@@ -22,3 +22,6 @@ test-results/
 # misc
 *.log
 .DS_Store
+
+# typescript incremental build cache
+tsconfig.tsbuildinfo
