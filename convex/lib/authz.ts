@@ -1,7 +1,8 @@
-import type { QueryCtx, MutationCtx } from "../_generated/server";
+import type { ActionCtx, QueryCtx, MutationCtx } from "../_generated/server";
 import type { Doc, Id } from "../_generated/dataModel";
 
 export type Ctx = QueryCtx | MutationCtx;
+export type AnyCtx = QueryCtx | MutationCtx | ActionCtx;
 
 /**
  * Resolve the current user id from the auth identity.
@@ -10,7 +11,7 @@ export type Ctx = QueryCtx | MutationCtx;
  * take the suffix and fall back to `subject`. This keeps domain code free of
  * auth-library imports (tests simulate identities directly).
  */
-export async function currentUserId(ctx: Ctx): Promise<Id<"users"> | null> {
+export async function currentUserId(ctx: AnyCtx): Promise<Id<"users"> | null> {
   const identity = await ctx.auth.getUserIdentity();
   if (!identity) return null;
   const fromToken = identity.tokenIdentifier.split("|").pop();
@@ -19,7 +20,7 @@ export async function currentUserId(ctx: Ctx): Promise<Id<"users"> | null> {
   return raw as Id<"users">;
 }
 
-export async function requireUser(ctx: Ctx): Promise<Id<"users">> {
+export async function requireUser(ctx: AnyCtx): Promise<Id<"users">> {
   const userId = await currentUserId(ctx);
   if (!userId) throw new Error("Not authenticated");
   return userId;

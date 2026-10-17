@@ -32,8 +32,18 @@ export const seedV1 = mutation({
           createdAt: Date.now(),
         });
         inserted += 1;
-      } else if (!existing.isActive) {
-        await ctx.db.patch(existing._id, { isActive: true });
+      } else {
+        // Converge: pre-release v1 content edits update in place. After the
+        // first public release, changes ship as NEW versions (PLAN §7.8).
+        if (existing.content !== template.content || !existing.isActive) {
+          await ctx.db.patch(existing._id, {
+            content: template.content,
+            vars:
+              template.vars.length > 0 ? template.vars : templateVars(template.content),
+            isActive: true,
+            notes: template.notes,
+          });
+        }
       }
     }
     const all = await ctx.db.query("promptTemplates").collect();

@@ -14,7 +14,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test --pass-with-no-tests",
-    "check": "tsc --noEmit && eslint . && vitest run",
+    "check": "tsc --noEmit && eslint . --max-warnings 0 && vitest run",
     "seed": "tsx scripts/seed-dev.ts",
     "fixtures": "tsx scripts/gen-fixtures.ts",
     "terminology": "tsx scripts/check-terminology.ts",
@@ -24,6 +24,8 @@
     "dc:down": "docker compose --env-file docker/.env down"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^4.0.82",
+    "@ai-sdk/openai": "^4.0.96",
     "@convex-dev/agent": "^0.7.8",
     "@convex-dev/auth": "^0.0.96",
     "ai": "^7.0.143",

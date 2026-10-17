@@ -1,11 +1,14 @@
+import type { ZodType } from "zod";
+
 /**
  * ModelGateway — the single seam between Fabula and any model provider
  * (PLAN §3.3, §13.4). Real implementations wrap the Vercel AI SDK; tests and
  * E2E runs use FakeGateway so the whole backend is deterministic offline.
+ *
+ * Structured outputs carry their zod schema: the fake gateway parses with it,
+ * the real gateway converts it to a JSON Schema for the provider and
+ * re-validates the response.
  */
-
-/** Minimal structural parse interface; zod schemas satisfy it. */
-export type SchemaParser<T> = { parse(value: unknown): T };
 
 export type ChatRole = "system" | "user" | "assistant";
 export type ChatMessage = { role: ChatRole; content: string };
@@ -20,7 +23,7 @@ export type GenerationRequest = {
 };
 
 export type ObjectRequest<T> = GenerationRequest & {
-  schema: SchemaParser<T>;
+  schema: ZodType<T>;
   /** Stable name of the structured task, e.g. "options" | "casting". */
   schemaName: string;
 };

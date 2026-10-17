@@ -26,6 +26,9 @@ const generationMode = v.union(
   v.literal("casting"),
   v.literal("directorMeta"),
   v.literal("sampleLine"),
+  v.literal("castRegen"),
+  v.literal("fieldRegen"),
+  v.literal("continuity"),
 );
 
 const toneDials = v.object({
@@ -162,6 +165,10 @@ export default defineSchema({
     sortKey: v.string(), // reorder = spotlight priority
     draftLocks: v.array(v.string()), // field paths locked in the audition UI (pre-play only)
     currentRevisionId: v.optional(v.id("roleRevisions")), // set once scene is playable
+    /** Cached voice samples keyed by revision-hash (PLAN Phase 2.8, ADR-004). */
+    sampleCache: v.optional(
+      v.object({ hash: v.string(), lines: v.array(v.string()), createdAt: v.number() }),
+    ),
   })
     .index("by_scene_status_sort", ["sceneId", "status", "sortKey"])
     .index("by_scene", ["sceneId"]),
@@ -350,6 +357,7 @@ export default defineSchema({
         key: v.string(), // contract|identity|world|boundaries|memory|relations|director|mode
         templateKey: v.optional(v.string()),
         templateVersion: v.optional(v.number()),
+        text: v.string(), // compiled block text — powers the prompt inspector (ADR-004)
         hash: v.string(),
         tokens: v.number(),
         chars: v.number(),

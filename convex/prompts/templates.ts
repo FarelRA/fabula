@@ -171,10 +171,12 @@ Return JSON: { summary, coveredFromSeq, coveredThroughSeq }.`,
     key: "mode.facts",
     version: TEMPLATE_VERSION_V1,
     notes: "Fact extraction contract — structured output.",
-    vars: ["fromSeq", "max", "existing"],
+    vars: ["fromSeq", "max", "existing", "window"],
     content: `MODE: facts
 Task: extract durable canon facts introduced since seq {{fromSeq}} (max {{max}}).
-Rules: one sentence per fact; subjects = involved role ids; visibility = public or private; nodeId = the beat id that introduced it.
+Beats in scope (id, seq, speaker):
+{{window}}
+Rules: one sentence per fact; subjects = involved role ids; visibility = public or private; nodeId must be one of the beat ids listed above.
 Skip moods, opinions, and anything already in the ledger: {{existing}}
 Return JSON: { facts: [{ text, subjects, visibility, nodeId }] }.`,
   },
@@ -197,7 +199,7 @@ Return JSON: { lines: ["…", "…"] }.`,
     content: `MODE: casting
 You are the casting director for an all-AI cast acting alongside a human director.
 Scene: {{premise}} · genre {{genre}} · era {{settingEra}}.
-Create {{castSize}} roles.{{humanRoleNote}}
+Cast size: {{castSize}} AI roles.{{humanRoleNote}}
 Cast-level constraints (checked programmatically; violation triggers a repair pass):
 - The relationship graph must be connected: every role relates to at least one other role.
 - At least one alliance and at least one friction point (tension ≥ 0.6).
@@ -238,9 +240,10 @@ Return JSON for the full role card.`,
     key: "meta.castRegen",
     version: TEMPLATE_VERSION_V1,
     notes: "Whole-cast regeneration respecting locks and vibe steer.",
-    vars: ["locks", "vibe", "castSummary", "scene"],
+    vars: ["locks", "vibe", "castSummary", "scene", "castSize"],
     content: `MODE: castRegen
 Task: regenerate the whole cast for this scene, applying the director's vibe steer.
+Cast size: {{castSize}} roles.
 Vibe steer: {{vibe}}
 Fields locked per role (keep exactly): {{locks}}.
 Current cast: {{castSummary}}

@@ -63,6 +63,9 @@ export const generationModeV = v.union(
   v.literal("casting"),
   v.literal("directorMeta"),
   v.literal("sampleLine"),
+  v.literal("castRegen"),
+  v.literal("fieldRegen"),
+  v.literal("continuity"),
 );
 
 export const roleStatusV = v.union(

@@ -1,6 +1,11 @@
 import { convexTest } from "convex-test";
+import { register as registerAgent } from "@convex-dev/agent/test";
 import { api } from "../../convex/_generated/api";
 import schema from "../../convex/schema";
+
+// Deterministic model layer for the whole backend suite (real providers are
+// never called in tests or CI — PLAN §11.1).
+process.env.FABULA_MODEL_FAKE = "1";
 
 /**
  * convex-test harness. Test files live OUTSIDE convex/ so they are never
@@ -20,7 +25,9 @@ const modules: Record<string, () => Promise<unknown>> = Object.fromEntries(
 );
 
 export function makeT() {
-  return convexTest(schema, modules);
+  const t = convexTest(schema, modules);
+  registerAgent(t);
+  return t;
 }
 
 export type T = ReturnType<typeof makeT>;
@@ -106,6 +113,9 @@ export function makeCard(name = "Linh") {
 
 export async function seedScene(t: T, userId: string) {
   const client = asUser(t, userId);
+  // Prompt templates are deployment data; tests bootstrap them like a fresh
+  // self-host would (idempotent).
+  await client.mutation(api.prompts.seed.seedV1, {});
   const created = await client.mutation(api.scenes.create, {
     title: "The Glass Harbor",
     premise: "A debt collector knocks on the wrong door.",

@@ -29,6 +29,8 @@ export async function createBeatRow(
     isArtifact?: boolean;
     editedFromBeatId?: Id<"beats">;
     regenerateOfBeatId?: Id<"beats">;
+    /** Streaming beats must not move the branch tip until they canonize. */
+    setBranchTip?: boolean;
   },
 ): Promise<{ beatId: Id<"beats">; seq: number }> {
   const seq = args.scene.seqCounter + 1;
@@ -60,7 +62,11 @@ export async function createBeatRow(
     createdAt: nowMs(),
   });
 
-  await ctx.db.patch(args.branchId, { tipBeatId: beatId });
+  if (args.setBranchTip !== false) {
+    await ctx.db.patch(args.branchId, { tipBeatId: beatId });
+  }
+  // Streaming beats pass setBranchTip:false — they canonize later in
+  // lifecycle.completeRun, so a discarded artifact never moves the tip.
   return { beatId, seq };
 }
 

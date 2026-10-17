@@ -139,7 +139,7 @@ export const upsertDraftRole = mutation({
 });
 
 export const updateDraft = mutation({
-  args: { roleId: v.id("roles"), patch: v.object({ ...roleCardV.fields, identity: v.optional(roleCardV.fields.identity) }) },
+  args: { roleId: v.id("roles"), patch: roleCardPatchV },
   handler: async (ctx, { roleId, patch }) => {
     const role = await requireRole(ctx, roleId);
     const scene = await requireScene(ctx, role.sceneId);

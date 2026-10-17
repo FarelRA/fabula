@@ -6,24 +6,37 @@ story three ways: pick one of the AI-generated paths, drop an out-of-character
 director note, or write a line yourself. Every choice can branch; nothing is
 ever destroyed.
 
-> **Status: Phase 0 + Phase 1 complete** (foundation, contracts, domain core).
+> **Status: Phases 0–2 complete** (foundation, domain core, generation engine).
 > The full plan — schema, prompt architecture, orchestration spec, wireflows,
 > phases, agents and acceptance criteria — lives in [PLAN.md](./PLAN.md).
 
 ## What works today
 
-- **Schema + contracts**: the full v1 data model (scenes, roles + revisions,
-  branches, beats, candidates, facts, summaries, director notes, snapshots,
-  runs, usage) and zod contracts for every AI output.
-- **Branch laws L1–L6** implemented and tested: pick-at-tip extends; ghost
-  picks fork; edit/regenerate always fork and preserve the original.
-- **Path-scoped memory**: facts and summaries are projected along the active
-  path, with the branch-isolation leak suite (unpinned facts never leak; pins
-  are explicit user overrides — ADR-001).
-- **Undo**: every reversible director action logs an inverse op.
-- **Access control**: owner/participant identity checks, revocable viewer
-  share links, anonymous → account claiming.
-- **Usage ledger** with per-scene rollups and cost estimates.
+- **Generation engine**: pure prompt compiler (fixed 8-block order, golden
+  snapshots, byte-deterministic), token-budget policy (system ≤25%, context
+  compaction, protected blocks), model tiers + provider-agnostic gateway with
+  a **deterministic fake** for tests/CI.
+- **Streaming turns** through the Convex Agent component: deltas persisted
+  (`saveStreamDeltas`) so streams survive reloads; beat lifecycle
+  (streaming → finished/failed/aborted), snapshots + usage on every
+  generation, failure isolation (no beat before the first delta; aborted
+  partials become artifacts that never move the tip).
+- **Path options** with validation → repair pass → deterministic fallback,
+  persisted atomically with their snapshot (inline cards render in Phase 5).
+- **Casting agent**: full cast with programmatic constraint checks
+  (connected graph, alliance + friction, distinct voices/hooks, tier policy),
+  up to 2 repair passes, human-role generation, cast/field regen that
+  respects locks byte-for-byte.
+- **Memory agent**: rolling summaries at the cadence, fact extraction with
+  dedupe, continuity warnings — each product snapshotted.
+- **Director meta-agent**: decision points, responder ordering, ending
+  detection, with deterministic floor fallbacks (pure `domain/orchestrate`).
+- **Schema + contracts**: full v1 data model and zod contracts for every AI
+  output.
+- **Branch laws L1–L6** implemented and tested; **path-scoped memory** with
+  the branch-isolation leak suite (pins are explicit overrides — ADR-001).
+- **Undo**, identity-guarded access, revocable share links, anonymous →
+  account claiming, usage ledger with per-scene rollups.
 - **Prompt templates as versioned data** (18 templates, idempotent seeding).
 - **Self-host scaffold**: Dockerfile + docker-compose (self-hosted Convex
   backend + dashboard + app), smoke script, CI including a self-host job.
@@ -39,7 +52,7 @@ bun run dev           # Next.js on :3000
 Run everything:
 
 ```bash
-bun run check          # typecheck + lint + tests (68 tests)
+bun run check          # typecheck + lint + tests (141 tests)
 bun run seed           # seed prompt templates (needs a running backend)
 bun run fixtures       # regenerate UI fixtures
 bun run terminology    # guard: no internal jargon in user-facing strings

@@ -47,6 +47,9 @@ export const GenerationModeSchema = z.enum([
   "casting",
   "directorMeta",
   "sampleLine",
+  "castRegen",
+  "fieldRegen",
+  "continuity",
 ]);
 
 /** Strategies that change scene state (PLAN §7.3: ≥1 option must use one). */
@@ -142,9 +145,17 @@ export const RoleCardSchema = z.object({
   }),
 });
 
-export const CastingSchema = z.object({
-  premise: z.string().min(1),
+export const RoleListSchema = z.object({
   roles: z.array(RoleCardSchema).min(1).max(8),
+});
+
+export const CastingSchema = RoleListSchema.extend({
+  premise: z.string().min(1),
+});
+
+/** Field regen returns a patch object; the action validates it field-by-field. */
+export const FieldRegenSchema = z.object({
+  fields: z.record(z.string(), z.unknown()),
 });
 
 const labelWords = (s: string): number => s.trim().split(/\s+/).filter(Boolean).length;
@@ -195,6 +206,15 @@ export const SampleLinesSchema = z.object({
   lines: z.array(z.string()).min(2).max(3),
 });
 
+export const ContinuitySchema = z.object({
+  warnings: z.array(
+    z.object({
+      text: z.string().min(1),
+      severity: z.enum(["low", "medium", "high"]),
+    }),
+  ),
+});
+
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -215,9 +235,12 @@ export type SceneSettings = z.infer<typeof SceneSettingsSchema>;
 export type Relation = z.infer<typeof RelationSchema>;
 export type RoleCard = z.infer<typeof RoleCardSchema>;
 export type Casting = z.infer<typeof CastingSchema>;
+export type RoleList = z.infer<typeof RoleListSchema>;
+export type FieldRegen = z.infer<typeof FieldRegenSchema>;
 export type PathOption = z.infer<typeof PathOptionSchema>;
 export type PathOptions = z.infer<typeof PathOptionsSchema>;
 export type Summary = z.infer<typeof SummarySchema>;
 export type Facts = z.infer<typeof FactsSchema>;
 export type DirectorMeta = z.infer<typeof DirectorMetaSchema>;
 export type SampleLines = z.infer<typeof SampleLinesSchema>;
+export type Continuity = z.infer<typeof ContinuitySchema>;

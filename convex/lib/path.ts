@@ -88,9 +88,10 @@ export async function sceneBeats(ctx: Ctx, sceneId: Id<"scenes">): Promise<Doc<"
 export async function activeChain(
   ctx: Ctx,
   scene: Doc<"scenes">,
+  tipBeatId?: Id<"beats">,
 ): Promise<Doc<"beats">[]> {
   const beats = await sceneBeats(ctx, scene._id);
-  const chain = buildChain(beats, scene.activeTipBeatId ?? undefined);
+  const chain = buildChain(beats, tipBeatId ?? scene.activeTipBeatId ?? undefined);
   const byId = new Map(beats.map((b) => [b._id as string, b]));
   return chain.map((entry) => {
     const doc = byId.get(entry._id);
@@ -108,8 +109,9 @@ export type PathProjection = {
 export async function projectPath(
   ctx: Ctx,
   scene: Doc<"scenes">,
+  tipBeatId?: Id<"beats">,
 ): Promise<PathProjection> {
-  const chain = await activeChain(ctx, scene);
+  const chain = await activeChain(ctx, scene, tipBeatId);
   const { ids, seqs } = pathSets(chain);
 
   const factsRaw = await ctx.db

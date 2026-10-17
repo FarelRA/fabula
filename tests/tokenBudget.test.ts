@@ -52,7 +52,7 @@ describe("fitToBudget", () => {
     ];
     const context: Block[] = Array.from({ length: 20 }, (_, i) => ({
       key: `beat-${i}`,
-      text: repeat("y", 8_000),
+      text: repeat("y", 200),
     }));
     const result = fitToBudget({
       blocks,

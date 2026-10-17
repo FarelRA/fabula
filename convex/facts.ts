@@ -1,5 +1,6 @@
-import { mutation, query } from "./_generated/server";
+import { internalMutation, mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import type { Id } from "./_generated/dataModel";
 import { assertSceneAccess, requireScene } from "./lib/authz";
 import { nowMs } from "./lib/time";
 import { logAction } from "./actions";
@@ -88,5 +89,44 @@ export const listForPath = query({
     await assertSceneAccess(ctx, scene);
     const projection = await projectPath(ctx, scene);
     return projection.facts.sort((a, b) => a.createdAt - b.createdAt);
+  },
+});
+
+/**
+ * Memory-agent writes (PLAN §3.4): extracted facts arrive pre-deduped from
+ * the action; nodeIds are already validated against the window.
+ */
+export const insertExtracted = internalMutation({
+  args: {
+    sceneId: v.id("scenes"),
+    facts: v.array(
+      v.object({
+        text: v.string(),
+        subjects: v.array(v.id("roles")),
+        visibilityKind: v.union(v.literal("public"), v.literal("private")),
+        visibilityRoleIds: v.array(v.id("roles")),
+        nodeId: v.id("beats"),
+      }),
+    ),
+  },
+  returns: v.array(v.id("facts")),
+  handler: async (ctx, args) => {
+    const ids: Id<"facts">[] = [];
+    for (const fact of args.facts) {
+      ids.push(
+        await ctx.db.insert("facts", {
+          sceneId: args.sceneId,
+          nodeId: fact.nodeId,
+          text: fact.text,
+          subjects: fact.subjects,
+          visibility: { kind: fact.visibilityKind, roleIds: fact.visibilityRoleIds },
+          status: "active",
+          isPinned: false,
+          source: "memory",
+          createdAt: nowMs(),
+        }),
+      );
+    }
+    return ids;
   },
 });

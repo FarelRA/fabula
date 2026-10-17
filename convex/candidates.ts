@@ -1,4 +1,4 @@
-import { mutation, query } from "./_generated/server";
+import { mutation, query, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import { assertSceneAccess, requireScene } from "./lib/authz";
@@ -6,6 +6,7 @@ import { nowMs } from "./lib/time";
 import { createBeatRow } from "./beats";
 import { logAction } from "./actions";
 import { planPick } from "./domain/branchPlans";
+import { snapshotV } from "./generation/validators";
 
 /**
  * Path options (candidates) — PLAN §6, laws L1–L3.
@@ -164,5 +165,63 @@ export const listForBeat = query({
       .withIndex("by_parent_status", (q) => q.eq("parentBeatId", beatId))
       .collect();
     return rows.sort((a, b) => a.optionIndex - b.optionIndex);
+  },
+});
+
+/**
+ * Options generation write path (PLAN §2.4): candidates + their prompt
+ * snapshot are persisted atomically.
+ */
+export const createBatchWithSnapshot = internalMutation({
+  args: {
+    sceneId: v.id("scenes"),
+    parentBeatId: v.id("beats"),
+    snapshot: snapshotV,
+    options: v.array(
+      v.object({
+        label: v.string(),
+        speakerRoleId: v.optional(v.id("roles")),
+        text: v.string(),
+        strategy: v.string(),
+      }),
+    ),
+  },
+  returns: v.array(v.id("candidates")),
+  handler: async (ctx, args) => {
+    const parent = await ctx.db.get(args.parentBeatId);
+    if (!parent || parent.sceneId !== args.sceneId) {
+      throw new Error("Parent beat not found in this scene");
+    }
+    const snapshotId = await ctx.db.insert("promptSnapshots", {
+      sceneId: args.sceneId,
+      mode: args.snapshot.mode,
+      beatId: parent._id,
+      blocks: args.snapshot.blocks,
+      model: args.snapshot.model,
+      tokenCounts: args.snapshot.tokenCounts,
+      budget: args.snapshot.budget,
+      createdAt: nowMs(),
+    });
+    const ids: Id<"candidates">[] = [];
+    for (let index = 0; index < args.options.length; index += 1) {
+      const option = args.options[index];
+      if (!option) continue;
+      ids.push(
+        await ctx.db.insert("candidates", {
+          sceneId: args.sceneId,
+          parentBeatId: parent._id,
+          branchId: parent.branchId,
+          optionIndex: index + 1,
+          label: option.label,
+          speakerRoleId: option.speakerRoleId,
+          text: option.text,
+          strategy: option.strategy,
+          status: "offered",
+          promptSnapshotId: snapshotId,
+          createdAt: nowMs(),
+        }),
+      );
+    }
+    return ids;
   },
 });
