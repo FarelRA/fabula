@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+/*
+ * Fabula design tokens — dark-first (PLAN §6, §9.7).
+ * Role accent colors are added as tokens in Phase 3; the values here are the
+ * foundation the rest of the app consumes.
+ */
+
+:root {
+  color-scheme: dark;
+}
+
+@theme {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-serif: ui-serif, Georgia, "Times New Roman", serif;
+
+  --color-stage-950: #0a0b0f;
+  --color-stage-900: #101218;
+  --color-stage-800: #191c24;
+  --color-stage-700: #262a35;
+  --color-parchment: #e9e4d8;
+  --color-accent: #e0a458;
+}

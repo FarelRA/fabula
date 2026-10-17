@@ -1,0 +1,17 @@
+node_modules
+.next
+.convex
+.git
+.github
+coverage
+playwright-report
+test-results
+.env
+.env.local
+.env.*.local
+docker/.env
+*.log
+PLAN.md
+docs
+tests
+e2e

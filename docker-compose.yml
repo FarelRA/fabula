@@ -1,0 +1,76 @@
+# Fabula self-host stack (PLAN §15.5). Modeled on the official convex-backend
+# self-host compose (self-hosted/docker/docker-compose.yml); dashboard + API
+# + app. Pin CONVEX_IMAGE_TAG in docker/.env for reproducible deploys.
+#
+#   cp docker/.env.example docker/.env && edit
+#   docker compose --env-file docker/.env up -d --build
+#   docker compose exec backend ./generate_admin_key.sh
+#
+name: fabula
+
+services:
+  backend:
+    # Pin to a release tag via CONVEX_IMAGE_TAG (never :latest in production).
+    image: ghcr.io/get-convex/convex-backend:${CONVEX_IMAGE_TAG:-latest}
+    stop_grace_period: 10s
+    stop_signal: SIGINT
+    ports:
+      - "${CONVEX_PORT:-3210}:3210"
+      - "${CONVEX_SITE_PORT:-3211}:3211"
+    volumes:
+      - convex-data:/convex/data
+    environment:
+      - INSTANCE_NAME=${INSTANCE_NAME:-fabula}
+      - INSTANCE_SECRET=${INSTANCE_SECRET:?Set INSTANCE_SECRET in docker/.env}
+      - CONVEX_CLOUD_ORIGIN=${CONVEX_CLOUD_ORIGIN:-http://127.0.0.1:3210}
+      - CONVEX_SITE_ORIGIN=${CONVEX_SITE_ORIGIN:-http://127.0.0.1:3211}
+      - DISABLE_BEACON=${DISABLE_BEACON:-true}
+      - DISABLE_METRICS_ENDPOINT=${DISABLE_METRICS_ENDPOINT:-true}
+      - DOCUMENT_RETENTION_DELAY=${DOCUMENT_RETENTION_DELAY:-172800}
+      - RUST_LOG=${RUST_LOG:-info}
+      # Optional Postgres / S3 upgrade path — unset ⇒ local SQLite + files.
+      - POSTGRES_URL
+      - S3_ENDPOINT_URL
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - S3_STORAGE_FILES_BUCKET
+      - S3_STORAGE_MODULES_BUCKET
+      - S3_STORAGE_EXPORTS_BUCKET
+      - S3_STORAGE_SNAPSHOT_IMPORTS_BUCKET
+      - S3_STORAGE_SEARCH_BUCKET
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3210/version"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    restart: unless-stopped
+
+  dashboard:
+    image: ghcr.io/get-convex/convex-dashboard:${CONVEX_IMAGE_TAG:-latest}
+    stop_grace_period: 10s
+    stop_signal: SIGINT
+    ports:
+      - "${DASHBOARD_PORT:-6791}:6791"
+    environment:
+      - NEXT_PUBLIC_DEPLOYMENT_URL=${NEXT_PUBLIC_DEPLOYMENT_URL:-http://127.0.0.1:3210}
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_CONVEX_URL: ${NEXT_PUBLIC_CONVEX_URL:-http://127.0.0.1:3210}
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  convex-data:

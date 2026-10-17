@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "0 4 * * *" # nightly self-host job
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - run: bun run typecheck
+      - run: bun run lint
+      - run: bun run terminology
+      - run: bun run test
+      - run: bun run build
+        env:
+          NEXT_PUBLIC_CONVEX_URL: http://127.0.0.1:3210
+
+  selfhost:
+    # Full stack boot on a fresh runner + smoke (PLAN §15.3 job 4).
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Configure self-host env
+        run: |
+          cp docker/.env.example docker/.env
+          sed -i "s|^INSTANCE_SECRET=.*|INSTANCE_SECRET=$(openssl rand -base64 32)|" docker/.env
+      - name: Boot the stack
+        run: docker compose --env-file docker/.env up -d --build
+      - name: Wait for backend health
+        run: |
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:3210/version >/dev/null; then exit 0; fi
+            sleep 5
+          done
+          docker compose --env-file docker/.env logs backend
+          exit 1
+      - name: Smoke
+        run: |
+          bun install --frozen-lockfile
+          bun run selfhost:smoke
+        env:
+          NEXT_PUBLIC_CONVEX_URL: http://127.0.0.1:3210
+          FABULA_APP_URL: http://127.0.0.1:3000

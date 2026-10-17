@@ -1,0 +1,23 @@
+# Optional TLS front door for single-VM deploys (PLAN §15.5).
+# Replace the example domains and point DNS at the VM.
+# Add these services to docker-compose.yml (or an override) when enabled.
+
+api.example.com {
+	encode zstd gzip
+	reverse_proxy backend:3210
+}
+
+site.example.com {
+	encode zstd gzip
+	reverse_proxy backend:3211
+}
+
+dash.example.com {
+	encode zstd gzip
+	reverse_proxy dashboard:6791
+}
+
+app.example.com {
+	encode zstd gzip
+	reverse_proxy app:3000
+}
