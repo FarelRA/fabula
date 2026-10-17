@@ -6,12 +6,21 @@ story three ways: pick one of the AI-generated paths, drop an out-of-character
 director note, or write a line yourself. Every choice can branch; nothing is
 ever destroyed.
 
-> **Status: Phases 0–2 complete** (foundation, domain core, generation engine).
-> The full plan — schema, prompt architecture, orchestration spec, wireflows,
-> phases, agents and acceptance criteria — lives in [PLAN.md](./PLAN.md).
+> **Status: Phases 0–3 complete** (foundation, domain core, generation engine,
+> app shell & design system). The full plan — schema, prompt architecture,
+> orchestration spec, wireflows, phases, agents and acceptance criteria — lives
+> in [PLAN.md](./PLAN.md).
 
 ## What works today
 
+- **App shell & design system** (Phase 3): dark-first theme with a WCAG-AA
+  tested token system (light mode included; `tests/theme/contrast.test.ts`),
+  8-slot identity palette, responsive three/two/single-pane shell with
+  bottom/side sheets + safe areas, states catalog
+  (loading/empty/error/offline/reconnecting), command palette (⌘K), keymap
+  registry + shortcuts dialog (Appendix B, collision-tested), motion presets
+  with reduced-motion, skip link + focus-trapped dialogs. Screenshots
+  archived in `docs/screenshots/` (320 → 2560).
 - **Generation engine**: pure prompt compiler (fixed 8-block order, golden
   snapshots, byte-deterministic), token-budget policy (system ≤25%, context
   compaction, protected blocks), model tiers + provider-agnostic gateway with
@@ -52,7 +61,8 @@ bun run dev           # Next.js on :3000
 Run everything:
 
 ```bash
-bun run check          # typecheck + lint + tests (141 tests)
+bun run check          # typecheck + lint + tests (227 unit/integration tests)
+bun run test:e2e       # Playwright: shell keyboard walkthrough + screenshots
 bun run seed           # seed prompt templates (needs a running backend)
 bun run fixtures       # regenerate UI fixtures
 bun run terminology    # guard: no internal jargon in user-facing strings

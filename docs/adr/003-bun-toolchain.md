@@ -34,3 +34,22 @@ implementation time is:
 - Zero divergence between local, CI and Docker builds in this environment.
 - A future migration to TS 7 / ESLint 10 requires only devDependency bumps
   once the lint stack catches up (tracked in PLAN §19.1 style spikes).
+
+## Update — Phase 3 (app shell)
+
+Three more Bun-ecosystem pins surfaced while building the app shell:
+
+- **jsdom pinned to `^26`**: jsdom ≥ 27's generated-IDL brand checks fail
+  under Bun — even a bare `new JSDOM()` throws
+  `'addEventListener' called on an object that is not a valid instance of
+  EventTarget`. jsdom 26 passes; revisit when upstream or Bun fixes it.
+- **Vitest JSX via `oxc`**: Next's tsconfig uses `jsx: "preserve"`, and
+  Vite 8 resolves `oxc` (which vitest pre-seeds), so `esbuild.jsx` options are
+  ignored. `vitest.config.ts` sets
+  `oxc: { jsx: { runtime: "automatic", importSource: "react" } }`.
+- **Playwright E2E port 3100**: the dev sandbox reserves :3000 for an
+  infrastructure service (Basic-auth Express), so the E2E webServer honors
+  `FABULA_E2E_PORT` with default 3100; CI uses the same default.
+- **Keymap robustness**: symbol chords (e.g. `?`) match even when the event
+  reports `shiftKey=false` (Playwright, some IMEs) — for symbol keys the
+  character itself encodes shift; letters/digits still require exact shift.

@@ -1,23 +1,248 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
 /*
- * Fabula design tokens — dark-first (PLAN §6, §9.7).
- * Role accent colors are added as tokens in Phase 3; the values here are the
- * foundation the rest of the app consumes.
+ * Fabula design tokens (PLAN §9.7, Phase 3.1) — dark-first, light available.
+ *
+ * Conventions:
+ *  - Every `--x` color that has text/icons rendered on it declares
+ *    `--x-foreground`. tests/theme/contrast.test.ts proves every such pair
+ *    meets WCAG 2.2 AA (≥ 4.5:1) in both themes.
+ *  - `--role-*` is the 8-slot identity palette (avatars, accents, branch
+ *    colors); branch `colorIndex` indexes into it.
+ *  - Reading measure is 72ch for the thread column (PLAN §9.7 desktop).
  */
 
+@custom-variant dark (&:is(.dark *));
+
 :root {
+  color-scheme: light;
+
+  /* --- light theme: warm parchment --- */
+  --background: #faf7f0;
+  --foreground: #1c1a16;
+  --card: #ffffff;
+  --card-foreground: #1c1a16;
+  --popover: #ffffff;
+  --popover-foreground: #1c1a16;
+  --primary: #7a4f10;
+  --primary-foreground: #fdf6e8;
+  --secondary: #efe9dc;
+  --secondary-foreground: #2a2620;
+  --muted: #efe9dc;
+  --muted-foreground: #5f584c;
+  --accent: #f0e2c4;
+  --accent-foreground: #2a2620;
+  --destructive: #b3261e;
+  --destructive-foreground: #fdf0ee;
+  --border: #ddd4c4;
+  --input: #ddd4c4;
+  --ring: #7a4f10;
+  --chart-1: #7a4f10;
+  --chart-2: #0f766e;
+  --chart-3: #6d28d9;
+  --chart-4: #be123c;
+  --chart-5: #0369a1;
+  --radius: 0.625rem;
+  --sidebar: #f3eee3;
+  --sidebar-foreground: #1c1a16;
+  --sidebar-primary: #7a4f10;
+  --sidebar-primary-foreground: #fdf6e8;
+  --sidebar-accent: #efe9dc;
+  --sidebar-accent-foreground: #2a2620;
+  --sidebar-border: #ddd4c4;
+  --sidebar-ring: #7a4f10;
+
+  /* --- identity palette (mode-independent) --- */
+  --role-amber: #e0a458;
+  --role-amber-foreground: #12131a;
+  --role-teal: #4fb8b0;
+  --role-teal-foreground: #12131a;
+  --role-violet: #a78bfa;
+  --role-violet-foreground: #12131a;
+  --role-rose: #f472b6;
+  --role-rose-foreground: #12131a;
+  --role-sky: #7cc4f0;
+  --role-sky-foreground: #12131a;
+  --role-lime: #a3d977;
+  --role-lime-foreground: #12131a;
+  --role-orange: #f08c4f;
+  --role-orange-foreground: #12131a;
+  --role-indigo: #8f9bf5;
+  --role-indigo-foreground: #12131a;
+
+  /* --- typography / layout scale --- */
+  --reading-measure: 72ch;
+}
+
+.dark {
   color-scheme: dark;
+
+  /* --- dark theme: the director's stage (default) --- */
+  --background: #0a0b0f;
+  --foreground: #e9e4d8;
+  --card: #101218;
+  --card-foreground: #e9e4d8;
+  --popover: #12141b;
+  --popover-foreground: #e9e4d8;
+  --primary: #e0a458;
+  --primary-foreground: #14100a;
+  --secondary: #191c24;
+  --secondary-foreground: #e9e4d8;
+  --muted: #191c24;
+  --muted-foreground: #b3ab99;
+  --accent: #262a35;
+  --accent-foreground: #e9e4d8;
+  --destructive: #ff6b63;
+  --destructive-foreground: #200604;
+  --border: #262a35;
+  --input: #262a35;
+  --ring: #e0a458;
+  --chart-1: #e0a458;
+  --chart-2: #4fb8b0;
+  --chart-3: #a78bfa;
+  --chart-4: #f472b6;
+  --chart-5: #7cc4f0;
+  --sidebar: #0d0f14;
+  --sidebar-foreground: #e9e4d8;
+  --sidebar-primary: #e0a458;
+  --sidebar-primary-foreground: #14100a;
+  --sidebar-accent: #191c24;
+  --sidebar-accent-foreground: #e9e4d8;
+  --sidebar-border: #262a35;
+  --sidebar-ring: #e0a458;
 }
 
 @theme {
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-serif: ui-serif, Georgia, "Times New Roman", serif;
+  --font-heading: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 
+  /* Type scale (display → body); sizes map to utilities text-* */
+  --text-hero: clamp(2rem, 1.35rem + 2.6vw, 3.5rem);
+  --text-title: clamp(1.375rem, 1.1rem + 1vw, 1.75rem);
+
+  /* Static stage tones (legacy aliases used by landing + shell chrome) */
   --color-stage-950: #0a0b0f;
   --color-stage-900: #101218;
   --color-stage-800: #191c24;
   --color-stage-700: #262a35;
   --color-parchment: #e9e4d8;
-  --color-accent: #e0a458;
+}
+
+@theme inline {
+  --font-heading: var(--font-heading);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+
+  /* Identity palette as utilities: bg-role-amber, text-role-teal-foreground, … */
+  --color-role-amber: var(--role-amber);
+  --color-role-amber-foreground: var(--role-amber-foreground);
+  --color-role-teal: var(--role-teal);
+  --color-role-teal-foreground: var(--role-teal-foreground);
+  --color-role-violet: var(--role-violet);
+  --color-role-violet-foreground: var(--role-violet-foreground);
+  --color-role-rose: var(--role-rose);
+  --color-role-rose-foreground: var(--role-rose-foreground);
+  --color-role-sky: var(--role-sky);
+  --color-role-sky-foreground: var(--role-sky-foreground);
+  --color-role-lime: var(--role-lime);
+  --color-role-lime-foreground: var(--role-lime-foreground);
+  --color-role-orange: var(--role-orange);
+  --color-role-orange-foreground: var(--role-orange-foreground);
+  --color-role-indigo: var(--role-indigo);
+  --color-role-indigo-foreground: var(--role-indigo-foreground);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* --- layout utilities (Phase 3.2) --- */
+
+/* Reading column for the thread (PLAN §9.7: max-width ≈ 72ch on desktop). */
+@utility reading-measure {
+  max-width: var(--reading-measure);
+}
+
+/* Notch / home-indicator safe areas (viewport-fit=cover is set in layout.tsx). */
+@utility pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+@utility pb-safe {
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 0.25rem);
+}
+
+/* Skip link: visually hidden until focused (keyboard-only onboarding to chrome). */
+@utility skip-link {
+  position: fixed;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 100;
+  transform: translateY(-300%);
+  border-radius: var(--radius-md);
+  background: var(--primary);
+  color: var(--primary-foreground);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: transform 150ms ease-out;
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skip-link {
+    transition: none;
+  }
 }

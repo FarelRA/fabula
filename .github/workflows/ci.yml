@@ -25,6 +25,25 @@ jobs:
         env:
           NEXT_PUBLIC_CONVEX_URL: http://127.0.0.1:3210
 
+  e2e:
+    # App-shell E2E (Phase 3); grows with each phase. The fake-gateway
+    # fixtures mode + local Convex arrive with the play loop (Phase 5).
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - run: bunx playwright install --with-deps chromium
+      - run: bun run build
+        env:
+          NEXT_PUBLIC_CONVEX_URL: http://127.0.0.1:3210
+      - run: bun run test:e2e
+        env:
+          NEXT_PUBLIC_CONVEX_URL: http://127.0.0.1:3210
+          FABULA_E2E_PORT: "3100"
+
   selfhost:
     # Full stack boot on a fresh runner + smoke (PLAN §15.3 job 4).
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
