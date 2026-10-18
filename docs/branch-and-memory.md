@@ -47,8 +47,8 @@ for the map, and `forkReason` is one of `pick`, `edit`, `regenerate`.
 
 ## 3. Ghost candidates and later-pick forking
 
-Unpicked candidates stay `status: "offered"` forever, the “ghost alternatives”
-of.2. Nothing sweeps them; they remain visible history.
+Unpicked candidates stay `status: "offered"` forever as the story’s ghost
+alternatives. Nothing sweeps them; they remain visible history.
 
 - `candidates.listForScene` decorates every offered candidate with
   `parentSeq` and `parentIsTip`.

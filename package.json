@@ -16,6 +16,7 @@
     "test:e2e": "cross-env NEXT_PUBLIC_CONVEX_URL=http://127.0.0.1:3210 NEXT_PUBLIC_FIXTURES=0 bun run build && playwright test --pass-with-no-tests",
     "e2e:server": "bun scripts/e2e-server.ts",
     "check:bundles": "bun scripts/check-bundle-lazy.ts && bun scripts/check-bundle-budgets.ts",
+  "check:dockerctx": "bash scripts/check-docker-context.sh",
     "check": "tsc --noEmit && eslint . --max-warnings 0 && vitest run",
     "seed": "tsx scripts/seed-dev.ts",
     "fixtures": "tsx scripts/gen-fixtures.ts",

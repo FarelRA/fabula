@@ -160,6 +160,7 @@ unless `FABULA_E2E_NO_SERVER=1`. CI installs Chromium, Firefox and WebKit.
 | `bun run check` | `tsc --noEmit && eslint . --max-warnings 0 && vitest run`, the pre-PR gate. |
 | `bun run build` | Production Next.js build (needed before bundle assertions). |
 | `bun run check:bundles` | Lazy-chunk assertion plus route JS gz budgets after a build. |
+| `bun run check:dockerctx` | Type-checks the file set the Docker image context contains (`.dockerignore`-filtered). Catches whatever only exists under `tests/`, `e2e/` or `docs/`, which the image build never sees. |
 | `bun run terminology` | UX-language guard. |
 | `bun run test:e2e` | Builds with `NEXT_PUBLIC_FIXTURES=0` and `NEXT_PUBLIC_CONVEX_URL=http://127.0.0.1:3210`, then Playwright starts the isolated e2e server. |
 | `FABULA_E2E_NO_SERVER=1 bun run test:e2e` | Reuse an already-running e2e server (env var is read by `playwright.config.ts`; `webServer` is disabled). |
@@ -212,8 +213,7 @@ v1 scans `src/` only; the README excerpt check from.6 is not wired.
   60 `beat-row`s, then measures `requestAnimationFrame` frames while
   programmatically scrolling for 1.5 s, requires > 10 frames and > 45 fps,
   attaches the numbers as test evidence. v1 uses this rAF measurement rather
-  than the CDP trace assertion sketched in.7; treat it as the
-  regression detector.
+  than a browser trace assertion; treat it as the regression detector.
 - **Route JS budgets** (`scripts/check-bundle-budgets.ts`): gzips each route’s
   initial chunks from `app-build-manifest.json` and fails over budget. Current
   budgets: `/` 250, `/new` 250, `/new/quick` 340, `/new/wizard` 340,
@@ -225,9 +225,9 @@ v1 scans `src/` only; the README excerpt check from.6 is not wired.
 
 | Job | Steps |
 |---|---|
-| `verify` | `bun install --frozen-lockfile` → `typecheck` → `lint` → `terminology` → `test` → `build` (with `NEXT_PUBLIC_CONVEX_URL=http://127.0.0.1:3210`) → `check:bundles`. |
+| `verify` | `bun install --frozen-lockfile` → `typecheck` → `lint` → `terminology` → `test` → `check:dockerctx` → `build` (with `NEXT_PUBLIC_CONVEX_URL=http://127.0.0.1:3210`) → `check:bundles`. |
 | `e2e` | install Chromium, Firefox and WebKit → `bun run test:e2e` with `FABULA_E2E_PORT=3100`. |
-| `selfhost` (nightly / manual) | Configures `docker/.env` (generated `INSTANCE_SECRET`), then runs the full release drill (`bun run selfhost:drill --backup-dir backups`): compose up → health → functions deploy → seed → smoke → data-volume backup + archive verification; stack logs dumped on failure and the verified backup uploaded as a build artifact. No real-model calls; the nightly real-model smoke behind a flag described in.1 is not wired. |
+| `selfhost` (nightly / manual) | Configures `docker/.env` (generated `INSTANCE_SECRET`), then runs the full release drill (`bun run selfhost:drill --backup-dir backups`): compose up → health → functions deploy → seed → smoke → data-volume backup + archive verification; stack logs dumped on failure and the verified backup uploaded as a build artifact. No real-model calls; the nightly real-model smoke behind an environment flag is not wired. |
 
 The branch-isolation leak suite is part of `bun run test`, so a leak fails the
 `verify` job. See `docs/branch-and-memory.md` for the leak suite.
