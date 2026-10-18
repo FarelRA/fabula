@@ -49,6 +49,9 @@ jobs:
     # Full stack boot on a fresh runner + release drill: compose up → health → functions deploy → seed → smoke → backup.
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
@@ -59,6 +62,16 @@ jobs:
         run: |
           cp docker/.env.example docker/.env
           sed -i "s|^INSTANCE_SECRET=.*|INSTANCE_SECRET=$(openssl rand -base64 32)|" docker/.env
+      - name: Log in to GHCR
+        # The Convex backend and dashboard images come from ghcr.io; anonymous
+        # pulls from shared runner IPs are denied or rate-limited, so the
+        # drill pulls them authenticated. The released app image works the
+        # same way on any host behind docker login ghcr.io.
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Release drill (up → health → deploy → seed → smoke → backup)
         run: bun run selfhost:drill --backup-dir backups
       - name: Stack logs on failure

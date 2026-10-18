@@ -227,7 +227,7 @@ v1 scans `src/` only; the README excerpt check from.6 is not wired.
 |---|---|
 | `verify` | `bun install --frozen-lockfile` → `typecheck` → `lint` → `terminology` → `test` → `check:dockerctx` → `build` (with `NEXT_PUBLIC_CONVEX_URL=http://127.0.0.1:3210`) → `check:bundles`. |
 | `e2e` | install Chromium, Firefox and WebKit → `bun run test:e2e` with `FABULA_E2E_PORT=3100`. |
-| `selfhost` (nightly / manual) | Configures `docker/.env` (generated `INSTANCE_SECRET`), then runs the full release drill (`bun run selfhost:drill --backup-dir backups`): compose up → health → functions deploy → seed → smoke → data-volume backup + archive verification; stack logs dumped on failure and the verified backup uploaded as a build artifact. No real-model calls; the nightly real-model smoke behind an environment flag is not wired. |
+| `selfhost` (nightly / manual) | Configures `docker/.env` (generated `INSTANCE_SECRET`), logs in to GHCR for the Convex images, then runs the full release drill (`bun run selfhost:drill --backup-dir backups`): compose up → health → functions deploy → seed → smoke → data-volume backup + archive verification; stack logs dumped on failure and the verified backup uploaded as a build artifact. No real-model calls; the nightly real-model smoke behind an environment flag is not wired. |
 
 The branch-isolation leak suite is part of `bun run test`, so a leak fails the
 `verify` job. See `docs/branch-and-memory.md` for the leak suite.

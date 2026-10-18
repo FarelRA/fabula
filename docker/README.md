@@ -174,6 +174,7 @@ keep archives off the VM.
 | App loads but queries fail | functions not deployed; run the deploy step (the drill covers it) |
 | App reports origin errors | `CONVEX_CLOUD_ORIGIN` and `NEXT_PUBLIC_CONVEX_URL` must match how users reach the stack; rebuild the app image after changing them |
 | Certificate not issued | DNS for all three hosts must point at the VM before first start; check `docker compose logs traefik` |
+| `denied` while pulling images | ghcr.io throttles anonymous pulls on some networks; run `docker login ghcr.io` first (a read-only token is enough) |
 | Deploy CLI hangs | confirm `CONVEX_SELF_HOSTED_URL` and `CONVEX_SELF_HOSTED_ADMIN_KEY`; the drill falls back from `convex dev --once` to `convex deploy --yes` |
 
 ## Security notes
