@@ -1,4 +1,5 @@
 import { spawnSync } from "node:child_process";
+import { createPublicKey, generateKeyPairSync } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { parseArgs } from "node:util";
@@ -12,11 +13,12 @@ import { parseArgs } from "node:util";
  *   2. backend health
  *   3. admin key (generate via compose exec when not supplied)
  *   4. deploy Convex functions against the self-hosted backend
- *   5. seed prompt templates
- *   6. smoke (backend + templates + app)
- *   7. backup the data volume and verify the archive (--backup-dir)
- *   8. image upgrade → smoke → rollback → smoke (--upgrade-tag/--rollback-tag)
- *   9. optional destructive restore check (--restore-from)
+ *   5. provision Convex Auth keys (SITE_URL, JWT_PRIVATE_KEY, JWKS)
+ *   6. seed prompt templates
+ *   7. smoke (backend + auth + templates + app)
+ *   8. backup the data volume and verify the archive (--backup-dir)
+ *   9. image upgrade → smoke → rollback → smoke (--upgrade-tag/--rollback-tag)
+ *  10. optional destructive restore check (--restore-from)
  *
  * Every step is idempotent; the script is safe to re-run. It is what the
  * nightly `selfhost` CI job executes.
@@ -158,6 +160,75 @@ function deployFunctions(key: string): void {
   }
 }
 
+const authDir = join(process.cwd(), ".convex", "selfhost-auth");
+
+function ensureAuthKeys(): { privateKeyPath: string; jwksPath: string } {
+  // Same shape as the e2e server provisioning: an RS256 keypair as a PKCS8
+  // PEM plus the matching JWKS document. Keys persist in .convex/ so repeated
+  // runs keep the same signing key.
+  mkdirSync(authDir, { recursive: true });
+  const privateKeyPath = join(authDir, "private.pem");
+  const jwksPath = join(authDir, "jwks.json");
+  if (!existsSync(privateKeyPath) || !existsSync(jwksPath)) {
+    const { privateKey } = generateKeyPairSync("rsa", {
+      modulusLength: 2048,
+      publicKeyEncoding: { type: "spki", format: "pem" },
+      privateKeyEncoding: { type: "pkcs8", format: "pem" },
+    });
+    const jwk = createPublicKey(privateKey).export({ format: "jwk" });
+    writeFileSync(privateKeyPath, privateKey);
+    writeFileSync(
+      jwksPath,
+      JSON.stringify({ keys: [{ ...jwk, alg: "RS256", use: "sig" }] }),
+    );
+  }
+  return { privateKeyPath, jwksPath };
+}
+
+function provisionAuth(key: string): void {
+  // Convex Auth refuses to sign anyone in without SITE_URL and an RS256
+  // keypair on the deployment; a fresh self-host must provision both before
+  // anyone can use the app.
+  console.log("\n▶ Provision Convex Auth keys");
+  const env = { ...process.env };
+  env.CONVEX_DEPLOYMENT = "";
+  env.CONVEX_DEPLOY_KEY = "";
+  env.CONVEX_SELF_HOSTED_URL = backendUrl;
+  env.CONVEX_SELF_HOSTED_ADMIN_KEY = key;
+  const cli = (args: string[], capture = false) =>
+    spawnSync("bunx", ["convex", ...args], {
+      stdio: capture ? ["ignore", "pipe", "inherit"] : "inherit",
+      encoding: "utf8",
+      env,
+    });
+  const readEnv = (name: string): string => {
+    const result = cli(["env", "get", name], true);
+    return result.status === 0 ? (result.stdout ?? "").trim() : "";
+  };
+
+  if (readEnv("SITE_URL") !== appUrl) {
+    const result = cli(["env", "set", "SITE_URL", appUrl]);
+    if (result.status !== 0) throw new Error("Failed to set SITE_URL");
+  }
+
+  if (readEnv("JWT_PRIVATE_KEY").length === 0 || readEnv("JWKS").length === 0) {
+    const { privateKeyPath, jwksPath } = ensureAuthKeys();
+    const keyResult = cli([
+      "env",
+      "set",
+      "JWT_PRIVATE_KEY",
+      "--from-file",
+      privateKeyPath,
+    ]);
+    if (keyResult.status !== 0) throw new Error("Failed to set JWT_PRIVATE_KEY");
+    const jwksResult = cli(["env", "set", "JWKS", "--from-file", jwksPath]);
+    if (jwksResult.status !== 0) throw new Error("Failed to set JWKS");
+    console.log("  provisioned Convex Auth JWT keys");
+  } else {
+    console.log("  auth keys already present");
+  }
+}
+
 function seed(): void {
   run("seed prompt templates", "bun", ["run", "seed"], {
     env: { NEXT_PUBLIC_CONVEX_URL: backendUrl },
@@ -268,6 +339,7 @@ async function main(): Promise<void> {
     const key = adminKey();
     deployFunctions(key);
   }
+  provisionAuth(adminKey());
   seed();
   smoke();
 

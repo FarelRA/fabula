@@ -3,7 +3,7 @@ import { api } from "../convex/_generated/api";
 
 /**
  * Self-host smoke:
- *   backend health → template bootstrap → app responds.
+ *   backend health → template bootstrap → anonymous sign-in → app responds.
  * Works against any backend URL: compose stack, Convex Cloud, or dev.
  */
 
@@ -36,9 +36,46 @@ async function main(): Promise<void> {
   if (templates.length === 0) throw new Error("Template seeding produced no active templates");
   console.log(`Templates active: ${templates.length}`);
 
-  const appRes = await fetch(appUrl);
-  if (!appRes.ok) throw new Error(`App unhealthy at ${appUrl} (${appRes.status})`);
-  console.log(`App OK (${appRes.status})`);
+  // Auth turnstile: a fresh anonymous visitor must obtain a session. This is
+  // where a deployment missing JWT_PRIVATE_KEY or JWKS fails, so smoke
+  // catches it before a person does.
+  const session = await client.action(api.auth.signIn, {
+    provider: "anonymous",
+    params: {},
+  });
+  const tokens = (session as { tokens?: { token?: string; refreshToken?: string } } | null)
+    ?.tokens;
+  if (!tokens?.token || !tokens.refreshToken) {
+    throw new Error(
+      `Sign-in produced no session tokens: ${JSON.stringify(session).slice(0, 200)}`,
+    );
+  }
+  console.log("Auth OK (anonymous session issued)");
+
+  // The app origin can sit behind a proxy or CDN; retry transient connect
+  // failures before treating the app as down.
+  let appStatus: number | undefined;
+  let appError: unknown;
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    try {
+      const appRes = await fetch(appUrl);
+      appStatus = appRes.status;
+      break;
+    } catch (error) {
+      appError = error;
+      if (attempt < 3) {
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+      }
+    }
+  }
+  if (appStatus === undefined) {
+    const detail = appError instanceof Error ? appError.message : String(appError);
+    throw new Error(`App unreachable at ${appUrl}: ${detail}`);
+  }
+  if (appStatus < 200 || appStatus >= 300) {
+    throw new Error(`App unhealthy at ${appUrl} (${appStatus})`);
+  }
+  console.log(`App OK (${appStatus})`);
 
   console.log("Self-host smoke passed.");
 }

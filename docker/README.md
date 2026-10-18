@@ -37,6 +37,13 @@ docker compose exec backend ./generate_admin_key.sh   # admin key for deploys
 - API `http://127.0.0.1:3210` · HTTP actions `http://127.0.0.1:3211` ·
   dashboard `http://127.0.0.1:6791` · app `http://127.0.0.1:3000`
 
+Sign-in depends on the Convex Auth keys (`SITE_URL`, `JWT_PRIVATE_KEY`,
+`JWKS`). The drill provisions them; for a manual setup, point `SITE_URL` at
+the app origin, then set both keys from files with
+`bunx convex env set <name> --from-file <file>` against the self-hosted
+backend. The drill keeps its RSA keypair in `.convex/selfhost-auth/` so
+repeated runs sign with the same key.
+
 ## Deploy code + seed + smoke
 
 Convex functions live with the code, not the image, so deploy them against the
@@ -58,8 +65,9 @@ NEXT_PUBLIC_CONVEX_URL=http://127.0.0.1:3210 FABULA_APP_URL=http://127.0.0.1:300
 bun run selfhost:drill --backup-dir backups
 ```
 
-Runs compose up, backend health, admin key, functions deploy, template seed,
-smoke, and a data-volume backup with archive verification. Extra flags:
+Runs compose up, backend health, admin key, functions deploy, Convex Auth key
+provisioning, template seed, smoke (including an anonymous sign-in), and a
+data-volume backup with archive verification. Extra flags:
 
 | Flag | Effect |
 |---|---|
@@ -173,6 +181,7 @@ keep archives off the VM.
 | Symptom | Check |
 |---|---|
 | Backend unhealthy | `docker compose logs backend`; is `INSTANCE_SECRET` set, are the ports free? |
+| Sign-in fails with a `JWT_PRIVATE_KEY` error | the deployment lacks Convex Auth keys; re-run the drill or set `SITE_URL`, `JWT_PRIVATE_KEY` and `JWKS` (see First run) |
 | Dashboard login fails | regenerate the admin key with `generate_admin_key.sh` |
 | App loads but queries fail | functions not deployed; run the deploy step (the drill covers it) |
 | App reports origin errors | `CONVEX_CLOUD_ORIGIN` and `NEXT_PUBLIC_CONVEX_URL` must match how users reach the stack; rebuild the app image after changing them |
