@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   useAction,
-  useConvexConnectionState,
   useMutation,
   useQuery,
 } from "convex/react";
@@ -42,7 +41,7 @@ import { InspectorPane } from "@/components/inspector/InspectorPane";
 import { ExportDialog } from "@/components/scenes/ExportDialog";
 import { ShareDialog } from "@/components/scenes/ShareDialog";
 import { ThreadView } from "@/components/thread/ThreadView";
-import { OfflineBanner, ReconnectingBanner } from "@/components/shell/states";
+import { useConnectionState } from "@/hooks/useConnectionState";
 import { useKeymap } from "@/hooks/useKeymap";
 import { useViewportMode } from "@/hooks/useViewportMode";
 import { buildPlayScene, mapPlayRun } from "@/lib/play/map";
@@ -64,31 +63,6 @@ function messageOf(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
-function useOnlineStatus(): boolean {
-  const [online, setOnline] = useState(true);
-  useEffect(() => {
-    const update = () => setOnline(window.navigator.onLine);
-    update();
-    window.addEventListener("online", update);
-    window.addEventListener("offline", update);
-    return () => {
-      window.removeEventListener("online", update);
-      window.removeEventListener("offline", update);
-    };
-  }, []);
-  return online;
-}
-
-function ConnectionNotice() {
-  const connection = useConvexConnectionState();
-  const online = useOnlineStatus();
-  if (!online) return <OfflineBanner />;
-  if (connection.hasEverConnected && !connection.isWebSocketConnected) {
-    return <ReconnectingBanner />;
-  }
-  return null;
-}
-
 type DialogState =
   | { kind: "regenerate"; beat: PlayBeat }
   | { kind: "ghostPick"; option: PlayOption }
@@ -104,6 +78,11 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
   const id = sceneId as Id<"scenes">;
   const [castOpen, setCastOpen] = useState(false);
   const [busy, setBusy] = useState(false);
+  const connection = useConnectionState();
+  const offline = connection === "offline";
+  // Offline locks every mutating affordance (PLAN §9.9); the global banner in
+  // the app shell explains why. Reconnecting keeps mutations queued by Convex.
+  const interactionBusy = busy || offline;
   const [queuedRoleIds, setQueuedRoleIds] = useState<string[]>([]);
   const [forcedSpeaker, setForcedSpeaker] = useState<string | null>(null);
   const [pendingPick, setPendingPick] = useState<PlayOption | null>(null);
@@ -598,7 +577,13 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
   // Auto-burst (PLAN §8.2): pause, decision points, failures and active runs
   // all stop the chain. Queue entries win over the resolved floor.
   useEffect(() => {
-    if (!scene || run || scene.status !== "playing") return;
+    if (!scene || run) return;
+    if (scene.status !== "playing") {
+      // Pause/archive disarms the burst entirely so resuming always re-arms
+      // it, even if the tip state is identical to the pre-pause state.
+      lastAutoKey.current = "";
+      return;
+    }
     const tip = tipOptions(scene.options);
     if (tip.length > 0) return;
     if (
@@ -643,7 +628,8 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
   const tipChoices = scene ? tipOptions(scene.options) : [];
   const pickChoice = (index: number) => {
     const option = tipChoices[index];
-    if (!option || busy || run) return;
+    // Only a live turn blocks a pick — options/memory bookkeeping runs don't.
+    if (!option || busy || (run !== null && run.mode === "turn")) return;
     requestPick(option);
   };
   useKeymap([
@@ -715,8 +701,6 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
 
   return (
     <div className="flex h-[calc(100dvh-3.5rem)] min-h-0 flex-col bg-background">
-      <ConnectionNotice />
-
       <header className="flex items-center gap-2 border-b border-border px-3 py-2">
         <Button asChild variant="ghost" size="icon-sm">
           <Link href="/" aria-label="Back to the lobby">
@@ -789,7 +773,7 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
             scene={scene}
             run={run}
             queuedRoleIds={queuedRoleIds}
-            disabled={archived}
+            disabled={archived || offline}
             onMention={mention}
             onQueue={queueRole}
           />
@@ -842,7 +826,7 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
             run={run}
             nextSpeaker={nextSpeaker}
             queuedCount={queuedRoleIds.length}
-            busy={busy}
+            busy={interactionBusy}
             onPauseToggle={() => void togglePause()}
             onAbort={() => void abort()}
             onOffer={() => void offerPaths()}
@@ -853,7 +837,7 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
             streamingText={streamingText}
             optimisticPick={pendingPick?.parentIsTip ? pendingPick : null}
             pendingPickId={pendingPick?.id ?? null}
-            busy={busy || Boolean(run)}
+            busy={interactionBusy || Boolean(run)}
             gutterMarkers={gutterMarkers}
             selectedBeatId={selectedBeatId ?? undefined}
             focusBeatId={selectedBeatId ?? undefined}
@@ -861,14 +845,14 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
             onPin={(beat, pinned) => void pin(beat, pinned)}
             onEdit={(beat) => setEditBeat(beat)}
             onRegenerate={(beat) => setDialog({ kind: "regenerate", beat })}
-            onRetry={() => void startTurn()}
+            onRetry={(beat) => void performRegenerate(beat)}
             onInspectBeat={(beat) => inspectBeat(beat.id)}
             onSwitchBranch={(marker) => void switchBranch(marker.branchId)}
           />
           <DirectorBar
             scene={scene}
             canUndo={canUndo}
-            busy={busy}
+            busy={interactionBusy}
             onUndo={() => void undo()}
             onOffer={() => void offerPaths()}
             onPauseToggle={() => void togglePause()}
@@ -879,7 +863,7 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
             roles={scene.roles}
             notes={scene.notes}
             run={run}
-            busy={busy}
+            busy={interactionBusy}
             onSteer={(text, mode) => void steer(text, mode)}
             onWrite={(roleId, text) => void write(roleId, text)}
             onMention={mention}
@@ -946,7 +930,7 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
             scene={scene}
             run={run}
             queuedRoleIds={queuedRoleIds}
-            disabled={archived}
+            disabled={archived || offline}
             onMention={(roleId) => {
               setCastOpen(false);
               mention(roleId);
@@ -965,7 +949,7 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
         onOpenChange={(open) => {
           if (!open) setEditBeat(null);
         }}
-        busy={busy}
+        busy={interactionBusy}
         onConfirm={(text) => void performEdit(text)}
       />
 

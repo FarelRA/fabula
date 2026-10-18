@@ -15,12 +15,13 @@
     "test:watch": "vitest",
     "test:e2e": "cross-env NEXT_PUBLIC_CONVEX_URL=http://127.0.0.1:3210 NEXT_PUBLIC_FIXTURES=0 bun run build && playwright test --pass-with-no-tests",
     "e2e:server": "bun scripts/e2e-server.ts",
-    "check:bundles": "bun scripts/check-bundle-lazy.ts",
+    "check:bundles": "bun scripts/check-bundle-lazy.ts && bun scripts/check-bundle-budgets.ts",
     "check": "tsc --noEmit && eslint . --max-warnings 0 && vitest run",
     "seed": "tsx scripts/seed-dev.ts",
     "fixtures": "tsx scripts/gen-fixtures.ts",
     "terminology": "tsx scripts/check-terminology.ts",
     "selfhost:smoke": "tsx scripts/selfhost-smoke.ts",
+    "selfhost:drill": "tsx scripts/selfhost-drill.ts",
     "dc:up": "docker compose --env-file docker/.env up -d",
     "dc:logs": "docker compose --env-file docker/.env logs -f",
     "dc:down": "docker compose --env-file docker/.env down"
@@ -66,6 +67,7 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@edge-runtime/vm": "^5.0.0",
     "@eslint/eslintrc": "^3.3.7",
     "@playwright/test": "^1.64.1",

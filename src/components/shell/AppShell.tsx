@@ -15,6 +15,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { useConnectionState, type ConnectionState } from "@/hooks/useConnectionState";
 import { useKeymap, type KeyRegistration } from "@/hooks/useKeymap";
 import { usePlatform } from "@/hooks/usePlatform";
 import { useViewportMode } from "@/hooks/useViewportMode";
@@ -32,7 +33,7 @@ import { useUiStore } from "@/stores/ui";
  * keeps its reading measure via the `reading-measure` utility.
  */
 
-export type ConnectionState = "online" | "reconnecting" | "offline";
+export type { ConnectionState };
 
 type AppShellProps = {
   children: React.ReactNode;
@@ -40,6 +41,7 @@ type AppShellProps = {
   rightPane?: React.ReactNode;
   leftLabel?: string;
   rightLabel?: string;
+  /** Test/override seam — by default the shell detects its own connection. */
   connection?: ConnectionState;
 };
 
@@ -49,8 +51,10 @@ export function AppShell({
   rightPane,
   leftLabel = "Cast",
   rightLabel = "Inspector",
-  connection = "online",
+  connection: connectionOverride,
 }: AppShellProps) {
+  const detected = useConnectionState();
+  const connection = connectionOverride ?? detected;
   const mode = useViewportMode();
   const platform = usePlatform();
   const activePanel = useUiStore((state) => state.activePanel);
@@ -117,12 +121,17 @@ export function AppShell({
               variant="outline"
               size="sm"
               className="gap-2 text-muted-foreground"
-              aria-label="Open command palette"
               onClick={() => setPaletteOpen(true)}
             >
               <CommandIcon className="size-3.5" aria-hidden />
-              <span className="hidden sm:inline">Search…</span>
-              <kbd className="hidden rounded-sm border border-border bg-muted px-1.5 py-0.5 font-sans text-[10px] text-muted-foreground md:inline">
+              <span className="sr-only">Open command palette</span>
+              <span className="hidden sm:inline" aria-hidden>
+                Search…
+              </span>
+              <kbd
+                aria-hidden
+                className="hidden rounded-sm border border-border bg-muted px-1.5 py-0.5 font-sans text-[10px] text-muted-foreground md:inline"
+              >
                 {paletteHint}
               </kbd>
             </Button>

@@ -1,8 +1,11 @@
 import { expect, test } from "@playwright/test";
+import { api } from "../convex/_generated/api";
 import {
   createLiveScene,
   firstOptionText,
+  ownerClient,
   PREMISE,
+  sceneIdFromUrl,
   waitForOptions,
 } from "./helpers";
 
@@ -138,20 +141,45 @@ test("floor mention · forcing a role makes them speak next", async ({ page }) =
 
 test("pause stops auto-floor; resume restarts it", async ({ page }) => {
   await createLiveScene(page, `${PREMISE} [[fake:no-decision]]`);
+  const sceneId = sceneIdFromUrl(page.url());
+  const owner = await ownerClient(page);
 
   // The opener is on stage and auto-burst is armed. Pause before the first
   // response lands, then wait for any already-running generation to settle.
   await page.getByRole("button", { name: /Pause auto-floor/ }).first().click();
   await expect(page.getByText(/Paused — auto-floor is off/)).toBeVisible();
   await expect(page.getByText(/speaking/)).toHaveCount(0, { timeout: 20_000 });
+  await expect
+    .poll(async () => await owner.query(api.generation.runs.active, { sceneId }), {
+      timeout: 20_000,
+    })
+    .toBeNull();
 
   const rows = page.getByTestId("beat-row");
   const before = await rows.count();
   await page.waitForTimeout(2200);
   expect(await rows.count()).toBe(before);
+  expect(await owner.query(api.generation.runs.active, { sceneId })).toBeNull();
 
+  // Resuming re-arms the floor. Serve whichever state the engine hands us:
+  // the burst starts a turn, or a decision point is (or becomes) open — then
+  // the director picks and the scene continues. (The first keypress can race
+  // the resume mutation's busy window, so keep offering the pick.)
   await page.getByRole("button", { name: /Resume auto-floor/ }).first().click();
+  const options = page.getByTestId("option-card");
+  for (let attempt = 0; attempt < 40; attempt += 1) {
+    if ((await rows.count()) > before) break;
+    if ((await options.count()) > 0) {
+      await page.keyboard.press("Alt+1");
+    }
+    await page.waitForTimeout(250);
+  }
   await expect
-    .poll(async () => rows.count(), { timeout: 20_000 })
+    .poll(async () => rows.count(), { timeout: 30_000 })
     .toBeGreaterThan(before);
+  await expect
+    .poll(async () => await owner.query(api.generation.runs.active, { sceneId }), {
+      timeout: 30_000,
+    })
+    .toBeNull();
 });

@@ -124,9 +124,15 @@ test("E2E-04 · edit forks a branch; memory and map follow the active path", asy
   await expect(page.getByText(/Prompts · beat \d+/)).toBeVisible();
   await expect(page.getByText("contract.roleplay v1")).toBeVisible();
 
-  // Usage meter reflects recorded (estimated) usage.
-  await page.getByRole("tab", { name: "Usage" }).click();
-  await expect(page.getByTestId("usage-meter")).toBeVisible();
+  // Usage meter reflects recorded (estimated) usage. Activate through the
+  // keyboard path: headless WebKit's pointer stability checks can churn on
+  // freshly-opened sheet content.
+  const usageTab = page.getByRole("tab", { name: "Usage" });
+  await usageTab.press("Enter");
+  await expect(usageTab).toHaveAttribute("aria-selected", "true", {
+    timeout: 10_000,
+  });
+  await expect(page.getByTestId("usage-meter")).toBeVisible({ timeout: 15_000 });
   await expect(page.getByTestId("usage-meter")).toContainText("estimated");
 });
 

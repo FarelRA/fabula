@@ -36,13 +36,14 @@ jobs:
         with:
           bun-version: latest
       - run: bun install --frozen-lockfile
-      - run: bunx playwright install --with-deps chromium
+      - run: bunx playwright install --with-deps chromium firefox webkit
       - run: bun run test:e2e
         env:
           FABULA_E2E_PORT: "3100"
 
   selfhost:
-    # Full stack boot on a fresh runner + smoke (PLAN §15.3 job 4).
+    # Full stack boot on a fresh runner + release drill (PLAN §15.3 job 4 /
+    # §15.6): compose up → health → functions deploy → seed → smoke → backup.
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
@@ -50,24 +51,19 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
+      - run: bun install --frozen-lockfile
       - name: Configure self-host env
         run: |
           cp docker/.env.example docker/.env
           sed -i "s|^INSTANCE_SECRET=.*|INSTANCE_SECRET=$(openssl rand -base64 32)|" docker/.env
-      - name: Boot the stack
-        run: docker compose --env-file docker/.env up -d --build
-      - name: Wait for backend health
-        run: |
-          for i in $(seq 1 30); do
-            if curl -fsS http://127.0.0.1:3210/version >/dev/null; then exit 0; fi
-            sleep 5
-          done
-          docker compose --env-file docker/.env logs backend
-          exit 1
-      - name: Smoke
-        run: |
-          bun install --frozen-lockfile
-          bun run selfhost:smoke
-        env:
-          NEXT_PUBLIC_CONVEX_URL: http://127.0.0.1:3210
-          FABULA_APP_URL: http://127.0.0.1:3000
+      - name: Release drill (up → health → deploy → seed → smoke → backup)
+        run: bun run selfhost:drill --backup-dir backups
+      - name: Stack logs on failure
+        if: failure()
+        run: docker compose --env-file docker/.env logs --tail 200
+      - name: Upload verified backup
+        uses: actions/upload-artifact@v4
+        with:
+          name: selfhost-backup
+          path: backups/
+          retention-days: 7

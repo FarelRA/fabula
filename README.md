@@ -6,14 +6,21 @@ story three ways: pick one of the AI-generated paths, drop an out-of-character
 director note, or write a line yourself. Every choice can branch; nothing is
 ever destroyed.
 
-> **Status: Phases 0–7 complete** (foundation, domain core, generation engine,
-> app shell & design system, cast generation UX, play loop, branch & meta
-> surfaces, archive & share). The full plan — schema, prompt architecture,
-> orchestration spec, wireflows, phases, agents and acceptance criteria —
-> lives in [PLAN.md](./PLAN.md).
+> **Status: v1.0.0 — Horizon 1 complete** (Phases 0–8: foundation, domain core,
+> generation engine, app shell & design system, cast generation UX, play loop,
+> branch & meta surfaces, archive & share, hardening & acceptance). The full
+> plan — schema, prompt architecture, orchestration spec, wireflows, phases,
+> agents and acceptance criteria — lives in [PLAN.md](./PLAN.md).
 
 ## What works today
 
+- **Hardening & acceptance** (Phase 8): the v1.0 quality bar is enforced in CI —
+  axe-core WCAG 2.2 AA sweeps on every primary surface (zero critical/serious),
+  a full keyboard walkthrough (E2E-09), failure-injection and offline/reconnect
+  contracts (E2E-06), route JS budgets, a cross-engine matrix (Chromium,
+  Firefox, WebKit), per-surface route error boundaries, and the self-host
+  release drill (`bun run selfhost:drill`). Acceptance evidence lives in
+  [docs/acceptance-run.md](./docs/acceptance-run.md).
 - **Archive & share** (Phase 7): end detection surfaces a non-modal “Wrap
   scene?” offer after consecutive resolution signals — never an automatic
   archive. Wrapping freezes the tree, runs a final summary pass and is one
@@ -140,11 +147,11 @@ the audition on deterministic local fixtures for UI-first development. E2E does
 Run everything:
 
 ```bash
-bun run check          # typecheck + lint + tests (424 unit/integration tests)
+bun run check          # typecheck + lint + tests (unit/integration)
 bun run test:e2e       # builds live, boots local Convex + fake model, Playwright
 bun run e2e:server     # the backend+app server Playwright starts (manual runs)
 bun run build          # production build
-bun run check:bundles  # lazy-chunk assertion (run after build; CI does)
+bun run check:bundles  # lazy-chunk + route JS budget assertions (run after build)
 bun run seed           # seed prompt templates (needs a running backend)
 bun run fixtures       # regenerate UI fixtures
 bun run terminology    # guard: no internal jargon in user-facing strings
@@ -159,14 +166,14 @@ already-running e2e server.
 
 ```bash
 cp docker/.env.example docker/.env   # set INSTANCE_SECRET
-docker compose --env-file docker/.env up -d --build
-docker compose exec backend ./generate_admin_key.sh
-bun run selfhost:smoke               # backend → templates → app
+bun run selfhost:drill --backup-dir backups   # up → health → deploy → seed → smoke → backup
 ```
 
-The only external dependencies are AI provider APIs. Convex Cloud is optional;
-the open-source backend is the reference target (PLAN §15.7). See
-[docker/README.md](./docker/README.md) for the runbook.
+The drill automates the whole release sequence (upgrades, rollback and restore
+drills included). Manual steps and the full runbook:
+[docker/README.md](./docker/README.md). The only external dependencies are AI
+provider APIs; Convex Cloud is optional and the open-source backend is the
+reference target (PLAN §15.7).
 
 ## Branch laws in one table
 
@@ -192,8 +199,21 @@ docs/adr/         architecture decision records
 ## Docs
 
 - [PLAN.md](./PLAN.md) — the complete product plan (horizons, phases, agents, acceptance).
-- [docs/adr/](./docs/adr/) — decision records (pinned-facts override, card typing, Bun toolchain).
-- [docker/README.md](./docker/README.md) — self-host runbook.
+- [docs/prompt-architecture.md](./docs/prompt-architecture.md) — compiler pipeline, blocks, output contracts, budgets, provenance.
+- [docs/orchestration.md](./docs/orchestration.md) — floor, burst, cadence, failure/abort policy, run locks.
+- [docs/branch-and-memory.md](./docs/branch-and-memory.md) — L1–L6 enforcement, projection, the leak test.
+- [docs/testing.md](./docs/testing.md) — pyramid, fake model, E2E scenarios, gates.
+- [docs/acceptance-run.md](./docs/acceptance-run.md) — the §17.1 acceptance record with evidence.
+- [docs/adr/](./docs/adr/) — decision records (pinned facts, card typing, Bun toolchain, per-phase API surfaces).
+- [docker/README.md](./docker/README.md) — self-host runbook + release drill.
 
-The README is expanded to the full §16 outline in Phase 8 (streaming/resume
-internals, prompt blocks, orchestration, glossary).
+## Roadmap
+
+Fabula ships in three additive horizons (PLAN §1.3); nothing is rewritten
+between them.
+
+| Horizon | Version | Theme | Phases | Highlights |
+|---|---|---|---|---|
+| H1 | **v1.0 (this release)** | The Director's Chair | 0–8 | Full play loop, branching, memory, prompt inspector, sharing, archive/export, hardening |
+| H2 | v1.5 | The Living Room | 9–11 | Multiple humans co-playing the cast, spectators, private facts & whispers, crowd casts, compare & merge |
+| H3 | v2.0 | Voices & Community | 12–14 | Per-role voices + radio mode, gallery/publish/remix, PWA offline reading, localization, spend center |

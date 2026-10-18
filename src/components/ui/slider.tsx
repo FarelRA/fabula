@@ -10,8 +10,13 @@ function Slider({
   value,
   min = 0,
   max = 100,
+  "aria-label": ariaLabel,
+  thumbLabels,
   ...props
-}: React.ComponentProps<typeof SliderPrimitive.Root>) {
+}: React.ComponentProps<typeof SliderPrimitive.Root> & {
+  /** Per-thumb labels for screen readers (single-thumb sliders fall back to the root's aria-label). */
+  thumbLabels?: string[]
+}) {
   const _values = React.useMemo(
     () =>
       Array.isArray(value)
@@ -29,6 +34,7 @@ function Slider({
       value={value}
       min={min}
       max={max}
+      aria-label={ariaLabel}
       className={cn(
         "relative flex w-full touch-none items-center select-none data-disabled:opacity-50 data-vertical:h-full data-vertical:min-h-40 data-vertical:w-auto data-vertical:flex-col",
         className
@@ -48,6 +54,9 @@ function Slider({
         <SliderPrimitive.Thumb
           data-slot="slider-thumb"
           key={index}
+          aria-label={
+            thumbLabels?.[index] ?? (_values.length === 1 ? ariaLabel : undefined)
+          }
           className="relative block size-3 shrink-0 rounded-full border border-ring bg-white ring-ring/50 transition-[color,box-shadow] select-none after:absolute after:-inset-2 hover:ring-3 focus-visible:ring-3 focus-visible:outline-hidden active:ring-3 disabled:pointer-events-none disabled:opacity-50"
         />
       ))}

@@ -250,6 +250,18 @@ export const start = action({
     let tokensIn = 0;
     let tokensOut = 0;
 
+    // Abort plumbing (PLAN §8.5): the director's abort flag trips this signal
+    // so the provider stream stops server-side, not just in the reader.
+    const abortController = new AbortController();
+    const abortPoll = setInterval(() => {
+      void ctx
+        .runQuery(internal.generation.runs.isAborted, { runId })
+        .then((aborted) => {
+          if (aborted) abortController.abort();
+        })
+        .catch(() => undefined);
+    }, 400);
+
     try {
       const result = await agent.streamText(
         ctx,
@@ -258,8 +270,9 @@ export const start = action({
           system: compiled.system,
           messages: compiled.messages,
           maxOutputTokens: outputReserve,
+          abortSignal: abortController.signal,
         },
-        { saveStreamDeltas: true },
+        { saveStreamDeltas: { returnImmediately: true } },
       );
 
       let chunkCount = 0;
@@ -279,6 +292,7 @@ export const start = action({
           const aborted = await ctx.runQuery(internal.generation.runs.isAborted, { runId });
           if (aborted) {
             outcome = "aborted";
+            abortController.abort();
             break;
           }
         }
@@ -306,8 +320,15 @@ export const start = action({
         streamMessageId = outputMessage._id as string;
       }
     } catch (error) {
-      outcome = "failed";
-      failure = error instanceof Error ? error.message : String(error);
+      // An aborted provider stream surfaces as a thrown error; the abort flag
+      // is the source of truth for which outcome to record.
+      const aborted = await ctx
+        .runQuery(internal.generation.runs.isAborted, { runId })
+        .catch(() => false);
+      outcome = aborted ? "aborted" : "failed";
+      failure = aborted ? undefined : error instanceof Error ? error.message : String(error);
+    } finally {
+      clearInterval(abortPoll);
     }
 
     await ctx.runMutation(internal.generation.lifecycle.completeRun, {

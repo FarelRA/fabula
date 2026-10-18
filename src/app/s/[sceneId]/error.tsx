@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect } from "react";
-import { ErrorState } from "@/components/shell/states";
+import { RouteError } from "@/components/shell/RouteError";
 
+/** Play/archive scene boundary (Phase 8.3) — covers nested /archive too. */
 export default function SceneError({
   error,
   reset,
@@ -16,17 +16,10 @@ export default function SceneError({
   }, [error]);
 
   return (
-    <div className="mx-auto max-w-xl space-y-4 px-4 py-16">
-      <ErrorState
-        title="This scene could not open"
-        description="The room is still there — retry, or start from the lobby."
-        onRetry={reset}
-      />
-      <div className="text-center">
-        <Link href="/" className="text-sm text-primary hover:underline">
-          Back to the lobby
-        </Link>
-      </div>
-    </div>
+    <RouteError
+      title="This scene could not open"
+      description="The room is still there — retry, or start from the lobby. Every branch and beat is safe."
+      onRetry={reset}
+    />
   );
 }

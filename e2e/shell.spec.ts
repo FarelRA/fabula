@@ -30,26 +30,49 @@ test.describe("app shell", () => {
     await page.keyboard.press("Enter");
     await expect(page.locator("#main")).toBeFocused();
 
-    // "?" opens the shortcuts dialog (Appendix B).
-    await page.keyboard.press("?");
-    const dialog = page.getByRole("dialog");
-    await expect(dialog).toBeVisible();
+    // "?" opens the shortcuts dialog (Appendix B). Emulated WebKit can drop a
+    // keydown dispatched in the same tick as a focus change, so retry.
+    const dialog = page
+      .getByRole("dialog")
+      .filter({ hasText: "Keyboard shortcuts" });
+    await expect
+      .poll(
+        async () => {
+          if (await dialog.isVisible().catch(() => false)) return true;
+          await page.keyboard.press("?");
+          return await dialog.isVisible().catch(() => false);
+        },
+        { timeout: 15_000 },
+      )
+      .toBe(true);
     await expect(dialog.getByText("Command palette")).toBeVisible();
     await expect(dialog.getByText("Pick path 1")).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(dialog).toBeHidden();
 
     // Ctrl+K opens the command palette; filtering works; Escape closes.
-    await page.keyboard.press("Control+k");
     const paletteInput = page.getByPlaceholder("Type a command or search…");
-    await expect(paletteInput).toBeVisible();
+    await expect
+      .poll(
+        async () => {
+          if (await paletteInput.isVisible().catch(() => false)) return true;
+          await page.keyboard.press("Control+k");
+          return await paletteInput.isVisible().catch(() => false);
+        },
+        { timeout: 15_000 },
+      )
+      .toBe(true);
     await page.keyboard.type("theme");
     await expect(page.getByText("Dark theme")).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(paletteInput).toBeHidden();
   });
 
-  test("responsive screenshots 320 → 2560 (Gate G3 evidence)", async ({ page }) => {
+  test("responsive screenshots 320 → 2560 (Gate G3 evidence)", async ({ page }, testInfo) => {
+    test.skip(
+      testInfo.project.name !== "chromium-desktop",
+      "Responsive evidence is captured once on the desktop profile.",
+    );
     mkdirSync("docs/screenshots", { recursive: true });
     for (const width of [320, 768, 1280, 2560]) {
       await page.setViewportSize({ width, height: 900 });

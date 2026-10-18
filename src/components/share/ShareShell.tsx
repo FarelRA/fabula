@@ -13,6 +13,7 @@ import { ThreadView } from "@/components/thread/ThreadView";
 import { Badge } from "@/components/ui/badge";
 import { buildPlayScene, mapPlayRun } from "@/lib/play/map";
 import { nextSpeakerPreview } from "@/lib/play/helpers";
+import { useConnectionState } from "@/hooks/useConnectionState";
 import type { PlayOption } from "@/lib/play/types";
 import { SharePresence } from "./SharePresence";
 
@@ -26,6 +27,8 @@ import { SharePresence } from "./SharePresence";
 export function ShareShell({ token }: { token: string }) {
   const bundle = useQuery(api.shares.getByToken, { token });
   const pick = useMutation(api.candidates.pick);
+  const connection = useConnectionState();
+  const offline = connection === "offline";
   const [pendingPickId, setPendingPickId] = useState<string | null>(null);
 
   const scene = useMemo(() => {
@@ -89,7 +92,7 @@ export function ShareShell({ token }: { token: string }) {
   const archived = bundle.scene.status === "archived";
 
   const handlePick = (option: PlayOption) => {
-    if (!canPick) return;
+    if (!canPick || offline) return;
     setPendingPickId(option.id);
     void pick({
       candidateId: option.id as Id<"candidates">,
@@ -138,7 +141,7 @@ export function ShareShell({ token }: { token: string }) {
         streamingText={streamingText}
         optimisticPick={null}
         pendingPickId={canPick ? pendingPickId : null}
-        busy={false}
+        busy={offline}
         readOnly={!canPick}
         onPick={handlePick}
         onPin={() => undefined}

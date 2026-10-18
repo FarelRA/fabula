@@ -21,6 +21,8 @@ export default defineConfig({
   projects: [
     { name: "chromium-desktop", use: { ...devices["Desktop Chrome"] } },
     { name: "chromium-mobile", use: { ...devices["Pixel 7"] } },
+    { name: "firefox-desktop", use: { ...devices["Desktop Firefox"] } },
+    { name: "webkit-mobile", use: { ...devices["iPhone 14"] } },
   ],
   webServer: process.env.FABULA_E2E_NO_SERVER
     ? undefined

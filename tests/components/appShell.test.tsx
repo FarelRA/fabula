@@ -11,6 +11,15 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: vi.fn(), replace: vi.fn(), prefetch: vi.fn() }),
 }));
 
+// The shell detects its own connection state; tests exercise the banner paths
+// through the `connection` override, so the underlying query stands online.
+vi.mock("convex/react", () => ({
+  useConvexConnectionState: () => ({
+    hasEverConnected: true,
+    isWebSocketConnected: true,
+  }),
+}));
+
 function renderShell(connection: "online" | "offline" | "reconnecting" = "online") {
   return render(
     <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>

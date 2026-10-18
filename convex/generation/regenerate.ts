@@ -224,6 +224,16 @@ export const beat = action({
     let tokensIn = 0;
     let tokensOut = 0;
 
+    const abortController = new AbortController();
+    const abortPoll = setInterval(() => {
+      void ctx
+        .runQuery(internal.generation.runs.isAborted, { runId })
+        .then((aborted) => {
+          if (aborted) abortController.abort();
+        })
+        .catch(() => undefined);
+    }, 400);
+
     try {
       const result = await agent.streamText(
         ctx,
@@ -232,8 +242,9 @@ export const beat = action({
           system: compiled.system,
           messages,
           maxOutputTokens: outputReserve,
+          abortSignal: abortController.signal,
         },
-        { saveStreamDeltas: true },
+        { saveStreamDeltas: { returnImmediately: true } },
       );
 
       let chunkCount = 0;
@@ -247,6 +258,7 @@ export const beat = action({
           );
           if (aborted) {
             outcome = "aborted";
+            abortController.abort();
             break;
           }
         }
@@ -272,8 +284,13 @@ export const beat = action({
       const outputMessage = saved && saved.length > 0 ? saved[saved.length - 1] : undefined;
       if (outputMessage?._id) streamMessageId = outputMessage._id as string;
     } catch (error) {
-      outcome = "failed";
-      failure = error instanceof Error ? error.message : String(error);
+      const aborted = await ctx
+        .runQuery(internal.generation.runs.isAborted, { runId })
+        .catch(() => false);
+      outcome = aborted ? "aborted" : "failed";
+      failure = aborted ? undefined : error instanceof Error ? error.message : String(error);
+    } finally {
+      clearInterval(abortPoll);
     }
 
     await ctx.runMutation(internal.generation.lifecycle.completeRun, {
