@@ -19,7 +19,7 @@ import {
 } from "./context";
 
 /**
- * Turn generation (PLAN §2.4, §8): resolve the floor → compile the role
+ * Turn generation: resolve the floor → compile the role
  * prompt → stream through the agent component (deltas persisted via
  * saveStreamDeltas, so streams survive reloads) → finalize the beat, write
  * the snapshot, record usage, then run director/memory follow-ups.
@@ -67,7 +67,7 @@ export const start = action({
     const opening = args.opening === true;
 
     if (view.scene.status === "archived") {
-      throw new Error("This scene is archived — the story is frozen. Undo the wrap to keep playing.");
+      throw new Error("This scene is archived. The story is frozen, but undoing the wrap reopens it.");
     }
 
     if (opening) {
@@ -115,8 +115,8 @@ export const start = action({
         .catch(() => ({ meta: null as unknown }));
       meta = (metaResult.meta ?? null) as DirectorMeta | null;
       if (meta) {
-        // End detection (PLAN §8.6, Phase 7): the streak only *surfaces* a
-        // wrap offer in the UI — the scene never auto-archives.
+        // End detection: the streak only *surfaces* a
+        // wrap offer in the UI, the scene never auto-archives.
         await ctx.runMutation(internal.scenes.recordEndingSignal, {
           sceneId: args.sceneId,
           suggested: meta.endingSuggested,
@@ -250,7 +250,7 @@ export const start = action({
     let tokensIn = 0;
     let tokensOut = 0;
 
-    // Abort plumbing (PLAN §8.5): the director's abort flag trips this signal
+    // Abort plumbing: the director's abort flag trips this signal
     // so the provider stream stops server-side, not just in the reader.
     const abortController = new AbortController();
     const abortPoll = setInterval(() => {
@@ -311,7 +311,7 @@ export const start = action({
         tokensIn = readNumber((usage as { inputTokens?: unknown }).inputTokens);
         tokensOut = readNumber((usage as { outputTokens?: unknown }).outputTokens);
       } catch {
-        // Usage unavailable (aborted stream) — record zeros.
+        // Usage unavailable (aborted stream), record zeros.
       }
 
       const saved = result.savedMessages;

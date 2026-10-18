@@ -4,7 +4,7 @@ import { api } from "../../convex/_generated/api";
 import { asUser, defaultSettings, makeCard, makeT, makeUser, seedScene } from "./helpers";
 
 /**
- * Path options (PLAN Phase 2.4, §8.3): cadence-driven offers, validation,
+ * Path options: cadence-driven offers, validation,
  * repair-then-fallback, and atomic candidate+snapshot persistence.
  */
 

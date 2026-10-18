@@ -4,8 +4,8 @@ import { v } from "convex/values";
 import { internal } from "./_generated/api";
 
 /**
- * Watchdog: fail generation runs that stalled (PLAN §8.5). Runs never
- * corrupt the tree — a failed run leaves at most a `failed` beat, and retry
+ * Watchdog: fail generation runs that stalled. Runs never
+ * corrupt the tree, a failed run leaves at most a `failed` beat, and retry
  * happens through the normal regenerate-fork path.
  */
 

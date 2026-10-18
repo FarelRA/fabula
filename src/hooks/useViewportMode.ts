@@ -4,7 +4,7 @@ import { useSyncExternalStore } from "react";
 import { LAYOUT_MEDIA, type LayoutMode } from "@/lib/layout";
 
 /**
- * Viewport mode from matchMedia (PLAN §9.7). JS decides *which* panes exist
+ * Viewport mode from matchMedia. JS decides *which* panes exist
  * inline vs. in sheets; CSS still styles everything responsively.
  */
 

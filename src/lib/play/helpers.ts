@@ -3,7 +3,7 @@ import { resolveFloor } from "@convex/domain/orchestrate";
 import type { CastRole } from "@/lib/cast/types";
 import type { PlayBeat, PlayOption, PlayRun, PlayScene } from "./types";
 
-/** Pure play-loop decisions, shared by the UI and its tests (PLAN §8). */
+/** Pure play-loop decisions, shared by the UI and its tests. */
 
 export function activeRoles(roles: readonly CastRole[]): CastRole[] {
   return roles.filter((role) => role.status === "active");
@@ -22,7 +22,7 @@ export function roleById(
 }
 
 /**
- * Auto-burst counter (PLAN §8.2): consecutive model turns since the last
+ * Auto-burst counter: consecutive model turns since the last
  * director action. Picks, edits, writes and opening beats reset the chain.
  */
 export function trailingAiBeats(beats: readonly PlayBeat[]): number {
@@ -127,7 +127,7 @@ export function nextSpeakerPreview(scene: PlayScene): CastRole | undefined {
     : undefined;
 }
 
-/** Scroll intent (PLAN §9.8 smart autoscroll). */
+/** Scroll intent. */
 export function isNearBottom(args: {
   scrollTop: number;
   scrollHeight: number;

@@ -4,9 +4,9 @@ import { join } from "node:path";
 import { parseArgs } from "node:util";
 
 /**
- * Self-host release drill (PLAN §15.6, Phase 8.7). Runs the whole release
- * sequence against the Docker Compose stack — or any compatible container
- * engine — and fails loudly on the first broken step:
+ * Self-host release drill. Runs the whole release
+ * sequence against the Docker Compose stack, or any compatible container
+ * engine, and fails loudly on the first broken step:
  *
  *   1. compose up (unless --skip-up)
  *   2. backend health
@@ -132,7 +132,7 @@ function deployFunctions(key: string): void {
     env: { ...process.env, ...env },
   });
   if (dev.status === 0) return;
-  console.log("  `convex dev --once` failed — retrying with `convex deploy --yes`");
+  console.log("  `convex dev --once` failed, retrying with `convex deploy --yes`");
   const deploy = spawnSync("bunx", ["convex", "deploy", "--yes"], {
     stdio: "inherit",
     env: { ...process.env, ...env },
@@ -262,7 +262,7 @@ async function main(): Promise<void> {
       await waitForHealthy(backendUrl, 24);
       smoke();
     } else {
-      console.log(`\n(restore drill skipped — pass --restore-from ${tarball} to test it)`);
+      console.log(`\n(restore drill skipped, pass --restore-from ${tarball} to test it)`);
     }
   }
 

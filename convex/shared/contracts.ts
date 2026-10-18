@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 // ---------------------------------------------------------------------------
-// Fabula shared contracts (PLAN.md §7.3 / §13.3).
+// Fabula shared contracts: output schemas and value objects.
 // Imported by Convex functions (generation outputs) and by the app (forms,
 // fixtures). Every AI structured output must parse against these schemas
 // before it is persisted.
@@ -52,7 +52,7 @@ export const GenerationModeSchema = z.enum([
   "continuity",
 ]);
 
-/** Strategies that change scene state (PLAN §7.3: ≥1 option must use one). */
+/** Strategies that change scene state. */
 export const STATE_CHANGING_STRATEGIES = ["escalate", "reveal", "confront", "commit"] as const;
 
 export const ToneDialsSchema = z.object({
@@ -163,7 +163,7 @@ const labelWords = (s: string): number => s.trim().split(/\s+/).filter(Boolean).
 export const PathOptionSchema = z.object({
   label: z
     .string()
-    .refine((s) => labelWords(s) >= 2 && labelWords(s) <= 4, "label must be 2–4 words"),
+    .refine((s) => labelWords(s) >= 2 && labelWords(s) <= 4, "label must be 2 to 4 words"),
   speakerRoleId: z.string(),
   text: z.string().min(1),
   strategy: StrategySchema,

@@ -70,7 +70,7 @@ type DialogState =
   | null;
 
 /**
- * Live play shell (PLAN Phase 5): reactive queries for beats/options/floor,
+ * Live play shell: reactive queries for beats/options/floor,
  * streaming deltas via useUIMessages, optimistic picks, auto-burst, and the
  * three director modes. Beats are the source of truth; streams are transport.
  */
@@ -80,7 +80,7 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
   const [busy, setBusy] = useState(false);
   const connection = useConnectionState();
   const offline = connection === "offline";
-  // Offline locks every mutating affordance (PLAN §9.9); the global banner in
+  // Offline locks every mutating affordance; the global banner in
   // the app shell explains why. Reconnecting keeps mutations queued by Convex.
   const interactionBusy = busy || offline;
   const [queuedRoleIds, setQueuedRoleIds] = useState<string[]>([]);
@@ -504,7 +504,7 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
       const result = await endSceneMutation({ sceneId: id });
       toast.success(result.archived ? "Scene wrapped and archived" : "Scene already archived", {
         description:
-          "A final summary pass runs now. Nothing is deleted — the archive keeps every branch.",
+          "A final summary pass runs now. Nothing is deleted, and the archive keeps every branch.",
         action: {
           label: "Open archive",
           onClick: () => router.push(`/s/${id}/archive`),
@@ -574,7 +574,7 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
     void startTurn(roleId);
   }, [forcedSpeaker, run, startTurn]);
 
-  // Auto-burst (PLAN §8.2): pause, decision points, failures and active runs
+  // Auto-burst: pause, decision points, failures and active runs
   // all stop the chain. Queue entries win over the resolved floor.
   useEffect(() => {
     if (!scene || run) return;
@@ -624,11 +624,11 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
     return () => clearTimeout(timer);
   }, [scene, run, queuedRoleIds, startTurn]);
 
-  // Keyboard registry (PLAN Appendix B): option picks, offer, abort, undo.
+  // Keyboard registry: option picks, offer, abort, undo.
   const tipChoices = scene ? tipOptions(scene.options) : [];
   const pickChoice = (index: number) => {
     const option = tipChoices[index];
-    // Only a live turn blocks a pick — options/memory bookkeeping runs don't.
+    // Only a live turn blocks a pick, options/memory bookkeeping runs don't.
     if (!option || busy || (run !== null && run.mode === "turn")) return;
     requestPick(option);
   };
@@ -786,7 +786,7 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
               className="flex flex-wrap items-center gap-2 border-b border-border bg-muted/50 px-3 py-1.5 text-xs"
             >
               <ArchiveIcon className="size-3.5 text-muted-foreground" aria-hidden />
-              <span>This scene is archived — replay and exports stay available.</span>
+              <span>This scene is archived, replay and exports stay available.</span>
               <Link
                 href={`/s/${id}/archive`}
                 className="ml-auto font-medium underline underline-offset-2"
@@ -1005,7 +1005,7 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
           if (!open) setDialog(null);
         }}
         title="Wrap & archive this scene?"
-        description="Wrapping runs a final summary pass over any uncovered beats, freezes the tree and opens the archive. Nothing is deleted — you can still export, share and replay everything. Undo reopens it."
+        description="Wrapping runs a final summary pass over any uncovered beats, freezes the tree and opens the archive. Nothing is deleted. You can still export, share and replay everything, and undo reopens the scene."
         confirmLabel="Wrap & archive"
         onConfirm={() => {
           setDialog(null);

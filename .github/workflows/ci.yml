@@ -42,8 +42,7 @@ jobs:
           FABULA_E2E_PORT: "3100"
 
   selfhost:
-    # Full stack boot on a fresh runner + release drill (PLAN §15.3 job 4 /
-    # §15.6): compose up → health → functions deploy → seed → smoke → backup.
+    # Full stack boot on a fresh runner + release drill: compose up → health → functions deploy → seed → smoke → backup.
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:

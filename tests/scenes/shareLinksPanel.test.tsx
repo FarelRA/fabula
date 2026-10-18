@@ -26,7 +26,7 @@ const activeDirector: ShareLinkRowView = {
   createdAt: now - 30_000,
 };
 
-describe("share links panel (PLAN Phase 7.4)", () => {
+describe("share links panel", () => {
   test("offers both permissions and lists active links with copy/revoke", async () => {
     const user = userEvent.setup();
     const onCreate = vi.fn();

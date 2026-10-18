@@ -6,7 +6,7 @@ import { alignBranches, type CompareBeat } from "@/lib/branches/compare";
 import type { BranchInfo } from "@/lib/branches/types";
 
 /**
- * Compare two branches side-by-side (PLAN Phase 6.4 / flag FABULA_FF_COMPARE).
+ * Compare two branches side-by-side.
  * Strictly read-only: aligned rows, divergence markers, no edit affordances.
  */
 export function CompareView({
@@ -72,7 +72,7 @@ function BranchHeader({ branch }: { branch: BranchInfo }) {
 function CompareCell({ beat }: { beat?: CompareBeat }) {
   if (!beat) {
     return (
-      <p className="px-1 text-[11px] text-muted-foreground italic">— no beat —</p>
+      <p className="px-1 text-[11px] text-muted-foreground italic">no beat here</p>
     );
   }
   return (

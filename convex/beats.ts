@@ -10,7 +10,7 @@ import { planEditFork, planRegenerate } from "./domain/branchPlans";
 import { projectPath } from "./lib/path";
 
 /**
- * Beats — the narrative tree (PLAN §5, §6, Phase 1.3).
+ * Beats, the narrative tree.
  * `createBeatRow` is the single DB-level append primitive used by every
  * mutation that grows the tree; it owns seq allocation, depth, and branch tip
  * maintenance so the invariants hold in exactly one place.
@@ -65,7 +65,7 @@ export async function createBeatRow(
   if (args.setBranchTip !== false) {
     await ctx.db.patch(args.branchId, { tipBeatId: beatId });
   }
-  // Streaming beats pass setBranchTip:false — they canonize later in
+  // Streaming beats pass setBranchTip:false, they canonize later in
   // lifecycle.completeRun, so a discarded artifact never moves the tip.
   return { beatId, seq };
 }
@@ -190,7 +190,7 @@ export const editFork = mutation({
 });
 
 /**
- * Shared fork primitive for regenerate (PLAN §6.1 / law L4). Used by the
+ * Shared fork primitive for regenerate. Used by the
  * public `regenerateFork` mutation and by the streaming regeneration action
  * (which fills the new beat with model output).
  */
@@ -280,7 +280,7 @@ export const pin = mutation({
   },
 });
 
-/** Aborted/discarded generations become artifacts; this canonizes one (L6). */
+/** Aborted/discarded generations become artifacts; this canonizes one. */
 export const keepArtifact = mutation({
   args: { beatId: v.id("beats") },
   handler: async (ctx, { beatId }) => {
@@ -331,7 +331,7 @@ export const getWithOptions = query({
 });
 
 /**
- * In-flight / failed children of the active tip (Phase 5.2). A streamed turn
+ * In-flight / failed children of the active tip. A streamed turn
  * beat is created on the first delta but only moves the tip when it finishes;
  * the play UI surfaces it as a live row. Failed children stay visible with a
  * retry affordance and never enter the active path (the tree stays intact).

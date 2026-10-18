@@ -4,9 +4,9 @@ import { assertSceneAccess, assertSceneMutable, requireScene } from "./lib/authz
 import { logAction } from "./actions";
 
 /**
- * Continuity warnings (PLAN §6.3, §7.5; Phase 6.5 memory panel). The memory
- * agent writes them; the director can dismiss (reversible, L6). Warnings are
- * advisory only — they never block a generation.
+ * Continuity warnings. The memory
+ * agent writes them; the director can dismiss. Warnings are
+ * advisory only, they never block a generation.
  */
 
 export const listForScene = query({

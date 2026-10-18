@@ -1,7 +1,5 @@
 /**
- * Deterministic avatar placeholders (PLAN §9.5: "placeholder = deterministic
- * gradient + monogram, rendered immediately; image gen runs async; never
- * blocks"). Keep this pure so it is testable without a DOM.
+ * Deterministic avatar placeholders. Keep this pure so it is testable without a DOM.
  */
 
 export const ROLE_ACCENTS = [
@@ -17,7 +15,7 @@ export const ROLE_ACCENTS = [
 
 export type RoleAccent = (typeof ROLE_ACCENTS)[number];
 
-/** FNV-1a 32-bit — stable across runs, platforms and reloads. */
+/** FNV-1a 32-bit, stable across runs, platforms and reloads. */
 export function hashSeed(seed: string): number {
   let hash = 0x811c9dc5;
   for (let index = 0; index < seed.length; index += 1) {

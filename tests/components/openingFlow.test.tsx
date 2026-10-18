@@ -41,7 +41,7 @@ async function storedBeatText(sceneId: string): Promise<string | undefined> {
   return text;
 }
 
-describe("opening beat — three paths (PLAN Phase 4.6)", () => {
+describe("opening beat, three paths", () => {
   test("path 1: keep the generated draft and start", async () => {
     const user = userEvent.setup();
     const scene = renderScene();

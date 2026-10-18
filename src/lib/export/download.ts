@@ -1,6 +1,6 @@
 /**
- * Client-side file download (PLAN §12 Phase 7.3): exports are generated
- * in-browser from the query bundle — no server file storage, no REST layer.
+ * Client-side file download: exports are generated
+ * in-browser from the query bundle, no server file storage, no REST layer.
  */
 export function downloadTextFile(
   filename: string,

@@ -8,7 +8,7 @@ import {
 import { makeExportBundle } from "./fixtures";
 
 /**
- * Export serializers (PLAN §11.3 `exportScene.test.ts`): markdown structure is
+ * Export serializers: markdown structure is
  * golden-locked; JSON is tree-lossless (branch links, candidates, facts) and
  * `jq`-parseable; filenames are deterministic.
  */
@@ -62,7 +62,7 @@ She slid the ledger back.
 
 ## Summaries
 
-- **Beats 1–2:** A door, a ledger, rain.
+- **Beats 1 to 2:** A door, a ledger, rain.
 
 ## Director notes
 

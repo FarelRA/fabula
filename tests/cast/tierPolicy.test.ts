@@ -10,8 +10,8 @@ import {
 } from "@/lib/cast/tierPolicy";
 
 /**
- * Cast sizing policy (PLAN §7.4 constraint 5 / Phase 4.5):
- * ≤4 all spotlight · 5–6 max 4 spotlight · 7–8 max 3 spotlight, 2 supporting.
+ * Cast sizing policy:
+ * ≤4 all spotlight · 5 to 6 max 4 spotlight · 7 to 8 max 3 spotlight, 2 supporting.
  */
 
 describe("tierDefaultsForSize", () => {

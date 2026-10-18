@@ -8,8 +8,8 @@ import {
 } from "@/lib/motion";
 
 /**
- * Motion presets (Phase 3.3, PLAN §9.8): every animated surface must honor
- * prefers-reduced-motion — reduced mode keeps the end state, drops movement.
+ * Motion presets: every animated surface must honor
+ * prefers-reduced-motion, reduced mode keeps the end state, drops movement.
  */
 
 describe("resolveTransition", () => {

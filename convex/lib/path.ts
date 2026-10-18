@@ -2,9 +2,9 @@ import type { QueryCtx, MutationCtx } from "../_generated/server";
 import type { Doc, Id } from "../_generated/dataModel";
 
 /**
- * Path projection — the single place where branch-scoped context is computed
- * (PLAN §6, law L5). Everything that needs "the active path" goes through
- * here; the leak test (§11.4) guards that no other code re-implements it.
+ * Path projection, the single place where branch-scoped context is computed.
+ * Everything that needs "the active path" goes through
+ * here; the leak test guards that no other code re-implements it.
  */
 
 export type Ctx = QueryCtx | MutationCtx;
@@ -57,7 +57,7 @@ export function pathSets(chain: BeatLike[]): { ids: Set<string>; seqs: Set<numbe
 
 /**
  * Facts on the active path. Explicitly pinned facts are scene-global canon
- * overrides (ADR-001) and are included regardless of path; muted facts are
+ * overrides and are included regardless of path; muted facts are
  * never included.
  */
 export function filterFactsAlongPath<T extends FactLike>(facts: T[], ids: Set<string>): T[] {

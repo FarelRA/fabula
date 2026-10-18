@@ -3,7 +3,7 @@ import { v } from "convex/values";
 import { authTables } from "@convex-dev/auth/server";
 
 // ---------------------------------------------------------------------------
-// Shared value objects (PLAN.md §5.1 — normative)
+// Shared value objects (normative).
 // ---------------------------------------------------------------------------
 
 const storyRole = v.union(
@@ -63,7 +63,7 @@ export default defineSchema({
     threadId: v.optional(v.string()), // Agent component thread (implementation detail)
     seqCounter: v.number(), // monotonic scene-wide seq source
     endedAt: v.optional(v.number()),
-    /** Consecutive director-meta "endingSuggested" results (Phase 7, ADR-008). */
+    /** Consecutive director-meta "endingSuggested" results. */
     endingStreak: v.optional(v.number()),
   }).index("by_owner_updated", ["ownerId"]),
 
@@ -87,7 +87,7 @@ export default defineSchema({
       abortedKeepsPartial: v.boolean(),
     }),
     branchFrequency: v.union(v.literal("always"), v.literal("key"), v.literal("onDemand")),
-    optionsDefaultCount: v.number(), // 2–4, default 3
+    optionsDefaultCount: v.number(), // 2 to 4, default 3
     contextBeatsK: v.number(), // default 30 (verbatim window)
     summaryEveryN: v.number(), // default 6
     lengthTarget: v.union(v.literal("short"), v.literal("medium"), v.literal("long")),
@@ -167,7 +167,7 @@ export default defineSchema({
     sortKey: v.string(), // reorder = spotlight priority
     draftLocks: v.array(v.string()), // field paths locked in the audition UI (pre-play only)
     currentRevisionId: v.optional(v.id("roleRevisions")), // set once scene is playable
-    /** Cached voice samples keyed by revision-hash (PLAN Phase 2.8, ADR-004). */
+    /** Cached voice samples keyed by revision-hash. */
     sampleCache: v.optional(
       v.object({ hash: v.string(), lines: v.array(v.string()), createdAt: v.number() }),
     ),
@@ -181,7 +181,7 @@ export default defineSchema({
     sceneId: v.id("scenes"),
     effectiveFromBeatId: v.optional(v.id("beats")), // null = from scene start
     effectiveSeq: v.number(), // scene seq for cheap revisionAt()
-    card: v.any(), // frozen snapshot of the full role card (ADR-002: typed via contracts.ts)
+    card: v.any(), // frozen snapshot of the full role card
     changedFields: v.array(v.string()),
     origin: v.union(
       v.literal("initial"),
@@ -275,7 +275,7 @@ export default defineSchema({
     parentBeatId: v.id("beats"),
     branchId: v.id("branches"), // context in which the option was offered
     optionIndex: v.number(),
-    label: v.string(), // 2–4 words
+    label: v.string(), // 2 to 4 words
     speakerRoleId: v.optional(v.id("roles")),
     text: v.string(),
     strategy: v.string(), // escalate|de-escalate|reveal|conceal|ally|confront|commit|deflect
@@ -298,7 +298,7 @@ export default defineSchema({
       roleIds: v.array(v.id("roles")), // for private
     }),
     status: v.union(v.literal("active"), v.literal("muted")),
-    isPinned: v.boolean(), // user "make canon" → treated as global (PLAN §6.3)
+    isPinned: v.boolean(), // user "make canon" → treated as global
     source: v.union(v.literal("memory"), v.literal("user")),
     createdAt: v.number(),
   })
@@ -335,7 +335,7 @@ export default defineSchema({
   }).index("by_scene_status", ["sceneId", "status"]),
 
   promptTemplates: defineTable({
-    // versioned documents — never inline strings
+    // versioned documents, never inline strings
     key: v.string(), // e.g. "contract.roleplay", "mode.turn", "meta.casting"
     version: v.number(),
     content: v.string(),
@@ -359,7 +359,7 @@ export default defineSchema({
         key: v.string(), // contract|identity|world|boundaries|memory|relations|director|mode
         templateKey: v.optional(v.string()),
         templateVersion: v.optional(v.number()),
-        text: v.string(), // compiled block text — powers the prompt inspector (ADR-004)
+        text: v.string(), // compiled block text, powers the prompt inspector
         hash: v.string(),
         tokens: v.number(),
         chars: v.number(),
@@ -407,7 +407,7 @@ export default defineSchema({
     .index("by_startedAt", ["startedAt"]), // watchdog cron
 
   actions: defineTable({
-    // undo log; inverse ops for the reversibility law (L6)
+    // undo log; inverse ops for the reversibility law
     sceneId: v.id("scenes"),
     seq: v.number(),
     type: v.string(), // "pick" | "editFork" | "regenerate" | "retire" | "muteFact" | ...

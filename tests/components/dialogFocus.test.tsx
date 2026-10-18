@@ -22,7 +22,7 @@ beforeEach(() => {
   installDomShims();
 });
 
-describe("Dialog focus management (Phase 3.3, WCAG 2.2 AA)", () => {
+describe("Dialog focus management", () => {
   test("focus traps inside the dialog, Escape closes, focus returns to trigger", async () => {
     const user = userEvent.setup();
     render(

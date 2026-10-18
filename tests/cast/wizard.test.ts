@@ -10,7 +10,7 @@ import {
 } from "@/lib/cast/wizard";
 import { presetById } from "@/lib/cast/presets";
 
-/** Wizard/quick-start validation + preseed behaviour (Phase 4.1). */
+/** Wizard/quick-start validation + preseed behaviour. */
 
 const VALID = {
   ...DEFAULT_VALUES,
@@ -68,7 +68,7 @@ describe("validateStep", () => {
     expect(result.success).toBe(false);
   });
 
-  test("cast step enforces the 1–8 bounds", () => {
+  test("cast step enforces the 1 to 8 bounds", () => {
     expect(validateStep("cast", { ...VALID, castSize: 0 }).success).toBe(false);
     expect(validateStep("cast", { ...VALID, castSize: 9 }).success).toBe(false);
     expect(validateStep("cast", { ...VALID, castSize: 4 }).success).toBe(true);

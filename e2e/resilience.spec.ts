@@ -9,7 +9,7 @@ import {
 } from "./helpers";
 
 /**
- * E2E-06 expanded (PLAN §12 Phase 8.3 / §8.5): failure isolation and the
+ * Failure isolation and the
  * offline reconnection contract.
  *
  *  - a failure before the first token creates no beat row at all;
@@ -19,7 +19,7 @@ import {
  *    re-enables them without a reload.
  */
 
-test("E2E-06 · fail-before-first-token leaves the tree untouched; the next turn recovers", async ({
+test("fail-before-first-token leaves the tree untouched; the next turn recovers", async ({
   page,
 }) => {
   const sceneId = sceneIdFromUrl(await createLiveScene(page));
@@ -36,7 +36,7 @@ test("E2E-06 · fail-before-first-token leaves the tree untouched; the next turn
   const failed = await owner.action(api.generation.turn.start, { sceneId });
   expect(failed.status).toBe("failed");
 
-  // No beat row exists: generation failed before the first delta (§8.5).
+  // No beat row exists: generation failed before the first delta.
   const afterFailure = await pathBeats(owner, sceneId);
   expect(afterFailure.length).toBe(before.length);
   await expect.poll(async () => await owner.query(api.generation.runs.active, { sceneId })).toBeNull();
@@ -54,7 +54,7 @@ test("E2E-06 · fail-before-first-token leaves the tree untouched; the next turn
   });
 });
 
-test("E2E-06 · mid-stream failure keeps the partial as a failed attempt; retry forks cleanly", async ({
+test("mid-stream failure keeps the partial as a failed attempt; retry forks cleanly", async ({
   page,
 }) => {
   const sceneId = sceneIdFromUrl(await createLiveScene(page));

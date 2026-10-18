@@ -1,11 +1,11 @@
 import type { ModelTier, Tier } from "@convex/shared/contracts";
 
 /**
- * Cast sizing policy (PLAN §7.4 constraint 5 / Phase 4.5):
+ * Cast sizing policy:
  *
  *   ≤ 4 roles → all spotlight
- *   5–6      → max 4 spotlight, rest supporting
- *   7–8      → max 3 spotlight, 2 supporting, rest background
+ *   5 to 6      → max 4 spotlight, rest supporting
+ *   7 to 8      → max 3 spotlight, 2 supporting, rest background
  *
  * The same table drives the UI hint and the tier defaults applied when the
  * director changes the cast size.
@@ -42,7 +42,7 @@ export function modelTierFor(tier: Tier): ModelTier {
   return "cheap";
 }
 
-/** Inline explanation shown at ≥ 5 (never a modal, PLAN §9.5). */
+/** Inline explanation shown at ≥ 5. */
 export function castSizeHint(size: number): string | null {
   if (size < 5) return null;
   return "5+ roles switch to strict turn-taking: supporting and background roles speak only when addressed or affected, and cost roughly doubles.";

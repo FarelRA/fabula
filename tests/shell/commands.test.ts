@@ -2,7 +2,7 @@ import { describe, expect, test, vi } from "vitest";
 import { buildShellCommands } from "@/lib/commands";
 
 /**
- * Shell command registry (Phase 3.5). Later phases append commands; the ids
+ * Shell command registry. Later surfaces append commands; the ids
  * are stable so tests and analytics can rely on them.
  */
 

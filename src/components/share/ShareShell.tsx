@@ -18,11 +18,11 @@ import type { PlayOption } from "@/lib/play/types";
 import { SharePresence } from "./SharePresence";
 
 /**
- * Shared scene surface (PLAN §9.1 / §12 Phase 7.4, E2E-07). One route for both
+ * Shared scene surface. One route for both
  * permissions: tokens are the whole credential. Viewers see the live stream
  * with zero mutate affordances; director links may pick path options through
- * `candidates.pick({shareToken})`. Server-side checks are the real gate —
- * this surface only never *offers* what the token can't do.
+ * `candidates.pick({shareToken})`. Server-side checks are the real gate.
+ * This surface only never *offers* what the token can't do.
  */
 export function ShareShell({ token }: { token: string }) {
   const bundle = useQuery(api.shares.getByToken, { token });
@@ -188,7 +188,7 @@ function ShareFloor({
       className="flex items-center gap-2 border-b border-border px-3 py-1.5 text-xs text-muted-foreground"
     >
       {sceneStatus === "archived"
-        ? "The scene has ended — everything stays readable."
+        ? "The scene has ended. Everything stays readable."
         : sceneStatus === "paused"
           ? "Paused by the director."
           : nextSpeaker

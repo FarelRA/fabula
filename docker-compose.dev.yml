@@ -1,4 +1,4 @@
-# Dev-parity overrides (PLAN §15.4): hot-reload app against the same pinned
+# Dev-parity overrides: hot-reload app against the same pinned
 # backend/dashboard images used in production.
 #
 #   docker compose --env-file docker/.env -f docker-compose.yml \

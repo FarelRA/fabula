@@ -8,7 +8,7 @@ import type { ChatMessage } from "../lib/gateway";
 /**
  * Object-mode generations don't carry provider token accounting through our
  * gateway abstraction; we record grounded estimates (chars/4) so the usage
- * meter reflects every call (PLAN §4.5).
+ * meter reflects every call.
  */
 export async function recordEstimatedUsage(
   ctx: ActionCtx,

@@ -24,7 +24,7 @@ function compareBeat(
   };
 }
 
-describe("branch compare alignment (PLAN Phase 6.4)", () => {
+describe("branch compare alignment", () => {
   test("aligns beats by depth and flags divergence", () => {
     const left = [compareBeat(0, "Open on rain"), compareBeat(1, "She knocks")];
     const right = [compareBeat(0, "Open on rain"), compareBeat(1, "He knocks")];
@@ -47,7 +47,7 @@ describe("branch compare alignment (PLAN Phase 6.4)", () => {
   });
 });
 
-describe("usage formatting & budget policy (PLAN Phase 6.7)", () => {
+describe("usage formatting & budget policy", () => {
   test("normalizes the v.any byTier rollup defensively", () => {
     expect(
       normalizeByTier({

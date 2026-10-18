@@ -34,7 +34,7 @@ function compileTurn(overrides: Partial<Parameters<typeof compileRolePrompt>[0]>
   });
 }
 
-describe("compileRolePrompt — golden snapshots", () => {
+describe("compileRolePrompt, golden snapshots", () => {
   test("turn · chat", () => {
     const result = compileTurn();
     expect(result.system).toMatchSnapshot();
@@ -68,7 +68,7 @@ describe("compileRolePrompt — golden snapshots", () => {
   });
 });
 
-describe("compileRolePrompt — purity", () => {
+describe("compileRolePrompt, purity", () => {
   test("identical inputs produce byte-identical outputs", () => {
     const first = compileTurn();
     const second = compileTurn();

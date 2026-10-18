@@ -52,7 +52,7 @@ const warnings: MemoryWarningView[] = [
   { id: "w1", text: "WARNING_TOKEN the timeline is ambiguous.", severity: "medium", status: "open", beatSeq: 3 },
 ];
 
-describe("memory panel (PLAN Phase 6.5)", () => {
+describe("memory panel", () => {
   test("shows path facts and marks global pins distinctly", () => {
     render(
       <MemoryPanel
@@ -70,7 +70,7 @@ describe("memory panel (PLAN Phase 6.5)", () => {
     expect(globalRow).toHaveAttribute("data-global", "true");
     expect(screen.getByText("Global · crosses branches")).toBeInTheDocument();
     expect(screen.getByText("WARNING_TOKEN the timeline is ambiguous.")).toBeInTheDocument();
-    expect(screen.getByText(/covers beats 1–4/)).toBeInTheDocument();
+    expect(screen.getByText(/covers beats 1 to 4/)).toBeInTheDocument();
   });
 
   test("off-path and muted facts are disclosed, never silently hidden", async () => {

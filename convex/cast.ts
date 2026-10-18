@@ -9,10 +9,10 @@ import { roleCardV, tierV, roleStatusV } from "./lib/validators";
 import { logAction } from "./actions";
 
 /**
- * Cast + role revisions (PLAN §3.1, Phase 1.2).
+ * Cast + role revisions.
  *
  * Draft semantics: before the scene is playable (no opener beat), role edits
- * mutate the role row directly — there is no history worth preserving yet.
+ * mutate the role row directly, there is no history worth preserving yet.
  * Once play starts, every change goes through `reviseRole`, which appends a
  * `roleRevisions` row with `effectiveFromBeatId` so future generations use
  * the new card while past beats keep compiling against the old one.
@@ -120,8 +120,8 @@ export const upsertDraftRole = mutation({
       draftLocks: [],
     });
     if (scene.activeTipBeatId !== undefined) {
-      // Mid-story casting (PLAN §2.3): the new role starts speaking from the
-      // current tip — insert its initial revision so future generations at
+      // Mid-story casting: the new role starts speaking from the
+      // current tip, insert its initial revision so future generations at
       // this position compile with a versioned card.
       const revisionId = await ctx.db.insert("roleRevisions", {
         roleId,
@@ -290,7 +290,7 @@ export const setLocks = mutation({
 
 /**
  * Called when a scene becomes playable (opening beat appended): freeze each
- * active role's current card as its initial revision (PLAN §3.1 versioning).
+ * active role's current card as its initial revision.
  */
 export async function ensureInitialRevisions(
   ctx: MutationCtx,

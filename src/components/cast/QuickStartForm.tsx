@@ -31,7 +31,7 @@ function messageOf(error: unknown): string {
 }
 
 /**
- * Quick start (PLAN §9.3, E2E-01): one line → cast + opening → audition-lite →
+ * Quick start: one line → cast + opening → audition-lite →
  * play. This component is screen 1; the session flips it to screen 2 while
  * casting, and the same route holds the audition.
  */
@@ -191,9 +191,9 @@ export function QuickStartForm({ onCreated }: { onCreated?: (sceneId: string) =>
                 className="h-8 w-full rounded-lg border border-input bg-transparent px-2 text-sm dark:bg-input/30"
                 {...form.register("presentationStyle")}
               >
-                <option value="chat">Chat — Name: line</option>
-                <option value="script">Script — NAME / stage directions</option>
-                <option value="novel">Novel — third person prose</option>
+                <option value="chat">Chat. Name: line</option>
+                <option value="script">Script. NAME / stage directions</option>
+                <option value="novel">Novel, third person prose</option>
               </select>
             </div>
             <div className="space-y-1.5">

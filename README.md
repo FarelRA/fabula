@@ -6,23 +6,23 @@ story three ways: pick one of the AI-generated paths, drop an out-of-character
 director note, or write a line yourself. Every choice can branch; nothing is
 ever destroyed.
 
-> **Status: v1.0.0 — Horizon 1 complete** (Phases 0–8: foundation, domain core,
-> generation engine, app shell & design system, cast generation UX, play loop,
-> branch & meta surfaces, archive & share, hardening & acceptance). The full
-> plan — schema, prompt architecture, orchestration spec, wireflows, phases,
-> agents and acceptance criteria — lives in [PLAN.md](./PLAN.md).
+> **Status: v1.0.0**, the first complete release: foundation, domain core,
+> generation engine, app shell and design system, cast generation UX, play
+> loop, branch and meta surfaces, archive and share, hardening and acceptance.
+> The full plan, schema, prompt architecture, orchestration spec, wireflows,
+> phases, agents and acceptance criteria live in [PLAN.md](./PLAN.md).
 
 ## What works today
 
-- **Hardening & acceptance** (Phase 8): the v1.0 quality bar is enforced in CI —
-  axe-core WCAG 2.2 AA sweeps on every primary surface (zero critical/serious),
-  a full keyboard walkthrough (E2E-09), failure-injection and offline/reconnect
-  contracts (E2E-06), route JS budgets, a cross-engine matrix (Chromium,
-  Firefox, WebKit), per-surface route error boundaries, and the self-host
-  release drill (`bun run selfhost:drill`). Acceptance evidence lives in
-  [docs/acceptance-run.md](./docs/acceptance-run.md).
-- **Archive & share** (Phase 7): end detection surfaces a non-modal “Wrap
-  scene?” offer after consecutive resolution signals — never an automatic
+- **Hardening & acceptance**: the quality bar is enforced in CI with axe-core
+  WCAG 2.2 AA sweeps on every primary surface (zero critical or serious
+  findings), a full keyboard walkthrough, failure-injection and
+  offline/reconnect contracts, route JS budgets, a cross-engine matrix
+  (Chromium, Firefox, WebKit), per-surface route error boundaries, and the
+  self-host release drill (`bun run selfhost:drill`). Acceptance evidence
+  lives in [docs/acceptance-run.md](./docs/acceptance-run.md).
+- **Archive & share**: end detection surfaces a non-modal “Wrap
+  scene?” offer after consecutive resolution signals, never an automatic
   archive. Wrapping freezes the tree, runs a final summary pass and is one
   ⌘Z away from reopening; archived scenes are story-immutable server-side
   while remaining readable, shareable and exportable.
@@ -31,33 +31,33 @@ ever destroyed.
     frozen facts/summaries/notes ledger, and share/export actions.
   - **Exports**: golden-tested markdown (mainline first, then branch deltas)
     and lossless JSON (ids, branch links, candidates, facts; prompt snapshots
-    optional) generated in the browser — JSON opens cleanly in `jq`.
+    optional) generated in the browser. JSON opens cleanly in `jq`.
   - **Share links** (`/share/[token]`): viewer links stream the scene live
     read-only; director links can pick path options; both show a “N watching”
     presence badge (`@convex-dev/presence`), and revocation closes the door
-    immediately (E2E-07, cross-context with no session).
-- **Branch & meta surfaces** (Phase 6): the inspector (Memory · Prompts · Map ·
+    immediately.
+- **Branch & meta surfaces**: the inspector (Memory · Prompts · Map ·
   Usage) is URL state (`?inspector=…&beat=…`), inline as a third desktop pane
   and a sheet on tablet/mobile.
   - **Branch gutter**: a rail beside the thread with active-path markers,
-    decision diamonds, pins/failures, and fork chips at divergence beats —
-    click scrolls to a beat; a fork chip switches branches.
+    decision diamonds, pins/failures, and fork chips at divergence beats.
+    Markers scroll to a beat; fork chips switch branches.
   - **Story map** (lazy `@xyflow/react` + dagre chunk, bundle-asserted by
     `bun run check:bundles`): branches colored by the identity palette,
     canon vs alternative edges, who/how/when metadata, a keyboard-navigable
-    beat list, and — behind `NEXT_PUBLIC_FABULA_FF_COMPARE=1` — a read-only
+    beat list, and behind `NEXT_PUBLIC_FABULA_FF_COMPARE=1` a read-only
     two-branch compare with divergence markers.
-  - **Branch switching** recomputes projection only (L5): a “Context updated”
+  - **Branch switching** recomputes projection only: a “Context updated”
     toast, no regeneration, nothing destroyed.
-  - **Memory panel**: facts in context, global pins (visually distinct —
-    “crosses branches”), off-path exclusions, muted rows with unmute,
-    summaries, and dismissible continuity warnings — all reversible.
+  - **Memory panel**: facts in context, global pins (visually distinct because
+    they cross branches), off-path exclusions, muted rows with unmute,
+    summaries, and dismissible continuity warnings, all reversible.
   - **Prompt inspector**: rendered block-by-block text for any beat/options
     generation plus recent casting/memory/director-meta snapshots, with
     template key@version, block hashes, token counts and budget actions.
   - **Usage meter**: estimated totals + per-tier breakdown and soft-cap
-    warnings at 80% / 100% (generation is never hard-blocked in v1).
-- **Play loop** (Phase 5): the `/s/[sceneId]` director console with a
+    warnings at 80% / 100% (generation is never hard-blocked).
+- **Play loop**: the `/s/[sceneId]` director console with a
   TanStack-Virtual thread (200-beat evidence: 8 rendered rows, 60.4 fps),
   chat/script/novel renderers with per-role accent borders, pin and
   failed-beat retry rows, smart autoscroll + Jump-to-latest (⌘J), and
@@ -67,7 +67,7 @@ ever destroyed.
     counter, pause/resume, abort, and "Offer paths"; @mention forces a speaker,
     queue-next and steal-floor abort-and-handoff are wired.
   - Inline path options under their parent beat, ghost candidates collapsed by
-    default with later-pick fork warnings, optimistic picks, Alt/⌥1–4 picking,
+    default with later-pick fork warnings, optimistic picks, Alt/⌥1 to 4 picking,
     and offer-paths at the tip.
   - Three-mode composer: steer (with quick chips + active note chips),
     in-character writing as any role, and steer-and-regenerate (forks a new
@@ -76,13 +76,14 @@ ever destroyed.
     branch copy, regenerate (server-streamed fork, pointer restore on failure),
     pin beats, and wrap/end scene. Beat text is the source of truth; transport
     messages are never rendered twice.
-  - Live E2E: E2E-01≤3 screens, E2E-02 two-context pick sync, E2E-03
-    reload-mid-stream token-exact resume, E2E-04 edit-fork + memory leak +
-    branch switch, E2E-07 viewer read-only + director pick + revoke, wrap →
-    archive → markdown/JSON export, keyboard picks, mention override, pause
-    blocking auto-floor, and the 200-beat perf probe.
-- **Cast generation UX** (Phase 4): `/` onboarding, the three doors
-  (`/new/quick`, `/new/wizard`, `/new/templates` with six Appendix-A presets),
+  - End-to-end coverage: quick start in at most 3 screens, two-context pick
+    sync, reload-mid-stream token-exact resume, edit-fork with memory
+    isolation and branch switch, viewer read-only plus director pick and
+    revoke, wrap then archive then markdown/JSON export, keyboard picks,
+    mention override, pause blocking auto-floor, and the 200-beat
+    performance probe.
+- **Cast generation UX**: `/` onboarding, the three doors
+  (`/new/quick`, `/new/wizard`, `/new/templates` with six genre presets),
   the validated four-step wizard (nuqs step state), and one audition surface:
   role cards with the shared RHF+zod editor, whole-field locks, per-field /
   per-role / whole-cast regeneration, vibe steers with diff badges, duplicate /
@@ -90,16 +91,16 @@ ever destroyed.
   cached sample-line sheet, deterministic gradient+monogram avatars, cast-size
   stepper with the tier policy, and an opening-beat preview (generate / reroll /
   write-your-own) committed atomically at Start. Quick start reaches a rendered
-  opening in ≤3 navigations (E2E-01). The same interface runs against **live
+  opening in ≤3 navigations. The same interface runs against **live
   Convex**: anonymous sign-in, scene creation, casting, opening preview and
   commit were smoke-tested against the self-hosted backend with the
   deterministic fake gateway.
-- **App shell & design system** (Phase 3): dark-first theme with a WCAG-AA
+- **App shell & design system**: dark-first theme with a WCAG-AA
   tested token system (light mode included; `tests/theme/contrast.test.ts`),
   8-slot identity palette, responsive three/two/single-pane shell with
   bottom/side sheets + safe areas, states catalog
   (loading/empty/error/offline/reconnecting), command palette (⌘K), keymap
-  registry + shortcuts dialog (Appendix B, collision-tested), motion presets
+  registry + shortcuts dialog (collision-tested), motion presets
   with reduced-motion, skip link + focus-trapped dialogs. Screenshots
   archived in `docs/screenshots/` (320 → 2560).
 - **Generation engine**: pure prompt compiler (fixed 8-block order, golden
@@ -119,18 +120,20 @@ ever destroyed.
   up to 2 repair passes, human-role generation, cast/field regen that
   respects locks byte-for-byte.
 - **Memory agent**: rolling summaries at the cadence, fact extraction with
-  dedupe, continuity warnings — each product snapshotted.
+  dedupe, continuity warnings, each product snapshotted.
 - **Director meta-agent**: decision points, responder ordering, ending
   detection, with deterministic floor fallbacks (pure `domain/orchestrate`).
-- **Schema + contracts**: full v1 data model and zod contracts for every AI
+- **Schema + contracts**: the full data model and zod contracts for every AI
   output.
-- **Branch laws L1–L6** implemented and tested; **path-scoped memory** with
-  the branch-isolation leak suite (pins are explicit overrides — ADR-001).
+- **Branch laws** (attach and extend, fork from ghosts, fork on edit, path
+  isolation, reversibility) implemented and tested; **path-scoped memory**
+  with the branch-isolation leak suite.
 - **Undo**, identity-guarded access, revocable share links, anonymous →
   account claiming, usage ledger with per-scene rollups.
 - **Prompt templates as versioned data** (18 templates, idempotent seeding).
-- **Self-host scaffold**: Dockerfile + docker-compose (self-hosted Convex
-  backend + dashboard + app), smoke script, CI including a self-host job.
+- **Self-host stack**: Dockerfile plus Compose (self-hosted Convex backend,
+  dashboard and app), a Traefik TLS overlay, a one-command release drill, and
+  CI with a nightly self-host job.
 
 ## Quickstart (development)
 
@@ -141,8 +144,9 @@ bun run dev           # Next.js on :3000
 ```
 
 No backend handy? `NEXT_PUBLIC_FIXTURES=1 bun run dev` runs the three doors and
-the audition on deterministic local fixtures for UI-first development. E2E does
-**not** use fixtures: it boots the open-source Convex backend + fake model.
+the audition on deterministic local fixtures for UI-first development. The
+end-to-end suite does **not** use fixtures: it boots the open-source Convex
+backend with the fake model.
 
 Run everything:
 
@@ -170,50 +174,51 @@ bun run selfhost:drill --backup-dir backups   # up → health → deploy → see
 ```
 
 The drill automates the whole release sequence (upgrades, rollback and restore
-drills included). Manual steps and the full runbook:
+drills included). For public HTTPS deploys, the Traefik overlay
+(`docker-compose.tls.yml`) is the entry point and terminates TLS with Let's
+Encrypt certificates. Manual steps and the full runbook:
 [docker/README.md](./docker/README.md). The only external dependencies are AI
 provider APIs; Convex Cloud is optional and the open-source backend is the
-reference target (PLAN §15.7).
+reference target.
 
 ## Branch laws in one table
 
 | Law | Meaning |
 |---|---|
-| L1/L2 | Picking an option at the active tip appends it to the current branch |
-| L3 | Picking a ghost option from an earlier beat forks a new branch there |
-| L4 | Edit/rewrite/regenerate always forks from the parent; the original survives |
-| L5 | The active path defines memory; switching branches recomputes context |
-| L6 | Nothing is destroyed; every directorial action is undoable |
+| Extend | Picking an option at the active tip appends it to the current branch |
+| Fork from ghosts | Picking a ghost option from an earlier beat forks a new branch there |
+| Fork on edit | Edit, rewrite or regenerate always forks from the parent; the original survives |
+| Path isolation | The active path defines memory; switching branches recomputes context |
+| Reversibility | Nothing is destroyed; every directorial action is undoable |
 
 ## Layout
 
 ```
 convex/           backend: schema, domain laws, functions, prompts, libs (Convex is the only backend)
-src/              Next.js app (App Router) — shell lands in Phase 3
+src/              Next.js app (App Router): shell, casting, play console, inspector
 tests/            Vitest (pure logic) + convex-test integration suites
-scripts/          fixtures, seeding, terminology guard, self-host smoke
-docker/, docker-compose*.yml, Dockerfile     self-host stack
+scripts/          fixtures, seeding, terminology guard, self-host smoke and drill
+docker/           TLS overlay config (Traefik) and the self-host runbook
 docs/adr/         architecture decision records
 ```
 
 ## Docs
 
-- [PLAN.md](./PLAN.md) — the complete product plan (horizons, phases, agents, acceptance).
-- [docs/prompt-architecture.md](./docs/prompt-architecture.md) — compiler pipeline, blocks, output contracts, budgets, provenance.
-- [docs/orchestration.md](./docs/orchestration.md) — floor, burst, cadence, failure/abort policy, run locks.
-- [docs/branch-and-memory.md](./docs/branch-and-memory.md) — L1–L6 enforcement, projection, the leak test.
-- [docs/testing.md](./docs/testing.md) — pyramid, fake model, E2E scenarios, gates.
-- [docs/acceptance-run.md](./docs/acceptance-run.md) — the §17.1 acceptance record with evidence.
-- [docs/adr/](./docs/adr/) — decision records (pinned facts, card typing, Bun toolchain, per-phase API surfaces).
-- [docker/README.md](./docker/README.md) — self-host runbook + release drill.
+- [PLAN.md](./PLAN.md), the complete product plan (horizons, phases, agents, acceptance).
+- [docs/prompt-architecture.md](./docs/prompt-architecture.md), compiler pipeline, blocks, output contracts, budgets, provenance.
+- [docs/orchestration.md](./docs/orchestration.md), floor, burst, cadence, failure/abort policy, run locks.
+- [docs/branch-and-memory.md](./docs/branch-and-memory.md), branch law enforcement, projection, the leak test.
+- [docs/testing.md](./docs/testing.md), pyramid, fake model, E2E scenarios, gates.
+- [docs/acceptance-run.md](./docs/acceptance-run.md), the release acceptance record with evidence.
+- [docs/adr/](./docs/adr/), decision records (pinned facts, card typing, Bun toolchain, API surface additions).
+- [docker/README.md](./docker/README.md), self-host runbook + release drill.
 
 ## Roadmap
 
-Fabula ships in three additive horizons (PLAN §1.3); nothing is rewritten
-between them.
+Fabula ships in three additive releases; nothing is rewritten between them.
 
-| Horizon | Version | Theme | Phases | Highlights |
-|---|---|---|---|---|
-| H1 | **v1.0 (this release)** | The Director's Chair | 0–8 | Full play loop, branching, memory, prompt inspector, sharing, archive/export, hardening |
-| H2 | v1.5 | The Living Room | 9–11 | Multiple humans co-playing the cast, spectators, private facts & whispers, crowd casts, compare & merge |
-| H3 | v2.0 | Voices & Community | 12–14 | Per-role voices + radio mode, gallery/publish/remix, PWA offline reading, localization, spend center |
+| Release | Theme | Highlights |
+|---|---|---|
+| **v1.0 (current)** | The Director's Chair | Full play loop, branching, memory, prompt inspector, sharing, archive and export, hardening |
+| v1.5 | The Living Room | Multiple humans co-playing the cast, spectators, private facts and whispers, crowd casts, compare and merge |
+| v2.0 | Voices & Community | Per-role voices and radio mode, gallery publishing and remixing, PWA offline reading, localization, spend center |

@@ -13,8 +13,8 @@ import {
 } from "./helpers";
 
 /**
- * Phase 7 backend surface: wrap/freeze + end-detection, share links with
- * viewer/director tokens, the export bundle and presence wrappers (ADR-008).
+ * Archive and share backend surface: wrap and freeze with end detection, share links with
+ * viewer/director tokens, the export bundle and presence wrappers.
  */
 
 async function seedTurnedScene(t: T, owner: string) {
@@ -33,7 +33,7 @@ async function seedTurnedScene(t: T, owner: string) {
   return { ...seeded, turnBeatId: turn.beatId };
 }
 
-test("wrap: endScene archives, runs the final summary and is undoable (L6)", async () => {
+test("wrap: endScene archives, runs the final summary and is undoable", async () => {
   const t = makeT();
   const owner = await makeUser(t, "Owner");
   const { sceneId, client, turnBeatId } = await seedTurnedScene(t, owner);

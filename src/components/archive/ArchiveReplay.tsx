@@ -20,7 +20,7 @@ const ORIGIN_LABELS: Record<string, string> = {
 };
 
 /**
- * Read-only replay list (PLAN §12 Phase 7.2): the archived chain of one
+ * Read-only replay list: the archived chain of one
  * branch, root → tip, with ghosts preserved as "paths not taken". No menus,
  * no pick buttons, no mutate affordances anywhere.
  */

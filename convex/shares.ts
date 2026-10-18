@@ -6,8 +6,8 @@ import { nowMs } from "./lib/time";
 import { projectPath } from "./lib/path";
 
 /**
- * Share links (PLAN §7 Phase 7, Phase 1.6): tokenized read access.
- * Viewers are read-only by construction — mutations are identity-guarded
+ * Share links: tokenized read access.
+ * Viewers are read-only by construction, mutations are identity-guarded
  * (assertSceneAccess) and never accept a share token.
  */
 
@@ -79,7 +79,7 @@ export const getByToken = query({
       .collect();
     const projection = await projectPath(ctx, scene);
 
-    // Everything a shared screen renders (Phase 7.4): the same shape the
+    // Everything a shared screen renders: the same shape the
     // play shell consumes, so `buildPlayScene` maps both identically.
     const tip = scene.activeTipBeatId;
     const pending = tip

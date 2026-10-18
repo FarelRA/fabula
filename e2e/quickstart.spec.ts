@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
 /**
- * E2E-01 (PLAN §11.5): quick start reaches a rendered opening beat in ≤ 3
+ * quick start reaches a rendered opening beat in ≤ 3
  * navigations, and the audition is fully keyboard-operable. Runs against the
  * isolated self-hosted Convex backend + deterministic fake model.
  */
@@ -28,7 +28,7 @@ async function startScene(page: Page): Promise<void> {
   await expect(page.getByText(/Burst/)).toBeVisible({ timeout: 30_000 });
 }
 
-test.describe("quick start (E2E-01)", () => {
+test.describe("quick start", () => {
   test("premise → audition → playable opening in ≤ 3 navigations", async ({ page }) => {
     let navigations = 0;
     page.on("framenavigated", (frame) => {

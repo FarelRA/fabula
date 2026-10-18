@@ -5,7 +5,7 @@ import type {
 } from "@convex/shared/contracts";
 
 /**
- * Genre preset seeds (PLAN Appendix A, Phase 4.1). A preset seeds premise,
+ * Genre preset seeds. A preset seeds premise,
  * world, tone, cast size, presentation style and a cast skeleton. The
  * skeleton is passed to the casting prompt as a steer; it is not persisted as
  * roles until the casting agent returns (fixtures use it directly).
@@ -146,7 +146,7 @@ export function presetById(id: string | null | undefined): GenrePreset | undefin
 
 export function skeletonVibe(preset: GenrePreset): string {
   return `Follow this cast skeleton: ${preset.skeleton
-    .map((role) => `${role.storyRole} — ${role.hook}`)
+    .map((role) => `${role.storyRole}, ${role.hook}`)
     .join("; ")}.`;
 }
 

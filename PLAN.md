@@ -1,12 +1,12 @@
-# Fabula — Complete Product Build Plan (Horizon 1 → final v2.0)
+# Fabula Product Build Plan (complete build: Horizon 1 through the final v2.0)
 
 **Status:** Approved plan of record (pre-implementation)
 **Target repo:** `~/projects/apps/fabula/`
 **Product:** A realtime roleplay platform where the entire cast is AI and the human is the director. Onboarding → scene creation → cast generation → play → branching → archive/export.
-**Scope:** the **entire product through the final, fully-featured release** — not just v1.0. v1.0 is Milestone 1 (Horizon 1, Phases 0–8). Horizons 2–3 (Phases 9–14) complete the app: multiple humans & spectators, secret knowledge, crowd casts, branch compare/merge, voice/TTS radio mode, community gallery & remixing, PWA, localization (§1.3, §12.11–12.12). Every Horizon-1 decision is made so Horizons 2–3 are **additive, not rewrites** (§5.4 future-proofing audit).
-**Deployment:** Docker-first and **fully self-hostable** — the whole stack (self-hosted Convex backend included) runs from a single `docker compose up`; managed Convex Cloud is optional, never required; the only external dependencies are the AI provider APIs the operator configures (§15.4–15.7).
+**Scope:** the **entire product through the final, fully-featured release**, not just v1.0. v1.0 is Milestone 1 (Horizon 1, Phases 0 to 8). Horizons 2 to 3 (Phases 9 to 14) complete the app: multiple humans & spectators, secret knowledge, crowd casts, branch compare/merge, voice/TTS radio mode, community gallery & remixing, PWA, localization (§1.3, §12.11 to 12.12). Every Horizon-1 decision is made so Horizons 2 to 3 are **additive, not rewrites** (§5.4 future-proofing audit).
+**Deployment:** Docker-first and **fully self-hostable**, the whole stack (self-hosted Convex backend included) runs from a single `docker compose up`; managed Convex Cloud is optional, never required; the only external dependencies are the AI provider APIs the operator configures (§15.4 to 15.7).
 
-> This document is the single source of truth for the build. Every phase, sub-phase, test slate, agent brief, contract, and acceptance criterion lives here. Implementation must not start on a sub-phase until its inputs (frozen contracts) are in place and its tests-first list is written down. Horizon 1 is a complete product experience on its own — never a throwaway MVP — and Horizons 2–3 layer on top until §17.2, the final acceptance bar, is reached.
+> This document is the single source of truth for the build. Every phase, sub-phase, test slate, agent brief, contract, and acceptance criterion lives here. Implementation must not start on a sub-phase until its inputs (frozen contracts) are in place and its tests-first list is written down. Horizon 1 is a complete product experience on its own, never a throwaway MVP, and Horizons 2 to 3 layer on top until §17.2, the final acceptance bar, is reached.
 
 ---
 
@@ -18,20 +18,20 @@
 | Backend agent (A1) | §5 (schema), §6 (laws), §13.4 (API surface) |
 | Generation agent (A2) | §7 (prompt architecture), §5, §13.4 |
 | Memory/orchestration agent (A3) | §6, §8 (orchestration spec) |
-| UI agents (A4–A7) | §9 (UX + wireflows), §13 (ownership matrix, fixtures mode) |
+| UI agents (A4, A7) | §9 (UX + wireflows), §13 (ownership matrix, fixtures mode) |
 | QA agent (A8) | §11 (testing strategy), §17 (acceptance checklist) |
 | Docs agent (A9) | §16 (deliverable docs) |
-| Horizon 2–3 planning | §1.3 (north star), §5.4 (future-proofing audit), §12.11–12.12, §17.2, §19.2–19.3 |
-| Ops / self-hosting | §15.4–15.7 (Docker, compose, runbook, parity law) |
+| Horizon 2 to 3 planning | §1.3 (north star), §5.4 (future-proofing audit), §12.11 to 12.12, §17.2, §19.2 to 19.3 |
+| Ops / self-hosting | §15.4 to 15.7 (Docker, compose, runbook, parity law) |
 
 Rules that apply to everyone:
 
-1. **TDD is mandatory.** Each sub-phase lists a *test slate* — write those tests (red), implement (green), refactor. CI blocks merges without them.
+1. **TDD is mandatory.** Each sub-phase lists a *test slate*, write those tests (red), implement (green), refactor. CI blocks merges without them.
 2. **Contracts are frozen before parallel work.** §13.3 defines the freeze list. Changing a frozen contract requires an ADR in `docs/adr/` approved by A0.
 3. **Ownership is file-scoped.** Only the owning agent edits a path (§13.2). Cross-path needs are raised to A0.
 4. **Library rule (hard):** if a maintained library solves it, use it (§3). Deviations require one-sentence justification in the PR.
 5. **Terminology is enforced.** UI says *scene, role/character, beat, path options, branch, floor*. The words *thread* and *agent* never appear in user-facing strings (lint test in §11.6).
-6. **Horizons share the discipline.** H2/H3 phases (§12.11–12.12) repeat the same wave choreography and gates; contracts refreeze at each horizon kickoff.
+6. **Horizons share the discipline.** H2/H3 phases (§12.11 to 12.12) repeat the same wave choreography and gates; contracts refreeze at each horizon kickoff.
 7. **Self-host parity is a law.** Every feature must work on the self-hosted Docker Compose stack (self-hosted Convex included); the only permitted external dependencies are AI provider APIs (§15.7). CI enforces it.
 
 ---
@@ -40,20 +40,20 @@ Rules that apply to everyone:
 
 Fabula is not a chat box. It is a **director's console** for an all-AI cast:
 
-- **Scene** — story container: premise, tone, cast, rules, one branch tree.
-- **Role / Character** — an AI participant with a structured role card. ("Agent" in code, "role/character" in UI.)
-- **Beat** — one narrative turn (single message or short burst).
-- **Path options** — 2–4 AI-generated candidate continuations at a decision point. Picking one makes it canon.
-- **Branch** — a divergent path. Created by picking alternates, editing, rewriting, or regenerating. Never destructive.
-- **Floor** — who is currently generating/speaking.
-- **Meta-agents** — non-speaking AI helpers: casting, director, memory. They never speak in-fiction.
-- **Thread** — one Convex Agent thread per scene. **Implementation detail; never surfaced in UX.**
+- **Scene**, story container: premise, tone, cast, rules, one branch tree.
+- **Role / Character**, an AI participant with a structured role card. ("Agent" in code, "role/character" in UI.)
+- **Beat**, one narrative turn (single message or short burst).
+- **Path options**, 2 to 4 AI-generated candidate continuations at a decision point. Picking one makes it canon.
+- **Branch**, a divergent path. Created by picking alternates, editing, rewriting, or regenerating. Never destructive.
+- **Floor**, who is currently generating/speaking.
+- **Meta-agents**, non-speaking AI helpers: casting, director, memory. They never speak in-fiction.
+- **Thread**, one Convex Agent thread per scene. **Implementation detail; never surfaced in UX.**
 
 Three direction modes at any turn:
 
-1. **Pick a path** — choose one of 2–4 AI candidate continuations.
-2. **Steer** — out-of-character director note ("make her suspicious", "skip to the duel").
-3. **Write in-character** — inject your own line as any participant.
+1. **Pick a path**, choose one of 2 to 4 AI candidate continuations.
+2. **Steer**, out-of-character director note ("make her suspicious", "skip to the duel").
+3. **Write in-character**, inject your own line as any participant.
 
 ### 1.1 Branch laws (enforced in code, documented in README, tested in CI)
 
@@ -70,22 +70,22 @@ Three direction modes at any turn:
 
 Floor resolves → speaker streams into the scene → memory updates in background → at decision points, path options render as **inline cards under the active beat (never a modal)** → director acts (pick / steer / write / regenerate) → repeat.
 
-### 1.3 The North Star — what the final app is (v2.0)
+### 1.3 The North Star, what the final app is (v2.0)
 
 The final Fabula is the complete realization of the director's-console concept, delivered in three additive horizons:
 
 | Horizon | Version | Theme | Phases | Headline features |
 |---|---|---|---|---|
-| H1 | **v1.0** | The Director's Chair | 0–8 | Everything in §10: full play loop, branching, memory, prompt inspector, sharing, archive/export |
-| H2 | **v1.5** | The Living Room | 9–11 | Multiple humans co-playing the AI cast; spectators; characters with real secrets (private facts, whispers); casts up to 8 with crowd dynamics; compare & merge branches |
-| H3 | **v2.0 final** | Voices & Community | 12–14 | Per-role voices + radio-mode playback + voice input; published scenes, gallery discovery, remix with attribution, moderation; PWA/offline reading, localization, spend center |
+| H1 | **v1.0** | The Director's Chair | 0 to 8 | Everything in §10: full play loop, branching, memory, prompt inspector, sharing, archive/export |
+| H2 | **v1.5** | The Living Room | 9 to 11 | Multiple humans co-playing the AI cast; spectators; characters with real secrets (private facts, whispers); casts up to 8 with crowd dynamics; compare & merge branches |
+| H3 | **v2.0 final** | Voices & Community | 12 to 14 | Per-role voices + radio-mode playback + voice input; published scenes, gallery discovery, remix with attribution, moderation; PWA/offline reading, localization, spend center |
 
 Principles that hold at every horizon:
 
-1. **Additive only** — H2/H3 add tables/fields/surfaces; they never rewrite branch laws, projection, or the prompt compiler (§5.4 proves this line-by-line).
-2. **v1.0 stands alone** — a complete, polished product, not an MVP stub.
-3. **The final acceptance bar is §17.2** — reached only when the whole app, not just Milestone 1, passes.
-4. **Self-hostable by default** — every horizon runs from the Docker Compose stack (self-hosted Convex included); only AI provider APIs are external (§15.7).
+1. **Additive only**. H2/H3 add tables/fields/surfaces; they never rewrite branch laws, projection, or the prompt compiler (§5.4 proves this line-by-line).
+2. **v1.0 stands alone**, a complete, polished product, not an MVP stub.
+3. **The final acceptance bar is §17.2**, reached only when the whole app, not just Milestone 1, passes.
+4. **Self-hostable by default**, every horizon runs from the Docker Compose stack (self-hosted Convex included); only AI provider APIs are external (§15.7).
 
 ---
 
@@ -113,11 +113,11 @@ Principles that hold at every horizon:
 └───────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-**Deployment model (law):** the entire stack — Next.js app, **self-hosted Convex** (with its Postgres metadata store and S3-compatible object storage), dashboard — runs via Docker Compose on one machine or many. Managed Convex Cloud is drop-in optional, never required. The *only* external dependencies are AI provider APIs (LLM/STT/TTS/image) configured with the operator's own keys; because all model calls route through the provider-agnostic gateway, they can be pointed at self-hosted model servers (Ollama/vLLM) where practical. See §15.4–15.7.
+**Deployment model (law):** the entire stack. Next.js app, **self-hosted Convex** (with its Postgres metadata store and S3-compatible object storage), dashboard, runs via Docker Compose on one machine or many. Managed Convex Cloud is drop-in optional, never required. The *only* external dependencies are AI provider APIs (LLM/STT/TTS/image) configured with the operator's own keys; because all model calls route through the provider-agnostic gateway, they can be pointed at self-hosted model servers (Ollama/vLLM) where practical. See §15.4 to 15.7.
 
 Key invariants:
 
-- **Beats are the source of truth.** The Agent component thread is the *transport* for streaming/resume, not the domain model. Prompt context is always compiled from `beats` filtered by the active path — never from raw thread history. This is what makes branch isolation provable.
+- **Beats are the source of truth.** The Agent component thread is the *transport* for streaming/resume, not the domain model. Prompt context is always compiled from `beats` filtered by the active path, never from raw thread history. This is what makes branch isolation provable.
 - **All state realtime.** No REST CRUD, no polling, no custom websockets.
 - **Every generation stores a prompt snapshot** (§7.5) → prompt inspector + reproducibility.
 
@@ -130,7 +130,7 @@ Key invariants:
 | Concern | Choice | Rationale |
 |---|---|---|
 | Framework | Next.js 15 (App Router) + TypeScript **strict** | SPA-feel shell, RSC where useful, typed end-to-end |
-| Backend (only) | Convex — **self-hosted via Docker** or Convex Cloud (interchangeable) | Mandated; realtime subscriptions eliminate websocket layer; self-hosting keeps the whole stack in the operator's infra |
+| Backend (only) | Convex, **self-hosted via Docker** or Convex Cloud (interchangeable) | Mandated; realtime subscriptions eliminate websocket layer; self-hosting keeps the whole stack in the operator's infra |
 | Packaging & deployment | **Docker + Docker Compose** (multi-stage Next.js build; official `convex-backend` self-host images) | One-command self-host on a Linux VM; same compose topology for dev-parity, staging and self-hosted prod (§15) |
 | AI runtime | Vercel AI SDK (`streamText`, `generateObject`) | Provider-agnostic; structured output; per-role models |
 | Streaming + resume | `@convex-dev/agent` (threads, `saveStreamDeltas`, `useUIMessages({stream:true})`, `syncStreams`) | Deltas persisted & reactively queried → resume on reload/any device, no flicker |
@@ -151,7 +151,7 @@ Key invariants:
 | Command palette | cmdk | Powers ⌘K + mention autocomplete |
 | Toasts | sonner | Retry/undo affordances |
 | Forms + validation | react-hook-form + zod | Role card editor, scene settings, every AI output schema |
-| URL state | nuqs | Wizard step, inspector tab, selected beat — shareable URLs |
+| URL state | nuqs | Wizard step, inspector tab, selected beat, shareable URLs |
 | Ephemeral UI state | zustand | Pane layout, composer mode, autoscroll intent (Convex remains source of truth) |
 | Dark mode | next-themes | Dark-first, light available |
 | Testing | Vitest + Testing Library + Playwright (multi-context) + `convex-test` | §11 |
@@ -169,7 +169,7 @@ Key invariants:
 
 Per-role overrides live on the role card (`modelTier`, optional `temperature`). Pricing table in `convex/lib/pricing.ts` (per-1M-token, env JSON override) powers the usage meter; values are estimates, labeled as such in UI.
 
-**H3 additions (at kickoff):** TTS + STT via provider SDKs behind the same gateway abstraction; playback uses native `HTMLAudioElement` in a small controlled component (no extra library needed — justified); captions reuse the markdown renderer.
+**H3 additions (at kickoff):** TTS + STT via provider SDKs behind the same gateway abstraction; playback uses native `HTMLAudioElement` in a small controlled component (no extra library needed, justified); captions reuse the markdown renderer.
 
 ---
 
@@ -179,13 +179,14 @@ Per-role overrides live on the role card (`modelTier`, optional `temperature`). 
 fabula/
 ├─ PLAN.md                      # this document
 ├─ README.md                    # §16
-├─ Dockerfile                   # Next.js app — multi-stage, standalone output
-├─ docker-compose.yml           # self-host stack: app + convex-backend + dashboard + postgres + S3 store (+ optional caddy)
+├─ Dockerfile                   # Next.js app, multi-stage, standalone output
+├─ docker-compose.yml           # self-host stack: app + convex-backend + dashboard
 ├─ docker-compose.dev.yml       # dev-parity overrides (hot reload, local ports)
+├─ docker-compose.tls.yml       # optional Traefik TLS overlay for public deploys
 ├─ .dockerignore
 ├─ docker/
 │  ├─ .env.example              # compose env (origins, instance secret, postgres, S3, AI keys)
-│  ├─ Caddyfile                 # optional TLS reverse proxy for single-VM deploys
+│  ├─ traefik/traefik.yml       # Traefik static config for the TLS overlay
 │  └─ README.md                 # self-host runbook (§15.6)
 ├─ package.json                 # pnpm
 ├─ next.config.ts               # code-split config (tree map dynamic import)
@@ -337,7 +338,7 @@ export default defineSchema({
       abortedKeepsPartial: v.boolean(),
     }),
     branchFrequency: v.union(v.literal("always"), v.literal("key"), v.literal("onDemand")),
-    optionsDefaultCount: v.number(),                // 2–4, default 3
+    optionsDefaultCount: v.number(),                // 2 to 4, default 3
     contextBeatsK: v.number(),                      // default 30 (verbatim window)
     summaryEveryN: v.number(),                      // default 6
     lengthTarget: v.union(v.literal("short"), v.literal("medium"), v.literal("long")),
@@ -466,7 +467,7 @@ export default defineSchema({
     parentBeatId: v.id("beats"),
     branchId: v.id("branches"),                            // context in which the option was offered
     optionIndex: v.number(),
-    label: v.string(),                                     // 2–4 words
+    label: v.string(),                                     // 2 to 4 words
     speakerRoleId: v.optional(v.id("roles")),
     text: v.string(),
     strategy: v.string(),                                  // taxonomy: escalate|de-escalate|reveal|conceal|ally|confront|commit|deflect
@@ -523,7 +524,7 @@ export default defineSchema({
     createdAt: v.number(),
   }).index("by_scene_status", ["sceneId", "status"]),
 
-  promptTemplates: defineTable({                           // versioned documents — never inline strings
+  promptTemplates: defineTable({                           // versioned documents, never inline strings
     key: v.string(),                                       // e.g. "contract.roleplay", "mode.turn", "meta.casting"
     version: v.number(),
     content: v.string(),
@@ -611,7 +612,7 @@ export default defineSchema({
 });
 ```
 
-**Note on `roleRevisions.card`:** stored as `v.any()` at the table level but written/read exclusively through the zod `RoleCard` type in `convex/shared/contracts.ts` — Convex's validator can't express recursive-but-typed JSON ergonomically without enormous duplication. All reads go through typed helpers; a `contracts.test.ts` guarantees writer/reader agreement. (Justified deviation, logged as ADR-002.)
+**Note on `roleRevisions.card`:** stored as `v.any()` at the table level but written/read exclusively through the zod `RoleCard` type in `convex/shared/contracts.ts`. Convex's validator can't express recursive-but-typed JSON ergonomically without enormous duplication. All reads go through typed helpers; a `contracts.test.ts` guarantees writer/reader agreement. (Justified deviation, logged as ADR-002.)
 
 ### 5.2 Index rationale (normative)
 
@@ -627,7 +628,7 @@ export default defineSchema({
 | Inspector provenance | `promptSnapshots.by_beat` / `by_candidate` | One snapshot per generation |
 | Access checks | `shareLinks.by_token` (unique-ish), `scenes.by_owner_updated` | Share route + dashboard |
 
-**Path traversal:** `ancestors(tipBeatId)` walks `parentBeatId` upward (iterative, depth-bounded by scene length). `projectPath(sceneId, tipBeatId)` = `{ beatIds: Set<seq/ids>, facts, summaries }`. This single module is the *only* place path filtering happens — enabling the leak test (§11.4).
+**Path traversal:** `ancestors(tipBeatId)` walks `parentBeatId` upward (iterative, depth-bounded by scene length). `projectPath(sceneId, tipBeatId)` = `{ beatIds: Set<seq/ids>, facts, summaries }`. This single module is the *only* place path filtering happens, enabling the leak test (§11.4).
 
 ### 5.3 Invariants (asserted in `lib/invariants.ts` and tested)
 
@@ -639,7 +640,7 @@ export default defineSchema({
 6. `roles.currentRevisionId` exists iff the scene has an opener (play started).
 7. Branch forks always reference an existing `forkedFromBeatId` in the same scene.
 
-### 5.4 Future-proofing audit — Horizon 2–3 needs vs. today's model
+### 5.4 Future-proofing audit. Horizon 2 to 3 needs vs. today's model
 
 Every final-product feature below is either **already supported** by the frozen schema or lands as **purely additive fields/tables** (no rewrites of §6 branch laws, §7 compiler, or §8 orchestration):
 
@@ -647,13 +648,13 @@ Every final-product feature below is either **already supported** by the frozen 
 |---|---|---|---|
 | Multiple humans (players) | `participants.userId` (N rows), seats, `roles.kind:"human"` | seat invite perms (`player`), human turn-handoff states | Floor resolver already speaker-agnostic; tests extended |
 | Spectators | `shareLinks.permission:"viewer"`, presence component | spectator seat rows, reactions (optional) | Server-side filtering already enforced |
-| Private facts / whispers | `facts.visibility{kind,roleIds}`; compiler filters per speaker | memory agent emits private facts; beat-level `visibility` | Leak suite extends to humans — same projection module |
-| Crowd casts (7–8) | tiers incl. `background`; condensed prompt form | rotation policy presets, compaction tuning | No schema change |
-| Compare & merge branches | full branch tree + `actions` log; `FABULA_FF_COMPARE` | compare UI; explicit audited `mergeFact` op (pin-like override) | Merge is an explicit override — documented like ADR-001 |
+| Private facts / whispers | `facts.visibility{kind,roleIds}`; compiler filters per speaker | memory agent emits private facts; beat-level `visibility` | Leak suite extends to humans, same projection module |
+| Crowd casts (7 to 8) | tiers incl. `background`; condensed prompt form | rotation policy presets, compaction tuning | No schema change |
+| Compare & merge branches | full branch tree + `actions` log; `FABULA_FF_COMPARE` | compare UI; explicit audited `mergeFact` op (pin-like override) | Merge is an explicit override, documented like ADR-001 |
 | Voice / TTS / radio mode | role `voice` block; gateway abstraction; file storage | beat fields `audioStatus/audioStorageId/voiceProfileHash`; voice profiles on role meta | Text path never blocked by audio (isolation rule) |
 | Voice input (STT) | mutation surface unchanged | client capture → same steer/in-character mutations | None |
 | Gallery / publish / remix | scenes/branches/beats are forkable; boundaries fields exist | `publishedScenes`, `reports`, moderation queue; fork-with-attribution | Remix **copies**; facts stay scene-scoped (permanent law §18.1) |
-| PWA / offline reading | read-only archive queries | service-worker cache for archived read models | Realtime stays the live path — no offline editing (§18.1) |
+| PWA / offline reading | read-only archive queries | service-worker cache for archived read models | Realtime stays the live path, no offline editing (§18.1) |
 | Localization | scene `playLanguage`; keymap registry | next-intl for UI chrome; RTL audit | Prompts already language-scoped |
 | Spend center / analytics | `usageEvents` + `sceneUsage` + `actions` | account rollups, alerts, dashboards | None |
 
@@ -667,10 +668,10 @@ Every final-product feature below is either **already supported** by the frozen 
 applyPick(scene, candidate):
   parent = candidate.parentBeatId
   if parent == scene.activeTipBeatId:
-      # L1 + L2 — extend active branch (canon append)
+      # L1 + L2, extend active branch (canon append)
       beat = createBeat(branch=scene.activeBranchId, parent=parent, origin="option")
   else:
-      # L3 — fork from parent
+      # L3, fork from parent
       branch = createBranch(forkedFromBeatId=parent,
                             forkedFromBranchId=candidate.branchId,
                             forkReason="pick")
@@ -680,7 +681,7 @@ applyPick(scene, candidate):
   logAction(inverse = { type: "setActive", branch, tip: parent })
 
 applyEditFork(scene, beat, newText):
-  # L4 — never touched in place, always forks from the ORIGINAL's parent
+  # L4, never touched in place, always forks from the ORIGINAL's parent
   branch = createBranch(forkedFromBeatId=beat.parentBeatId, forkReason="edit")
   newBeat = createBeat(branch, parent=beat.parentBeatId, origin="edit",
                        editedFromBeatId=beat._id, text=newText)
@@ -699,12 +700,12 @@ Unpicked candidates stay `status=offered` forever ("ghost alternatives"). They r
 ### 6.3 Memory projection semantics (documented in README + docs/branch-and-memory.md)
 
 - **Active path** = `ancestors(activeTipBeatId)` realized as a set of beat ids + seqs.
-- **Facts** in context: `status=active` AND (`nodeId` on path) AND (visibility public OR caller is subject). Plus **global pins**: facts with `isPinned=true` are treated as scene-global canon regardless of path — this is an *explicit director override*, visually marked in the memory panel, and the leak test excludes only these explicitly-pinned rows (ADR-001). Muted facts never enter prompts.
+- **Facts** in context: `status=active` AND (`nodeId` on path) AND (visibility public OR caller is subject). Plus **global pins**: facts with `isPinned=true` are treated as scene-global canon regardless of path, this is an *explicit director override*, visually marked in the memory panel, and the leak test excludes only these explicitly-pinned rows (ADR-001). Muted facts never enter prompts.
 - **Summaries** in context: summaries whose `coveredThroughBeatId` is on the path, most recent up to memory budget; older ones collapse into the next summary.
 - **Switching branches** recomputes projection instantly; UI shows a "context updated" toast; nothing is re-generated retroactively.
 - **Private knowledge (schema-ready, v1 public):** private facts compile only into prompts of subject roles; the role's own card `secret`/`secretGoal` is always visible to itself.
 
-### 6.4 Leak test (CI-mandatory — §11.4)
+### 6.4 Leak test (CI-mandatory, §11.4)
 
 Fixture: scene with branches A and B diverging at beat 3, each containing unique fact tokens (`FACT_A_9C1`, `FACT_B_44E`). For every mode (turn/options/summary/facts/director meta), compile prompts on A and assert: `FACT_B_44E` appears in zero blocks; and vice versa. Also per-role privacy: role X's private facts absent from role Y's compiled prompt. The same spec runs as an E2E on edit-fork (E2E-04).
 
@@ -727,13 +728,13 @@ compileRolePrompt(scene, roleAtSeq, tipBeatId, mode, runtimeInputs) →
   return { system, messages, snapshot }
 ```
 
-Properties: **pure** (no DB writes, no clock, no RNG), deterministic, server-side only, single module, golden-tested per mode. Template text is loaded from `promptTemplates` (versioned documents) and injected — the compiler contains zero prompt prose literals.
+Properties: **pure** (no DB writes, no clock, no RNG), deterministic, server-side only, single module, golden-tested per mode. Template text is loaded from `promptTemplates` (versioned documents) and injected, the compiler contains zero prompt prose literals.
 
 ### 7.2 Block assembly (fixed order)
 
 | # | Block | Contents | Template key | Compaction priority (lower = shrunk first) |
 |---|---|---|---|---|
-| 1 | Roleplay contract | Stay in character; never control others' choices/reactions/thoughts; no omniscience; never break character or mention being an AI; respect boundaries; continuity with facts ledger; leave hooks — don't resolve the whole scene in one beat. | `contract.roleplay` | never shrink |
+| 1 | Roleplay contract | Stay in character; never control others' choices/reactions/thoughts; no omniscience; never break character or mention being an AI; respect boundaries; continuity with facts ledger; leave hooks, don't resolve the whole scene in one beat. | `contract.roleplay` | never shrink |
 | 2 | Identity & voice | From role card: identity, essence, psychology, voice, drives, boundaries. | `identity` | 5 |
 | 3 | World & tone | Premise, genre, era, tone dials (rendered as prose), presentation style. | `world` | 4 |
 | 4 | Content boundaries | Scene allowed/blocked + global; hard rules. | `boundaries` | never shrink |
@@ -744,17 +745,17 @@ Properties: **pure** (no DB writes, no clock, no RNG), deterministic, server-sid
 
 ### 7.3 Output contracts by mode (zod in `convex/shared/contracts.ts`)
 
-**turn** — free text (streamed); formatted per presentation style:
+**turn**, free text (streamed); formatted per presentation style:
 
 | Style | Format contract | Length (medium default) |
 |---|---|---|
-| chat | `Name: text`; narration italic on its own lines | 40–120 words |
-| script | `NAME` / parenthesized stage directions / dialogue lines | 60–160 words |
-| novel | third-person limited past-tense prose, quoted dialogue, no name prefixes | 120–300 words |
+| chat | `Name: text`; narration italic on its own lines | 40 to 120 words |
+| script | `NAME` / parenthesized stage directions / dialogue lines | 60 to 160 words |
+| novel | third-person limited past-tense prose, quoted dialogue, no name prefixes | 120 to 300 words |
 
 No meta commentary. One beat = one character's turn (bursts chain multiple beats).
 
-**options** — `generateObject`:
+**options**, `generateObject`:
 
 ```ts
 const PathOptionsSchema = z.object({
@@ -769,15 +770,15 @@ const PathOptionsSchema = z.object({
 
 Default 3 (setting `optionsDefaultCount`). Validated: speakers must be active participants; strategies should span divergent quadrants (escalate/de-escalate, reveal/conceal, ally/confront); **≥1 option must change scene state** (strategy ∈ {escalate, reveal, confront, commit}). Violations → one repair pass; still invalid → deterministic fallback (speaker rotation, temperature-up retry).
 
-**summary** — `{ summary: string, coveredFromSeq, coveredThroughSeq }`; concise, evidence-anchored, no speculation.
+**summary**, `{ summary: string, coveredFromSeq, coveredThroughSeq }`; concise, evidence-anchored, no speculation.
 
-**facts** — `{ facts: [{ text, subjects: string[], visibility: "public"|"private", nodeId }] }`; deduped against existing ledger (cheap model dedupe pass + normalized-string fallback).
+**facts**, `{ facts: [{ text, subjects: string[], visibility: "public"|"private", nodeId }] }`; deduped against existing ledger (cheap model dedupe pass + normalized-string fallback).
 
-**casting** — full cast, per §7.4.
+**casting**, full cast, per §7.4.
 
-**directorMeta** — `{ decisionPoint: boolean, reason: string, responders: string[], pacingNote: string, endingSuggested: boolean }`.
+**directorMeta**, `{ decisionPoint: boolean, reason: string, responders: string[], pacingNote: string, endingSuggested: boolean }`.
 
-**sampleLine** — 2–3 in-voice sample lines (standard tier; cached on the revision).
+**sampleLine**, 2 to 3 in-voice sample lines (standard tier; cached on the revision).
 
 ### 7.4 Casting agent contract
 
@@ -789,7 +790,7 @@ Cast-level constraints (checked **programmatically** after parse, not trusted fr
 2. ≥1 alliance edge and ≥1 friction edge (tension ≥ 0.6).
 3. Voice distinctness: pairwise sample-line/vocabulary token-overlap below threshold.
 4. No two hooks with near-identical phrasing (normalized overlap < threshold).
-5. Tier assignment obeys the sizing policy (§4 table): ≤4 → all spotlight; 5–6 → max 4 spotlight; 7+ → max 3 spotlight / 2 supporting / rest background.
+5. Tier assignment obeys the sizing policy (§4 table): ≤4 → all spotlight; 5 to 6 → max 4 spotlight; 7+ → max 3 spotlight / 2 supporting / rest background.
 6. Speakers in the requested cast size; roles include the human player's role if "you-in-scene" chosen (human role generated with the same schema).
 
 Violations trigger up to 2 repair passes (model receives the violation list); residual violations surface as non-blocking warnings on the audition screen.
@@ -804,7 +805,7 @@ Violations trigger up to 2 repair passes (model receives the violation list); re
 
 ### 7.6 Token budget policy
 
-- Target: **system ≤ 25% of usable context**; usable = `contextWindow − outputReserve − protocolOverhead`.
+- Target: **system ≤ 25% of usable context**; usable = `contextWindow - outputReserve - protocolOverhead`.
 - When over budget, compaction order: **(1)** drop oldest context beats (never below 4), **(2)** compact memory (summaries + top-N facts by subject overlap & recency), **(3)** shrink world/relations/identity descriptions, **(4)** record `overBudgetAction` in the snapshot. **Never** shrink blocks 1, 4, 7, 8 (contract/boundaries/director/mode).
 - If still over after (3): fail the generation cleanly (run `failed`, beat not created) and retry once with context halved. Never truncate silently.
 - `lib/tokenBudget.ts` exposes `estimateTokens()` (provider tokenizer when available, chars/4 fallback) and `fitToBudget()`. Property test fuzzes block sizes to prove the never-exceed invariant and the never-shrink invariant.
@@ -827,13 +828,13 @@ Every generation writes a `promptSnapshots` row (blocks with hashes + template k
 
 Priority order:
 
-1. **Forced mention** — user @mention always overrides everything.
-2. **Director queue** — a queued speaker pops next.
+1. **Forced mention**, user @mention always overrides everything.
+2. **Director queue**, a queued speaker pops next.
 3. **Turn mode:**
-   - `roundRobin` — next active seat after last speaker (seat pointer stored on participant).
-   - `reactive` (default) — candidate responders = { roles addressed by name/@ in last beat } ∪ { facts' subjects introduced by last beat } ∪ { roles with tension ≥ 0.7 to last speaker }; dedupe; if empty → spotlight roles minus cooldown. Order decided by director meta-agent; **deterministic fallback** if the meta call fails: mention order → tension desc → round-robin.
-   - `directorLed` — no auto floor; UI waits for queue/mention/in-character write.
-   - `freeform` — no auto floor; director instructs explicitly (composer nudges "type a steer or @mention").
+   - `roundRobin`, next active seat after last speaker (seat pointer stored on participant).
+   - `reactive` (default), candidate responders = { roles addressed by name/@ in last beat } ∪ { facts' subjects introduced by last beat } ∪ { roles with tension ≥ 0.7 to last speaker }; dedupe; if empty → spotlight roles minus cooldown. Order decided by director meta-agent; **deterministic fallback** if the meta call fails: mention order → tension desc → round-robin.
+   - `directorLed`, no auto floor; UI waits for queue/mention/in-character write.
+   - `freeform`, no auto floor; director instructs explicitly (composer nudges "type a steer or @mention").
 4. Tier behavior: `spotlight` full agent, default frequency; `supporting` appears in candidate set only when addressed/affected or every Nth beat; `background` reacts **only** when addressed or directly affected, and uses the `cheap` model tier with the lightweight prompt form (identity+voice condensed, no psychology section). Enforcement is in the responder filter, tested with the 6-role fixture.
 
 ### 8.2 Auto-burst
@@ -850,9 +851,9 @@ If `turnRules.autoBurst` and `consecutiveAiBeats < burstMax` and the director me
 | `key` (default) | Only when director meta-agent flags `decisionPoint=true` (threshold on confidence/reason) |
 | `onDemand` | Never automatically; the "Offer paths" button/shortcut generates them at the current tip |
 
-Options generate **in parallel** (default 3, configurable 2–4). While generating, inline skeleton cards render; failures drop that option silently if ≥2 succeed, else the whole batch retries once then shows an inline retry.
+Options generate **in parallel** (default 3, configurable 2 to 4). While generating, inline skeleton cards render; failures drop that option silently if ≥2 succeed, else the whole batch retries once then shows an inline retry.
 
-### 8.4 Director's chair controls — semantics
+### 8.4 Director's chair controls, semantics
 
 | Control | Backend | Notes |
 |---|---|---|
@@ -883,7 +884,7 @@ Options generate **in parallel** (default 3, configurable 2–4). While generati
 
 ### 8.7 Concurrency & multi-device
 
-- One active run per scene (enforced by `invariants.assertSingleActiveRun` in `runs.ts`). Picking while a run is active aborts it first (per setting) — deterministic, logged.
+- One active run per scene (enforced by `invariants.assertSingleActiveRun` in `runs.ts`). Picking while a run is active aborts it first (per setting), deterministic, logged.
 - All client mutations are optimistic where safe (pick, steer, pin, mute) with server reconciliation via reactive queries. Two contexts see the same state in the same tick (§11.5 E2E-02).
 - Share-director links: control actions allowed but serialized by the run lock; presence badges show who is directing. v1 advisory single-writer; conflicts are last-writer-wins on notes, blocked on runs.
 
@@ -904,7 +905,7 @@ Options generate **in parallel** (default 3, configurable 2–4). While generati
 | `/s/[sceneId]/archive` | Read-only replay, branch explorer, export |
 | `/share/[token]` | Viewer (read-only live) or director (controls) shared view |
 
-### 9.2 Wireflow A — entry & three doors
+### 9.2 Wireflow A, entry & three doors
 
 ```
  [ / ] Value screen ──"Start a scene"──▶ [ /new ]
@@ -925,7 +926,7 @@ Options generate **in parallel** (default 3, configurable 2–4). While generati
                       [ Audition grid ] ──"Start scene"──▶ first beat (opening) ──▶ PLAY
 ```
 
-### 9.3 Wireflow B — quick start (≤3 screens, E2E-01)
+### 9.3 Wireflow B, quick start (≤3 screens, E2E-01)
 
 ```
  Screen 1: /new/quick
@@ -956,18 +957,18 @@ Options generate **in parallel** (default 3, configurable 2–4). While generati
 │ "The rain hadn't stopped for three days when…"       │
 │                        [ Start scene →  (3/3) ]      │
 └─────────────────────────────────────────────────────┘
- Screen 3: /s/[id] play shell — opening beat live, floor indicator spinning up.
+ Screen 3: /s/[id] play shell, opening beat live, floor indicator spinning up.
 ```
 
 Field-level edits from Screen 2 open the full audition grid (still the same route family; "Start scene" returns to play). Screen counting for E2E-01: navigation events to a rendered thread ≤ 3.
 
-### 9.4 Wireflow C — guided wizard steps (nuqs `?step=`)
+### 9.4 Wireflow C, guided wizard steps (nuqs `?step=`)
 
 ```
  1 premise       2 world & tone       3 you-in-scene       4 cast size
 ┌───────────┐   ┌───────────────┐   ┌────────────────┐   ┌────────────────┐
 │ premise   │   │ genre, era,   │   │ (◉) I play a   │   │ 2 [3] 4  5   8 │
-│ inputs +  │   │ tone dials,   │   │ role → opens   │   │ 2–4 recommend. │
+│ inputs +  │   │ tone dials,   │   │ role → opens   │   │ 2 to 4 recommend. │
 │ "expand   │   │ presentation  │   │ role editor    │   │ ≥5 → explain:  │
 │ with AI"  │   │ style, lang,  │   │ ( ) director   │   │ turn mode +    │
 │           │   │ boundaries    │   │ from the wings │   │ idle roles     │
@@ -978,7 +979,7 @@ Field-level edits from Screen 2 open the full audition grid (still the same rout
 
 "You-in-scene" selection: generate the human role with the casting agent, then open the **same role editor** (same component as AI roles, `kind=human`); or choose director-from-the-wings (no in-fiction presence; the composer still allows in-character writes as *any* role).
 
-### 9.5 Wireflow D — the audition (review) screen — the delight surface
+### 9.5 Wireflow D, the audition (review) screen, the delight surface
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────────┐
@@ -1001,7 +1002,7 @@ Field-level edits from Screen 2 open the full audition grid (still the same rout
 │ [↻ role][⧉ dup]   │ [↻ role][⧉ dup]    │ [↻ role][⧉ dup]    │               │
 │ [🗑 off-stage]    │ [🗑 off-stage]     │ [🗑 off-stage]     │               │
 ├────────────────────┴────────────────────┴────────────────────┴───────────────┤
-│  Cast size:  ◂ 4 ▸   2–4 recommended · 5+ needs strict turn mode (learn more) │
+│  Cast size:  ◂ 4 ▸   2 to 4 recommended · 5+ needs strict turn mode (learn more) │
 │  [+ blank role]  [⧉ duplicate]  [↻ regenerate cast 🔒 respects locks]        │
 │                                          [ Generate opening beat →  ]        │
 └──────────────────────────────────────────────────────────────────────────────┘
@@ -1021,7 +1022,7 @@ Behavior spec:
 | ⇄ drag reorder | @dnd-kit; order = spotlight priority (seat order derives from it) |
 | ▶ sample line | `sampleLine` action (standard tier) → bottom sheet (mobile) / popover (desktop); cached per revision hash |
 | Avatar | Placeholder = deterministic gradient + monogram, rendered immediately; image gen runs async, crossfades on arrival; **never blocks** |
-| Cast size stepper | 1–8; hint "2–4 recommended"; ≥5 shows inline explanation (turn throughput, idle roles, cost) — never a modal |
+| Cast size stepper | 1 to 8; hint "2 to 4 recommended"; ≥5 shows inline explanation (turn throughput, idle roles, cost), never a modal |
 | Start / generate opener | Generates opening beat (editable / regenerable / "write the opener yourself") → transitions to play |
 
 **Three doors mapping:** Quick start = Screen 1 → Screen 2 (generation + audition-lite). Guided = wizard steps then the same audition. Templates = preseeded then the same audition. All doors converge on **one** audition component.
@@ -1039,7 +1040,7 @@ Behavior spec:
                            (composer with 3 modes; ⌥1-4 picks; ⌘. aborts)
 ```
 
-- Option cards: inline under the active beat; each shows speaker avatar, 2–4-word label, text preview, strategy chip; expanding shows full text. Picked cards become canon beats; unpicked become ghosts (fork warning on later pick).
+- Option cards: inline under the active beat; each shows speaker avatar, 2 to 4-word label, text preview, strategy chip; expanding shows full text. Picked cards become canon beats; unpicked become ghosts (fork warning on later pick).
 - Steer composer modes (segmented control): **Steer** (OOC note) · **In-character** (role selector + input) · comment-style quick chips ("faster pace", "raise stakes").
 - Floor indicator: avatar + name + "speaking…" / "next" + burst counter + abort/pause/skip.
 
@@ -1048,8 +1049,8 @@ Behavior spec:
 | Class | Layout | Panels |
 |---|---|---|
 | Phone portrait ≤ 480px | Single column thread; options and role cards in **bottom sheets**; thumb-zone action bar; safe-area insets; swipe right on beat → actions | Inspector = full-screen sheet |
-| Phone landscape / foldable 481–768px | Dense single column, collapsible header | Inspector = side sheet |
-| Tablet 769–1200px | Two panes: cast \| thread | Inspector slides over |
+| Phone landscape / foldable 481 to 768px | Dense single column, collapsible header | Inspector = side sheet |
+| Tablet 769 to 1200px | Two panes: cast \| thread | Inspector slides over |
 | Desktop ≥ 1201px | Three panes: scenes/cast · thread (max-width reading column ~72ch) · inspector (branch map, memory, prompts, usage tabs) | All inline |
 | Ultrawide 21:9+ | Same three panes; thread column stays max-width, side panes absorb extra width | All inline |
 
@@ -1057,7 +1058,7 @@ Container queries for role cards and option cards (they appear in grids, sheets,
 
 ### 9.8 Interaction craft inventory
 
-- Optimistic updates: pick option, edit note, mute/pin fact, reorder roles — all paint immediately, reconcile via subscriptions.
+- Optimistic updates: pick option, edit note, mute/pin fact, reorder roles, all paint immediately, reconcile via subscriptions.
 - Skeletons for: cast generation, options, thread load, map load. Streaming caret with reduced-motion fallback (pulse → static).
 - Smart autoscroll: stick-to-bottom when user is at bottom; otherwise show "Jump to latest" pill (⌘J).
 - Undo toasts after every reversible action (sonner, with ⌘Z binding for last action).
@@ -1074,7 +1075,7 @@ Container queries for role cards and option cards (they appear in grids, sheets,
 | Options | inline skeletons | "Offer paths" button | inline retry | queued until reconnect | banner |
 | Map / inspector | lazy skeleton | "no branches yet" | panel-level boundary | cached | banner |
 
-### 9.10 Horizon 2–3 UX additions (planned; detailed in §12.11–12.12)
+### 9.10 Horizon 2 to 3 UX additions (planned; detailed in §12.11 to 12.12)
 
 - **Seats strip** (H2): player avatars beside the floor indicator; "Your turn" wait state; pass/hand-off affordances; invite sheet.
 - **Spectator shell** (H2): `/share/[token]` becomes a live watch view with presence, reactions off by default, and zero mutate affordances.
@@ -1085,7 +1086,7 @@ Container queries for role cards and option cards (they appear in grids, sheets,
 
 ---
 
-## 10. Feature checklist — Milestone 1 · v1.0 (Horizon 1) → surfaces & phases
+## 10. Feature checklist. Milestone 1 · v1.0 (Horizon 1) → surfaces & phases
 
 > The checklist for the **final** product (all horizons) is §17.2.
 
@@ -1125,25 +1126,25 @@ Container queries for role cards and option cards (they appear in grids, sheets,
 | E2E | Playwright (multi-context, fake gateway, deterministic timing) | §11.5 scenarios |
 | A11y | axe-core (Playwright) | keyboard walkthroughs, contrast, focus |
 
-**Fake gateway** (`convex/lib/fakeGateway.ts`): deterministic canned streams (configurable token delay), scripted failures (500 / timeout / mid-stream drop), fixture casts. Enabled via env `FABULA_MODEL_FAKE=1` — the E2E suite never calls real models. Real-model smoke tests run nightly behind a flag.
+**Fake gateway** (`convex/lib/fakeGateway.ts`): deterministic canned streams (configurable token delay), scripted failures (500 / timeout / mid-stream drop), fixture casts. Enabled via env `FABULA_MODEL_FAKE=1`, the E2E suite never calls real models. Real-model smoke tests run nightly behind a flag.
 
 ### 11.2 TDD protocol per sub-phase
 
-1. Write the test slate (listed in §12 per sub-phase) — all red.
+1. Write the test slate (listed in §12 per sub-phase), all red.
 2. Implement minimum to green.
 3. Refactor; keep goldens updated only with review note.
 4. Coverage floors: ≥85% lines on `convex/compiler`, `convex/domain`, `convex/lib`, `convex/shared` (the correctness core). No global floor.
 
 ### 11.3 Backend integration suites (convex-test, mandatory)
 
-- `branchLaws.test.ts` — extend-vs-fork matrix for pick/edit/regenerate incl. root-opener forks; originals preserved; invariants 1–7.
-- `projection.test.ts` — path projection, summary collapse, private visibility per role, global pins.
-- `leak.test.ts` — §6.4, all modes, both directions.
-- `orchestration.test.ts` — floor priority, reactives, tiers (background speaks only when mentioned/affected), burst gate, stalls.
-- `runs.test.ts` — single run lock, abort keep/discard→artifact, retries/backoff, watchdog.
-- `shareAccess.test.ts` — viewer cannot mutate; director can; revocation; expired token.
-- `usage.test.ts` — ledger → rollup math, pricing table application.
-- `exportScene.test.ts` — JSON lossless for the tree; markdown structure snapshot.
+- `branchLaws.test.ts`, extend-vs-fork matrix for pick/edit/regenerate incl. root-opener forks; originals preserved; invariants 1 to 7.
+- `projection.test.ts`, path projection, summary collapse, private visibility per role, global pins.
+- `leak.test.ts`, §6.4, all modes, both directions.
+- `orchestration.test.ts`, floor priority, reactives, tiers (background speaks only when mentioned/affected), burst gate, stalls.
+- `runs.test.ts`, single run lock, abort keep/discard→artifact, retries/backoff, watchdog.
+- `shareAccess.test.ts`, viewer cannot mutate; director can; revocation; expired token.
+- `usage.test.ts`, ledger → rollup math, pricing table application.
+- `exportScene.test.ts`. JSON lossless for the tree; markdown structure snapshot.
 
 ### 11.4 Branch isolation leak test (the crown jewel)
 
@@ -1161,11 +1162,11 @@ Covered in §6.4. Two execution forms: pure/compiler test and convex-test integr
 | E2E-06 | Failure isolation | gateway 500 mid-scene → beat `failed`, tree intact, retry forks cleanly; abort → artifact, not canon |
 | E2E-07 | Share links | viewer link sees live stream read-only, cannot mutate; director link can pick |
 | E2E-08 | Responsive | 320px: bottom-sheet options; 1440px: three panes; keyboard-only walkthrough of pick/steer/mention |
-| E2E-09 | Palette & shortcuts | ⌘K opens; ⌥1–4 picks; ⌘. aborts; shortcuts dialog lists all |
+| E2E-09 | Palette & shortcuts | ⌘K opens; ⌥1 to 4 picks; ⌘. aborts; shortcuts dialog lists all |
 
 ### 11.6 Terminology lint
 
-`scripts/check-terminology.ts` greps user-facing strings (src/components, src/app, README excerpt) for forbidden UX words `thread`, `agent` (case-insensitive, allowlisted identifiers) — fails CI. Keeps the product language honest.
+`scripts/check-terminology.ts` greps user-facing strings (src/components, src/app, README excerpt) for forbidden UX words `thread`, `agent` (case-insensitive, allowlisted identifiers), fails CI. Keeps the product language honest.
 
 ### 11.7 Performance checks
 
@@ -1175,11 +1176,11 @@ Covered in §6.4. Two execution forms: pure/compiler test and convex-test integr
 
 ---
 
-## 12. Execution plan — Horizon 1 (Phases 0–8, v1.0) + Horizons 2–3 (§12.11–12.12)
+## 12. Execution plan. Horizon 1 (Phases 0 to 8, v1.0) + Horizons 2 to 3 (§12.11 to 12.12)
 
-Estimates are agent-days (assume one focused agent-day = a solid sub-agent work block). With the wave parallelism in §12.10, wall-clock ≈ 55–60% of the sum. Horizons 2–3 repeat the same discipline (spike → freeze → build → harden → accept) at their own kickoff.
+Estimates are agent-days (assume one focused agent-day = a solid sub-agent work block). With the wave parallelism in §12.10, wall-clock ≈ 55 to 60% of the sum. Horizons 2 to 3 repeat the same discipline (spike → freeze → build → harden → accept) at their own kickoff.
 
-### Phase 0 — Foundation & contracts (Owner: A0 + A8; 4–6d)
+### Phase 0 Foundation & contracts (Owner: A0 + A8; 4 to 6d)
 
 | Sub | Task | Tests first |
 |---|---|---|
@@ -1193,7 +1194,7 @@ Estimates are agent-days (assume one focused agent-day = a solid sub-agent work 
 
 **Gate G0:** `pnpm check` green (typecheck+lint+unit+convex-test), streaming spike proven, contracts frozen for Wave 1, `docker compose up` smoke green.
 
-### Phase 1 — Domain core & branch laws (Owner: A1; 5–7d)
+### Phase 1 Domain core & branch laws (Owner: A1; 5 to 7d)
 
 | Sub | Task | Tests first |
 |---|---|---|
@@ -1207,7 +1208,7 @@ Estimates are agent-days (assume one focused agent-day = a solid sub-agent work 
 
 **Gate G1:** branch laws + leak + access suites green; invariants asserted everywhere.
 
-### Phase 2 — Generation engine (Owner: A2 + A3; started Wave 1 for pure compiler; 8–10d)
+### Phase 2 Generation engine (Owner: A2 + A3; started Wave 1 for pure compiler; 8 to 10d)
 
 | Sub | Task | Tests first |
 |---|---|---|
@@ -1223,7 +1224,7 @@ Estimates are agent-days (assume one focused agent-day = a solid sub-agent work 
 
 **Gate G2:** all backend suites green with fake gateway; every generation writes a snapshot; budget invariants proven.
 
-### Phase 3 — App shell & design system (Owner: A4; 4–5d)
+### Phase 3 App shell & design system (Owner: A4; 4 to 5d)
 
 | Sub | Task | Tests first |
 |---|---|---|
@@ -1235,7 +1236,7 @@ Estimates are agent-days (assume one focused agent-day = a solid sub-agent work 
 
 **Gate G3:** shell navigable 320px→21:9, screenshots archived, keyboard-only pass.
 
-### Phase 4 — Cast generation UX (Owner: A5; 7–8d; starts Wave 2 against fixtures)
+### Phase 4 Cast generation UX (Owner: A5; 7 to 8d; starts Wave 2 against fixtures)
 
 | Sub | Task | Tests first |
 |---|---|---|
@@ -1249,7 +1250,7 @@ Estimates are agent-days (assume one focused agent-day = a solid sub-agent work 
 
 **Gate G4:** E2E-01 green; audition keyboard-complete; generation failures leave the audition usable.
 
-### Phase 5 — Play loop (Owner: A6 + A3; 8–9d)
+### Phase 5 Play loop (Owner: A6 + A3; 8 to 9d)
 
 | Sub | Task | Tests first |
 |---|---|---|
@@ -1263,7 +1264,7 @@ Estimates are agent-days (assume one focused agent-day = a solid sub-agent work 
 
 **Gate G5:** E2E-02/03 green; 60fps trace; streaming resume proven with no duplicates.
 
-### Phase 6 — Branch & meta surfaces (Owner: A6/A7 + A3; 6–8d)
+### Phase 6 Branch & meta surfaces (Owner: A6/A7 + A3; 6 to 8d)
 
 | Sub | Task | Tests first |
 |---|---|---|
@@ -1278,7 +1279,7 @@ Estimates are agent-days (assume one focused agent-day = a solid sub-agent work 
 
 **Gate G6:** E2E-04 green; map lazy-loaded; inspector works for every generation type.
 
-### Phase 7 — Archive & share (Owner: A7; 4–5d)
+### Phase 7 Archive & share (Owner: A7; 4 to 5d)
 
 | Sub | Task | Tests first |
 |---|---|---|
@@ -1289,7 +1290,7 @@ Estimates are agent-days (assume one focused agent-day = a solid sub-agent work 
 
 **Gate G7:** E2E-07 green; exports open cleanly in a fresh browser tab and in `jq`.
 
-### Phase 8 — Hardening & acceptance (Owner: A0 + A8 + A9; 5–6d)
+### Phase 8 Hardening & acceptance (Owner: A0 + A8 + A9; 5 to 6d)
 
 | Sub | Task | Tests first |
 |---|---|---|
@@ -1307,8 +1308,8 @@ Estimates are agent-days (assume one focused agent-day = a solid sub-agent work 
 
 ```
 Wave 0: [A0+A8  P0 foundation & contracts] ──────────────────────────► G0
-Wave 1: [A1 P1 domain] [A2 2.1–2.2 compiler+budget] [A4 P3 shell] [A8 harness] ─► G1
-Wave 2: [A1 P1 tail] [A2 2.3–2.9 engine] [A3 orchestration core] [A5 P4 cast UX (fixtures)] [A4 polish]
+Wave 1: [A1 P1 domain] [A2 2.1 to 2.2 compiler+budget] [A4 P3 shell] [A8 harness] ─► G1
+Wave 2: [A1 P1 tail] [A2 2.3 to 2.9 engine] [A3 orchestration core] [A5 P4 cast UX (fixtures)] [A4 polish]
 Wave 3: [A3 memory+director integration] [A5 P4 real-backend] [A6 P5 play loop] [A2 hardening] ─► G2, G4
 Wave 4: [A6 A7 P6 branches+meta surfaces] [A3 leak/E2E support] [A7 P7 archive/share] ─► G6, G7
 Wave 5: [A0+A8 P8 hardening] [A9 docs] [acceptance run] ─► G8 / v1.0.0
@@ -1316,9 +1317,9 @@ Wave 5: [A0+A8 P8 hardening] [A9 docs] [acceptance run] ─► G8 / v1.0.0
 
 Dependency DAG (hard edges): G0 → everything; P1.3 → P1.4/1.5; 2.1 → 2.3+; 2.3 → P5.2; P1 → P4 real-backend swap; 2.6/2.7 → P5.3/5.4; P1.3 → P6; P5/P6 → E2E suite completion; all → P8.
 
-### 12.11 Horizon 2 — v1.5 "The Living Room" (Phases 9–11)
+### 12.11 Horizon 2, v1.5 "The Living Room" (Phases 9 to 11)
 
-**Phase 9 — Multi-human co-play & spectators** (Owner: A10 + A1/A3; 6–8d)
+**Phase 9. Multi-human co-play & spectators** (Owner: A10 + A1/A3; 6 to 8d)
 
 | Sub | Task | Tests first |
 |---|---|---|
@@ -1328,33 +1329,33 @@ Dependency DAG (hard edges): G0 → everything; P1.3 → P1.4/1.5; 2.1 → 2.3+;
 | 9.4 | Spectator mode: viewer links become live spectator seats; presence-rich; promote/demote player↔spectator by host | access matrix; live updates reach spectators; zero mutate affordances |
 | 9.5 | Multi-director reconciliation: run-lock holder display, request-floor, soft takeover | two-director concurrency tests; serialized generations; lock state visible |
 
-**Gate H2-9:** E2E-H2-01 — 2 humans + 3 AI + 1 spectator full scene; floors alternate correctly; spectator sees live, cannot mutate; private notes never leak.
+**Gate H2-9:** E2E-H2-01 covers a scene with 2 humans + 3 AI + 1 spectator; floors alternate correctly; the spectator sees live and cannot mutate; private notes never leak.
 
-**Phase 10 — Secret knowledge & crowd casts** (Owner: A1 + A3; 5–7d)
+**Phase 10. Secret knowledge & crowd casts** (Owner: A1 + A3; 5 to 7d)
 
 | Sub | Task | Tests first |
 |---|---|---|
 | 10.1 | Private facts end-to-end: memory agent emits `visibility`, fact editor UI, per-scope pin/mute | per-role private isolation across **all** modes (leak-suite extension) |
 | 10.2 | Whisper beats: `visibility.roleIds` subsets; collapsed rendering for unentitled viewers; branch-law compatible (visibility ≠ branch) | render/filter tests; ghosts & forks preserve visibility |
-| 10.3 | Crowd mode (7–8): spotlight-window policy (≤3 spotlight speakers per beat window), mentioned-only interjectors, aggressive compaction preset, cost guardrails | 8-role soak: no single role dominates; background = mentioned-only; budget invariants hold |
+| 10.3 | Crowd mode (7 to 8): spotlight-window policy (≤3 spotlight speakers per beat window), mentioned-only interjectors, aggressive compaction preset, cost guardrails | 8-role soak: no single role dominates; background = mentioned-only; budget invariants hold |
 | 10.4 | Casting at capacity: constraint checks scaled for 8-role graphs; tier auto-assignment updated | 8-role casting fixtures; all §7.4 constraints hold |
 
 **Gate H2-10:** 8-role crowd soak + secrets-never-leak suite green.
 
-**Phase 11 — Deep branching** (Owner: A6 + A7; 4–6d)
+**Phase 11. Deep branching** (Owner: A6 + A7; 4 to 6d)
 
 | Sub | Task | Tests first |
 |---|---|---|
 | 11.1 | Compare two branches side-by-side (graduate `FABULA_FF_COMPARE`): aligned columns, divergence marker, per-path fact diff | alignment/divergence tests; read-only review |
 | 11.2 | Branch rename / annotate / bookmark; branch notes in map; text search across branches | metadata CRUD; map reflects; search |
-| 11.3 | Director merge tool: explicitly bring a fact from branch B into branch A's canon (audited, undoable, marked "merged" — a documented explicit override like ADR-001) | merge logged + inverse; leak suite updated with merge semantics (ADR-003) |
+| 11.3 | Director merge tool: explicitly bring a fact from branch B into branch A's canon (audited, undoable, marked "merged", a documented explicit override like ADR-001) | merge logged + inverse; leak suite updated with merge semantics (ADR-003) |
 | 11.4 | Replay scrubber: scrub/step the active path with animated replay | perf on 200-beat scrub; reduced-motion variant |
 
 **Gate H2-11:** compare + merge acceptance; leak suite green under merge semantics.
 
-### 12.12 Horizon 3 — v2.0 final "Voices & Community" (Phases 12–14)
+### 12.12 Horizon 3, v2.0 final "Voices & Community" (Phases 12 to 14)
 
-**Phase 12 — Voice & audio** (Owner: A11 + A2; 7–9d)
+**Phase 12. Voice & audio** (Owner: A11 + A2; 7 to 9d)
 
 | Sub | Task | Tests first |
 |---|---|---|
@@ -1363,9 +1364,9 @@ Dependency DAG (hard edges): G0 → everything; P1.3 → P1.4/1.5; 2.1 → 2.3+;
 | 12.3 | Playback UX: per-beat play; **Radio mode** (continuous scene playback incl. live new beats); per-role speed/pitch; synced captions | radio queue ordering under branching/switching; caption a11y; interruption semantics |
 | 12.4 | Voice input (STT) for steers & in-character lines (flag-gated) | mocked STT; permission prompts; same mutation surface |
 
-**Gate H3-12:** E2E-H3-01 — radio mode plays a 20-beat scene continuously, voice stable across a branch switch; text path unaffected by audio failures.
+**Gate H3-12:** E2E-H3-01, radio mode plays a 20-beat scene continuously, voice stable across a branch switch; text path unaffected by audio failures.
 
-**Phase 13 — Community & gallery** (Owner: A12 + A1; 6–8d)
+**Phase 13. Community & gallery** (Owner: A12 + A1; 6 to 8d)
 
 | Sub | Task | Tests first |
 |---|---|---|
@@ -1375,9 +1376,9 @@ Dependency DAG (hard edges): G0 → everything; P1.3 → P1.4/1.5; 2.1 → 2.3+;
 | 13.4 | Moderation: report button, review queue, takedown (removes from gallery, never from the owner's drive) | report flow; takedown scope tests |
 | 13.5 | Director analytics (optional): per-scene stats, usage trends | aggregation correctness |
 
-**Gate H3-13:** E2E-H3-02 — publish → discover → remix → play; moderation takedown works.
+**Gate H3-13:** E2E-H3-02, publish → discover → remix → play; moderation takedown works.
 
-**Phase 14 — Platform completion** (Owner: A4 + A12; 5–7d)
+**Phase 14. Platform completion** (Owner: A4 + A12; 5 to 7d)
 
 | Sub | Task | Tests first |
 |---|---|---|
@@ -1389,7 +1390,7 @@ Dependency DAG (hard edges): G0 → everything; P1.3 → P1.4/1.5; 2.1 → 2.3+;
 
 **Gate H3-14 (FINAL):** §17.2 fully green → tag `v2.0.0`. The app is complete.
 
-**Horizon discipline:** each horizon repeats the wave choreography of §12.10 (spike → freeze contracts → parallel build → integration → hardening → acceptance). Horizons 2–3 kick off with their own mini-Phase-0 spikes listed in §19.2–19.3.
+**Horizon discipline:** each horizon repeats the wave choreography of §12.10 (spike → freeze contracts → parallel build → integration → hardening → acceptance). Horizons 2 to 3 kick off with their own mini-Phase-0 spikes listed in §19.2 to 19.3.
 
 ---
 
@@ -1448,7 +1449,7 @@ Dependency DAG (hard edges): G0 → everything; P1.3 → P1.4/1.5; 2.1 → 2.3+;
 
 **Mutations:** `scenes.create/update/rename/setStatus(pause·resume)` [A1] · `scenes.endScene(sceneId)` (wrap: freeze + final summary + reversible) [A1] (Phase 7, ADR-008) · `cast.upsertDraftRole/updateDraft/reviseRole(effectiveFrom)/retire/restore/reorder/setTier/setLocks` [A1] · `candidates.pick(shareToken?)/dismiss` [A1] (Phase 7, ADR-008) · `beats.editFork/regenerateFork/pin/keepArtifact` [A1] · `branches.setActive/rename` [A1] · `directorNotes.add/resolve` [A1] · `facts.pin/mute/unmute/addUserFact` [A1] · `warnings.dismiss(warningId)` [A1] (Phase 6, ADR-007) · `actions.undoLast` [A1] · `shares.create/revoke` [A1] · `claim.claimScene` [A1] · `director.queueRole/forceMention/stealFloor` [A3].
 
-All Phase 7 story mutations additionally pass `assertSceneMutable` (archived scenes are story-immutable; share/export/undo stay allowed — ADR-008).
+All Phase 7 story mutations additionally pass `assertSceneMutable` (archived scenes are story-immutable; share/export/undo stay allowed. ADR-008).
 
 **Actions:** `generation.startTurn/abort/retry` [A2] · `generation.offerOptions` [A2] · `generation.castDraft/regenField/regenRole/regenCast` [A2] · `generation.opening.draft` [A2] (Phase 4 audition preview, ADR-004) · `generation.regenerate.beat` [A2] (Phase 5 streamed fork, ADR-005) · `generation.sampleLine/avatar` [A2] · `generation.openingBeat` [A2] · internal scheduled: `generation.memoryPass` [A3], `generation.directorDecide` [A3] · crons: `crons.watchdog/rollups` [A2].
 
@@ -1471,14 +1472,14 @@ NEXT: <suggested next sub-phase>
 - Trunk-based; one branch per agent per sub-phase; PRs require: typecheck, lint, unit+convex-test, affected E2E; A8 reviews test quality; A0 merges.
 - Feature flags (`FABULA_FF_COMPARE`, `FABULA_FF_PRESENCE`, `NEXT_PUBLIC_FIXTURES`) keep `main` demoable at all times.
 - Any schema/contract change after G0: ADR + coordinated bump; never silent.
-- UI agents consume only §13.4 names + `convex/shared/contracts.ts`; if a name is missing, request it — never invent a parallel API.
+- UI agents consume only §13.4 names + `convex/shared/contracts.ts`; if a name is missing, request it, never invent a parallel API.
 
 ### 13.7 Agent briefing template (copy-paste to spawn a sub-agent)
 
 ```
 You are agent <ID> (<Name>) on Fabula. Read ~/projects/apps/fabula/PLAN.md
 sections: §<list>. Your owned paths: <from §13.2>. Frozen contracts you may
-rely on: §13.3–13.4. Your assignment: Phase <n>, sub-phases <list>.
+rely on: §13.3 to 13.4. Your assignment: Phase <n>, sub-phases <list>.
 
 Work TDD: write the test slate first (listed in §12 for your sub-phase),
 then implement to green, then refactor. Use only the libraries in §3.
@@ -1487,8 +1488,7 @@ orchestrator. Keep user-facing language per §1 terminology (no "thread",
 no "agent" in UI). Update docs you own.
 
 Definition of done: sub-phase tests green + gate criteria in §12 + report
-in the §13.5 format. If a frozen contract blocks you, stop and report —
-do not improvise a workaround.
+in the §13.5 format. If a frozen contract blocks you, stop and report, do not improvise a workaround.
 ```
 
 ---
@@ -1519,7 +1519,7 @@ do not improvise a workaround.
 
 ### 15.1 Env vars
 
-`.env.local` (Next) — public:
+`.env.local` (Next), public:
 
 ```
 NEXT_PUBLIC_CONVEX_URL=
@@ -1540,10 +1540,10 @@ FABULA_PRICING_JSON=                         # optional override {model: {in, ou
 FABULA_MODEL_FAKE=0                          # 1 = deterministic fake gateway (tests/E2E)
 FABULA_E2E_SECRET=                           # dev-only test sign-in guard
 FABULA_MAX_TOKENS_DEFAULT=                   # hard ceiling fallback when model unknown
-TTS_API_KEY=                                 # Horizon 3 (voice) — set at H3 kickoff
+TTS_API_KEY=                                 # Horizon 3 (voice), set at H3 kickoff
 ```
 
-Docker Compose self-host — `docker/.env` (copy from `docker/.env.example`):
+Docker Compose self-host, `docker/.env` (copy from `docker/.env.example`):
 
 ```
 CONVEX_CLOUD_ORIGIN=http://localhost:3210    # backend public origin (your domain in prod)
@@ -1552,11 +1552,12 @@ CONVEX_INSTANCE_SECRET=                      # generate once (openssl rand -base
 POSTGRES_PASSWORD=                           # backend metadata DB
 S3_ENDPOINT_URL= S3_ACCESS_KEY= S3_SECRET_KEY= S3_BUCKET=   # MinIO or any S3-compatible store
 ALLOWED_ORIGINS=                             # CORS: app origin(s)
+ACME_EMAIL= APP_HOST= CONVEX_HOST= CONVEX_SITE_HOST=   # optional TLS overlay (Traefik)
 NEXT_PUBLIC_CONVEX_URL=                      # app → backend origin
 # AI keys from the Convex env block above are injected into the backend service
 ```
 
-The exact variable set is pinned to the chosen `convex-backend` self-host release (verified in Phase 0.5/0.7 — never assume drift). With self-host, deployment env is applied via the Convex dashboard or `npx convex env set` against `CONVEX_SELF_HOSTED_URL` + `CONVEX_SELF_HOSTED_ADMIN_KEY`.
+The exact variable set is pinned to the chosen `convex-backend` self-host release (verified in Phase 0.5/0.7, never assume drift). With self-host, deployment env is applied via the Convex dashboard or `npx convex env set` against `CONVEX_SELF_HOSTED_URL` + `CONVEX_SELF_HOSTED_ADMIN_KEY`.
 
 ### 15.2 Scripts
 
@@ -1570,7 +1571,7 @@ pnpm test:e2e         # playwright (fake gateway + convex local)
 pnpm seed             # seed prompt templates + dev fixtures
 pnpm fixtures         # regenerate UI fixtures from contracts
 pnpm terminology      # forbidden-word lint
-pnpm dc:up            # docker compose up -d — full self-host stack
+pnpm dc:up            # docker compose up -d, full self-host stack
 pnpm dc:logs          # follow stack logs
 pnpm dc:down          # stop the stack
 pnpm selfhost:smoke   # health → sign-in → create scene → one fake turn (any backend URL)
@@ -1583,13 +1584,13 @@ pnpm selfhost:smoke   # health → sign-in → create scene → one fake turn (a
 3. `nightly`: real-model smoke (casting + one turn + options) behind env flag; cost-capped.
 4. `selfhost`: build images → `docker compose up` → health checks → `selfhost:smoke` + Playwright smoke subset (nightly also runs the upgrade/rollback drill from P8.7).
 
-Every backend used in CI is the open-source Convex backend (`convex dev --local` / compose) — there is no managed-only path; self-host parity is exercised on every build.
+Every backend used in CI is the open-source Convex backend (`convex dev --local` / compose), there is no managed-only path; self-host parity is exercised on every build.
 
 ### 15.4 Local development topologies
 
 | Path | Command | When |
 |---|---|---|
-| Fast loop | `pnpm dev` + `pnpm dev:backend` (`convex dev --local` — the open-source backend, no Docker) | day-to-day feature work |
+| Fast loop | `pnpm dev` + `pnpm dev:backend` (`convex dev --local`, the open-source backend, no Docker) | day-to-day feature work |
 | Parity loop | `pnpm dc:up` (`docker-compose.dev.yml`: hot-reload app + pin-matched backend/dashboard/postgres/S3) | before PRs touching infra, auth, storage, streaming |
 | Test loop | Playwright with fake gateway against the local backend | CI + E2E |
 
@@ -1602,13 +1603,13 @@ Every backend used in CI is the open-source Convex backend (`convex dev --local`
 | `convex-dashboard` | official dashboard image | operator console (env, logs, data, schedules) | expose on admin network/localhost only |
 | `postgres` | `postgres:16` (or external managed PG) | backend metadata | named volume + backups |
 | `s3` | MinIO (or external S3-compatible) | avatars, audio exports (H3), files | named volume + lifecycle policy |
-| `caddy` (optional) | `caddy` | TLS + reverse proxy for single-VM deploys | Caddyfile in `docker/` |
+| `traefik` (optional) | `traefik:v3.x` (pinned) | TLS termination + reverse proxy for single-VM deploys | routes the app, the Convex API and the HTTP actions host; Let's Encrypt via HTTP-01; config in `docker-compose.tls.yml` |
 
 Containers run non-root, with healthchecks, resource limits, and pinned tags (no `latest`). All AI API keys flow only into `convex-backend` env; the app layer holds no provider secrets.
 
 ### 15.6 Self-host runbook (shipped as `docker/README.md`, completed in P8.7)
 
-- Prereqs: Linux VM (2 vCPU / 4 GB RAM to start), Docker + Compose plugin, a domain (optional TLS via Caddy).
+- Prereqs: Linux VM (2 vCPU / 4 GB RAM to start), Docker + Compose plugin, a domain (optional TLS via the Traefik overlay).
 - First run: copy `docker/.env.example` → `docker/.env`, set secrets + origins, `pnpm dc:up`, run `pnpm selfhost:smoke`.
 - Deploy code: `npx convex deploy` against the self-hosted backend (`CONVEX_SELF_HOSTED_URL` + `CONVEX_SELF_HOSTED_ADMIN_KEY`) + pull the new app image.
 - Backup: `pg_dump` (metadata) + object-store sync (files); documented restore + rollback (pin back old image tags).
@@ -1616,7 +1617,7 @@ Containers run non-root, with healthchecks, resource limits, and pinned tags (no
 
 ### 15.7 Deployment parity law
 
-The open-source Convex backend is the **reference target**: every feature (Agent component threads/streams, Convex Auth, file storage, scheduling, crons) must pass CI against it. Convex Cloud remains supported as a convenience deployment — same code, same schema — but no feature may depend on Cloud-only behavior. Postgres and S3 may be internal (compose) or external managed services. The only hard external dependencies are AI provider APIs, swappable via the model gateway (§3.3).
+The open-source Convex backend is the **reference target**: every feature (Agent component threads/streams, Convex Auth, file storage, scheduling, crons) must pass CI against it. Convex Cloud remains supported as a convenience deployment, same code, same schema, but no feature may depend on Cloud-only behavior. Postgres and S3 may be internal (compose) or external managed services. The only hard external dependencies are AI provider APIs, swappable via the model gateway (§3.3).
 
 ---
 
@@ -1625,9 +1626,9 @@ The open-source Convex backend is the **reference target**: every feature (Agent
 ### 16.1 README.md (outline, final content written by A9)
 
 1. What Fabula is (concept, all-AI cast, director's chair) + hero screenshot.
-2. Quickstart — local dev first, then `docker compose up` self-host in one command (env vars, seed, run).
+2. Quickstart, local dev first, then `docker compose up` self-host in one command (env vars, seed, run).
 3. How streaming & resume work (Agent component threads, `saveStreamDeltas`, `useUIMessages({stream:true})`, reconciliation model).
-4. Branch laws (L1–L6 table) + what forking means in the UI.
+4. Branch laws (L1, L6 table) + what forking means in the UI.
 5. Memory projection (path-scoped facts/summaries, global pins, leak-test guarantee).
 6. Prompt blocks (8-block table + budget policy) and prompt inspector.
 7. Orchestration modes (floor algorithm, tiers, burst, branch cadence).
@@ -1635,7 +1636,7 @@ The open-source Convex backend is the **reference target**: every feature (Agent
 9. Testing (how to run, fake gateway, E2E scenarios table).
 10. Glossary (UX term ↔ code term, incl. "thread is internal").
 11. Roadmap: horizons H1/H2/H3, what v1.0 already ships, what H2/H3 add (§1.3).
-12. Self-hosting & operations: compose topology, env reference, upgrades/backups/rollback, TLS (§15.5–15.7, `docker/README.md`).
+12. Self-hosting & operations: compose topology, env reference, upgrades/backups/rollback, TLS (§15.5 to 15.7, `docker/README.md`).
 
 ### 16.2 docs/*
 
@@ -1645,7 +1646,7 @@ The open-source Convex backend is the **reference target**: every feature (Agent
 
 ## 17. Acceptance checklists
 
-### 17.1 Milestone 1 · v1.0 (Horizon 1) — evidence links required
+### 17.1 Milestone 1 · v1.0 (Horizon 1), evidence links required
 
 | # | Criterion | Verified by |
 |---|---|---|
@@ -1693,11 +1694,11 @@ The open-source Convex backend is the **reference target**: every feature (Agent
 - No custom websockets, no polling, no REST CRUD layer.
 - No offline-first **editing** (realtime + reconnect UX instead; offline reading arrives in H3).
 - Meta-agents never speak in-fiction.
-- Nothing is ever destroyed — no destructive story mutations, at any horizon.
+- Nothing is ever destroyed, no destructive story mutations, at any horizon.
 - No cross-scene fact sharing: remixes **copy**; facts stay scene-scoped forever.
-- No hand-rolled virtualization/markdown/dnd/graph-layout/streaming/URL-state/dialog primitives — libraries only (§3).
+- No hand-rolled virtualization/markdown/dnd/graph-layout/streaming/URL-state/dialog primitives, libraries only (§3).
 
-### 18.2 Deferred beyond v1.0 — scheduled, not cut (Horizons 2–3)
+### 18.2 Deferred beyond v1.0, scheduled, not cut (Horizons 2 to 3)
 
 | Deferred from v1.0 | Lands in |
 |---|---|
@@ -1717,7 +1718,7 @@ Ideas only, no plan: native mobile apps, marketplace/monetization, third-party r
 
 ## 19. Verification spikes
 
-### 19.1 Horizon 1 — resolve before/at G0
+### 19.1 Horizon 1, resolve before/at G0
 
 1. Exact `@convex-dev/agent` API for: thread creation, streaming with `saveStreamDeltas`, `streamArgs`+`syncStreams` client consumption, abort semantics; pin the version.
 2. Convex Auth anonymous sign-in → upgrade/claim flow shape (or ADR to Clerk with anonymous-friendly claim).
@@ -1725,7 +1726,7 @@ Ideas only, no plan: native mobile apps, marketplace/monetization, third-party r
 4. AI SDK structured-output support per chosen provider/model for the casting schema size (fallback: tool-call mode).
 5. Image-generation provider for avatars + Convex file storage flow (or ship gradient+monogram only behind env flag).
 6. Convex local deployment for CI + Playwright orchestration (`convex dev --local`).
-7. Tokenizer availability per provider (fallback chars/4 estimator — document accuracy expectations).
+7. Tokenizer availability per provider (fallback chars/4 estimator, document accuracy expectations).
 8. Confirm `roleRevisions.card` typed-any decision (ADR-002) or find a validator-friendly encoding.
 9. **Self-host parity spike (P0.7):** pin the `convex-backend` self-host release; verify Agent component streams, Convex Auth, file storage, scheduling, and crons behave identically; finalize the compose service matrix + env set + healthchecks.
 
@@ -1746,7 +1747,7 @@ Ideas only, no plan: native mobile apps, marketplace/monetization, third-party r
 
 ---
 
-## Appendix A — Genre preset seeds (v1)
+## Appendix A. Genre preset seeds (v1)
 
 | Preset | Premise seed | Cast skeleton (suggested) | Tone defaults |
 |---|---|---|---|
@@ -1759,13 +1760,13 @@ Ideas only, no plan: native mobile apps, marketplace/monetization, third-party r
 
 Each preset seeds: premise, genre/era, tone dials, cast size, role skeletons (names empty, hooks pre-filled), presentation style, and a starter director note.
 
-## Appendix B — Keymap (registry IDs frozen at G0)
+## Appendix B. Keymap (registry IDs frozen at G0)
 
 | Keys | Action ID | Where |
 |---|---|---|
 | ⌘K / Ctrl K | `palette.open` | global |
 | ⌘J | `thread.jumpToLatest` | play |
-| ⌥1–4 | `options.pick.1..4` | play (options visible) |
+| ⌥1 to 4 | `options.pick.1..4` | play (options visible) |
 | ⌘⏎ | `composer.send` | composer |
 | ⌘⇧O | `options.offer` | play |
 | ⌘. | `generation.abort` | while streaming |
@@ -1776,14 +1777,14 @@ Each preset seeds: premise, genre/era, tone dials, cast size, role skeletons (na
 | Esc | context close / cancel compose | global sheets/dialogs |
 | ? | `shortcuts.dialog` | global |
 
-## Appendix C — Model & cost configuration
+## Appendix C. Model & cost configuration
 
 - Logical tiers (`spotlight`/`standard`/`cheap`) resolve via `FABULA_MODEL_*` env → concrete `provider/model` in `lib/models.ts`; per-role override on the card.
 - Attendance rules: options = spotlight (parallel ≤4); casting = spotlight; field/role regen = standard; sample lines = standard; director meta + memory + summaries + facts = cheap; background roles = cheap + condensed prompt.
 - Pricing: `lib/pricing.ts` table (USD per 1M in/out) + `FABULA_PRICING_JSON` override; `sceneUsage` rollup drives the meter; UI labels numbers "estimated".
 - Budget guard: soft USD cap per scene (setting) → metered warning banner at 80% / 100%; generation never hard-blocked in v1 (user override), decision logged.
 
-## Appendix D — Glossary (UX ↔ code)
+## Appendix D. Glossary (UX ↔ code)
 
 | UX word | Code term | Notes |
 |---|---|---|
@@ -1793,6 +1794,6 @@ Each preset seeds: premise, genre/era, tone dials, cast size, role skeletons (na
 | Branch | `branches` | forked from a beat; never destructive |
 | Floor | `domain/orchestrate` + `generationRuns` | who generates next |
 | Meta-agents | `casting` / `director` / `memory` action modules | never in-fiction |
-| Thread | Agent component thread | **internal only — never in UX copy** |
+| Thread | Agent component thread | **internal only, never in UX copy** |
 | Artifact | `beats.isArtifact` | aborted/discarded partials; stored, not canon |
 | Global pin | `facts.isPinned` | explicit director override of path scoping (§6.3, ADR-001) |

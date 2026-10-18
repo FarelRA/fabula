@@ -2,7 +2,7 @@ import { mkdirSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 
 /**
- * App shell E2E (Phase 3 / Gate G3):
+ * App shell E2E:
  *  - boots dark-first
  *  - keyboard-only walkthrough: skip link → main, "?" shortcuts, ⌘/Ctrl+K palette
  *  - responsive screenshots archived to docs/screenshots/ (320 → 2560)
@@ -68,7 +68,7 @@ test.describe("app shell", () => {
     await expect(paletteInput).toBeHidden();
   });
 
-  test("responsive screenshots 320 → 2560 (Gate G3 evidence)", async ({ page }, testInfo) => {
+  test("responsive screenshots 320 → 2560", async ({ page }, testInfo) => {
     test.skip(
       testInfo.project.name !== "chromium-desktop",
       "Responsive evidence is captured once on the desktop profile.",

@@ -12,7 +12,7 @@ import { installDomShims } from "./testUtils";
 installDomShims();
 
 /**
- * Route boundaries (Phase 8.3): every surface recovers with a retry wired to
+ * Route boundaries: every surface recovers with a retry wired to
  * Next's `reset`, plus a way home. Copy never implies story data was lost.
  */
 

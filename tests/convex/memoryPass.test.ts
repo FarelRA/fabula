@@ -4,7 +4,7 @@ import { api, internal } from "../../convex/_generated/api";
 import { makeCard, makeT, makeUser, seedScene } from "./helpers";
 
 /**
- * Memory agent (PLAN Phase 2.6): summary cadence, fact extraction with
+ * Memory agent: summary cadence, fact extraction with
  * dedupe, continuity warnings, snapshot provenance for each product.
  */
 

@@ -105,7 +105,7 @@ function TextAreaField({
 }
 
 /**
- * The one role editor (PLAN §9.5): RHF + zod, shared by AI and human roles and
+ * The one role editor: RHF + zod, shared by AI and human roles and
  * opened from any field's pencil (the initial field is emphasized).
  */
 export function RoleEditorSheet({

@@ -7,7 +7,7 @@ function roleLabel(storyRole: string): string {
   return storyRole.slice(0, 1).toUpperCase() + storyRole.slice(1);
 }
 
-/** Template gallery (PLAN §9.2): six Appendix-A seeds, one click to setup. */
+/** Template gallery: six Appendix-A seeds, one click to setup. */
 export function TemplateGallery() {
   return (
     <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
@@ -36,8 +36,8 @@ export function TemplateGallery() {
               <ul className="mt-1.5 space-y-1">
                 {preset.skeleton.map((role) => (
                   <li key={`${preset.id}-detail-${role.hook}`}>
-                    <span className="text-foreground">{roleLabel(role.storyRole)}</span> —{" "}
-                    {role.hook}
+                    <span className="text-foreground">{roleLabel(role.storyRole)}</span>
+                    <span className="block text-muted-foreground">{role.hook}</span>
                   </li>
                 ))}
               </ul>

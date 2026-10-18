@@ -5,9 +5,9 @@ import { nowMs } from "./lib/time";
 import { projectPath } from "./lib/path";
 
 /**
- * Rolling summaries (PLAN §3.4). Written by the memory agent (internal),
+ * Rolling summaries. Written by the memory agent (internal),
  * projected along the active path: a summary applies iff the beat it ends on
- * is on the path — switching branches instantly switches summaries too.
+ * is on the path, switching branches instantly switches summaries too.
  */
 
 export const add = internalMutation({

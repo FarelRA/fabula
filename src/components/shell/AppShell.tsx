@@ -23,7 +23,7 @@ import { DEFAULT_KEYMAP, formatKey } from "@/lib/keymap";
 import { useUiStore } from "@/stores/ui";
 
 /**
- * Responsive app shell (PLAN §9.7, Phase 3.2).
+ * Responsive app shell.
  *
  * Desktop (≥1201px): left | main | right panes inline.
  * Tablet (≥769px):   left pane inline; the right pane opens as a sheet.
@@ -41,7 +41,7 @@ type AppShellProps = {
   rightPane?: React.ReactNode;
   leftLabel?: string;
   rightLabel?: string;
-  /** Test/override seam — by default the shell detects its own connection. */
+  /** Test/override seam, by default the shell detects its own connection. */
   connection?: ConnectionState;
 };
 

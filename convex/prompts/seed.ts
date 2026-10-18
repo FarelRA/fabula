@@ -4,7 +4,7 @@ import { DEFAULT_TEMPLATES } from "./templates";
 import { templateVars } from "./registry";
 
 /**
- * Template seeding (PLAN §7.8). Idempotent by (key, version): running it any
+ * Template seeding. Idempotent by (key, version): running it any
  * number of times converges to the same state. Public so a fresh dev,
  * self-host or CI deployment can bootstrap without CLI access.
  */
@@ -34,7 +34,7 @@ export const seedV1 = mutation({
         inserted += 1;
       } else {
         // Converge: pre-release v1 content edits update in place. After the
-        // first public release, changes ship as NEW versions (PLAN §7.8).
+        // first public release, changes ship as NEW versions.
         if (existing.content !== template.content || !existing.isActive) {
           await ctx.db.patch(existing._id, {
             content: template.content,

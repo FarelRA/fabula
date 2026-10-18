@@ -3,7 +3,7 @@ import { api } from "../../convex/_generated/api";
 import { asUser, makeCard, makeT, makeUser, seedScene } from "./helpers";
 
 /**
- * Opening draft action (Phase 4.6 / ADR-004): the audition can reroll the
+ * Opening draft action: the audition can reroll the
  * opening before canonizing it, but previews write no beats. Start commits the
  * chosen text through `beats.appendOpening`, which freezes initial role
  * revisions exactly like the streamed opening path.

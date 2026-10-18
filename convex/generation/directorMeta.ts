@@ -10,9 +10,9 @@ import { getGateway } from "../lib/gatewayFactory";
 import { recordEstimatedUsage } from "./record";
 
 /**
- * Director meta-agent (PLAN §7.4, §8.1): decision points, responder
+ * Director meta-agent: decision points, responder
  * ordering, pacing, ending detection. Never writes in-fiction content and
- * never fails the caller — on any error it returns { meta: null } and the
+ * never fails the caller, on any error it returns { meta: null } and the
  * caller falls back to deterministic floor resolution.
  */
 export const decide = internalAction({
@@ -43,7 +43,7 @@ export const decide = internalAction({
       const compiled = compileDirectorPrompt({
         templates: view.templates,
         model: { provider: resolved.provider, modelId: resolved.modelId, ref: resolved.raw },
-        // Recent beats (latest last) — ending detection needs the run-up, not
+        // Recent beats (latest last), ending detection needs the run-up, not
         // just the final line.
         lastBeat: view.chain
           .slice(-3)

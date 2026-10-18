@@ -20,7 +20,7 @@ function messageOf(error: unknown): string {
 }
 
 /**
- * Audition screen container (PLAN §9.5). One component behind all three doors:
+ * Audition screen container. One component behind all three doors:
  * quick start renders it compact, the wizard renders the full grid. It owns
  * transient UI state (editor/sample sheets) while the cast session owns data.
  */

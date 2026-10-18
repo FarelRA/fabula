@@ -2,7 +2,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import { join, relative } from "node:path";
 
 /**
- * Bundle lazy-load assertion (PLAN §11.7 / Gate G6): the story map
+ * Bundle lazy-load assertion: the story map
  * (@xyflow/react + dagre) must never enter the play route's initial JS.
  * Runs after `bun run build`: locates the chunk carrying the map marker and
  * proves it is absent from the route manifest's initial chunk list.
@@ -16,7 +16,7 @@ const manifest = JSON.parse(
 const routeKey = "/s/[sceneId]/page";
 const routeChunks = manifest.pages[routeKey] ?? [];
 if (routeChunks.length === 0) {
-  console.error(`No initial chunks found for ${routeKey} — did the build run?`);
+  console.error(`No initial chunks found for ${routeKey}, did the build run?`);
   process.exit(1);
 }
 
@@ -41,7 +41,7 @@ for (const file of walk(join(nextDir, "static", "chunks"))) {
 
 if (!markerChunk) {
   console.error(
-    `Map marker "${marker}" not found in any chunk — the lazy map build output is missing.`,
+    `Map marker "${marker}" not found in any chunk, the lazy map build output is missing.`,
   );
   process.exit(1);
 }

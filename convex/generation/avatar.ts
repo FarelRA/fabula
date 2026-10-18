@@ -7,8 +7,8 @@ import type { Id } from "../_generated/dataModel";
 import { isFakeMode } from "../lib/modelRegistry";
 
 /**
- * Avatar generation (PLAN §2.3): ALWAYS asynchronous and never blocking —
- * the UI renders a deterministic gradient+monogram placeholder immediately.
+ * Avatar generation: ALWAYS asynchronous and never blocking. The UI renders
+ * a deterministic gradient+monogram placeholder immediately.
  * Without a configured image model (or in fake mode) this returns `skipped`
  * and the placeholder simply stays (zero dependencies on images).
  */
@@ -31,7 +31,7 @@ export const generate = action({
     if (isFakeMode() || !imageModel) {
       return {
         status: "skipped" as const,
-        reason: "No image model configured — the gradient+monogram placeholder stays",
+        reason: "No image model configured. The gradient+monogram placeholder stays.",
       };
     }
     try {
@@ -44,7 +44,7 @@ export const generate = action({
       const openai = createOpenAI({ apiKey });
       const { image } = await generateImage({
         model: openai.image(imageModel),
-        prompt: `Painterly character portrait, head and shoulders, no text, no watermark: ${loaded.role.name} — ${loaded.role.card.hook}`,
+        prompt: `Painterly character portrait, head and shoulders, no text, no watermark: ${loaded.role.name}, ${loaded.role.card.hook}`,
         size: "1024x1024",
       });
       const bytes = Uint8Array.from(image.uint8Array);

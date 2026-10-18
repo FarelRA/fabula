@@ -43,7 +43,7 @@ function messageOf(error: unknown): string {
 }
 
 /**
- * Guided wizard (PLAN §9.4, Phase 4.1): four validated steps, then the same
+ * Guided wizard: four validated steps, then the same
  * audition component as quick start and templates. The URL owns the step
  * (nuqs at the route); this component stays pure/testable via props.
  */
@@ -216,9 +216,9 @@ export function WizardFlow({
                   className="h-8 w-full rounded-lg border border-input bg-transparent px-2 text-sm dark:bg-input/30"
                   {...form.register("presentationStyle")}
                 >
-                  <option value="chat">Chat — Name: line</option>
-                  <option value="script">Script — NAME / stage directions</option>
-                  <option value="novel">Novel — third person prose</option>
+                  <option value="chat">Chat. Name: line</option>
+                  <option value="script">Script. NAME / stage directions</option>
+                  <option value="novel">Novel, third person prose</option>
                 </select>
               </div>
               <div className="space-y-1.5">

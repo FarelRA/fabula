@@ -1,5 +1,5 @@
 /**
- * Pricing table for the usage meter (PLAN §4.5 / §Appendix C).
+ * Pricing table for the usage meter.
  * Values are USD per 1M tokens and are estimates, labeled as such in the UI.
  * Override per deployment with FABULA_PRICING_JSON:
  *   { "openai/gpt-4.1": { "in": 2, "out": 8 } }

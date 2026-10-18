@@ -1,10 +1,13 @@
-# Fabula self-host stack (PLAN §15.5). Modeled on the official convex-backend
+# Fabula self-host stack. Modeled on the official convex-backend
 # self-host compose (self-hosted/docker/docker-compose.yml); dashboard + API
 # + app. Pin CONVEX_IMAGE_TAG in docker/.env for reproducible deploys.
 #
 #   cp docker/.env.example docker/.env && edit
 #   docker compose --env-file docker/.env up -d --build
 #   docker compose exec backend ./generate_admin_key.sh
+#
+# Every service binds to 127.0.0.1 only. Put the public entry point in front
+# with the TLS overlay (docker-compose.tls.yml, Traefik).
 #
 name: fabula
 
@@ -15,8 +18,8 @@ services:
     stop_grace_period: 10s
     stop_signal: SIGINT
     ports:
-      - "${CONVEX_PORT:-3210}:3210"
-      - "${CONVEX_SITE_PORT:-3211}:3211"
+      - "127.0.0.1:${CONVEX_PORT:-3210}:3210"
+      - "127.0.0.1:${CONVEX_SITE_PORT:-3211}:3211"
     volumes:
       - convex-data:/convex/data
     environment:
@@ -28,7 +31,7 @@ services:
       - DISABLE_METRICS_ENDPOINT=${DISABLE_METRICS_ENDPOINT:-true}
       - DOCUMENT_RETENTION_DELAY=${DOCUMENT_RETENTION_DELAY:-172800}
       - RUST_LOG=${RUST_LOG:-info}
-      # Optional Postgres / S3 upgrade path — unset ⇒ local SQLite + files.
+      # Optional Postgres / S3 upgrade path, unset ⇒ local SQLite + files.
       - POSTGRES_URL
       - S3_ENDPOINT_URL
       - AWS_ACCESS_KEY_ID
@@ -51,7 +54,7 @@ services:
     stop_grace_period: 10s
     stop_signal: SIGINT
     ports:
-      - "${DASHBOARD_PORT:-6791}:6791"
+      - "127.0.0.1:${DASHBOARD_PORT:-6791}:6791"
     environment:
       - NEXT_PUBLIC_DEPLOYMENT_URL=${NEXT_PUBLIC_DEPLOYMENT_URL:-http://127.0.0.1:3210}
     depends_on:
@@ -66,7 +69,7 @@ services:
       args:
         NEXT_PUBLIC_CONVEX_URL: ${NEXT_PUBLIC_CONVEX_URL:-http://127.0.0.1:3210}
     ports:
-      - "${APP_PORT:-3000}:3000"
+      - "127.0.0.1:${APP_PORT:-3000}:3000"
     depends_on:
       backend:
         condition: service_healthy

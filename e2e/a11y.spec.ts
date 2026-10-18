@@ -9,12 +9,12 @@ import {
 } from "./helpers";
 
 /**
- * E2E-08 a11y half (PLAN §11.5 / §17.1 #10): every primary surface passes an
+ * Accessibility half: every primary surface passes an
  * axe-core WCAG 2.2 AA sweep with zero critical/serious violations. Full
  * violation reports are attached as test artifacts.
  *
- * Axe inspects the accessibility tree, not the engine — the sweep runs once on
- * the desktop profile while E2E-08's responsiveness and E2E-09's keyboard
+ * Axe inspects the accessibility tree, not the engine, the sweep runs once on
+ * the desktop profile while the responsive sweep and the keyboard walkthrough
  * walkthrough run across the whole browser matrix.
  */
 

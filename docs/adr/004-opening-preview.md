@@ -1,20 +1,20 @@
-# ADR-004 — Opening-beat preview before canon
+# Opening-beat preview before canon
 
-**Status:** Accepted (Phase 4)
+**Status:** Accepted
 **Date:** 2026-10-18
-**Deciders:** A0 (orchestrator), A2 (generation), A5 (cast UX)
+**Deciders:** orchestrator, generation, cast UX
 
 ## Context
 
-PLAN §9.5/Phase 4.6 requires the opening-beat step to support three paths:
+The opening-beat step supports three paths:
 generate, **regenerate**, and write-your-own, all before the director presses
-Start. The Phase 2 opening path (`generation.turn.start` with
+Start. The existing opening path (`generation.turn.start` with
 `opening: true`) streams into a real beat and rejects a second call once the
 scene has an active tip. Reusing it for rerolls would leave abandoned opening
-beats in the tree (or require deleting them, violating L6), and keeps the scene
+beats in the tree, and keeps the scene
 in `playing` while the director is still auditioning.
 
-The frozen API surface (§13.4) names an opening-beat action family but has no
+The frozen API surface names an opening-beat action family but has no
 preview operation.
 
 ## Decision
@@ -44,7 +44,7 @@ beats list; provenance still points at the compiled prompt via the snapshot.
   holds without cleanup mutations.
 - The audition can stay on the draft scene until Start; first-play revision
   semantics are unchanged.
-- API surface grows by one action. §13.4 is updated in PLAN.md; no existing
+- API surface grows by one action. The plan's API table was updated; no existing
   args/returns changed.
 - Preview usage is metered (the usage meter stays honest about rerolls).
 - Real-model latency is paid per reroll (same as any generation); fixtures are

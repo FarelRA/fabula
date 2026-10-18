@@ -52,7 +52,7 @@ function FixturesScene({ sceneId }: { sceneId: string }) {
 }
 
 /**
- * Scene route (Phase 5): fixtures-built scenes keep the deterministic Phase-4
+ * Scene route: fixtures-built scenes keep the deterministic fixture-cast
  * handoff reading surface; live Convex scenes get the full play shell. The
  * scene id prefix is the discriminator, so one build can serve both demos and
  * real deployments.

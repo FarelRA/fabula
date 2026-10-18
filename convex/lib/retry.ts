@@ -1,5 +1,5 @@
 /**
- * Retry with exponential backoff (PLAN §8.5). The sleep function is
+ * Retry with exponential backoff. The sleep function is
  * injectable so tests are instant and deterministic.
  */
 

@@ -18,8 +18,8 @@ import type {
 } from "./types";
 
 /**
- * Block builders — the ONLY place template prose meets runtime data.
- * Fixed block order (PLAN §7.2): contract, identity, world, boundaries,
+ * Block builders, the ONLY place template prose meets runtime data.
+ * Fixed block order: contract, identity, world, boundaries,
  * memory, relations, directorNotes, mode.
  */
 
@@ -36,7 +36,7 @@ export function requireTemplate(
 ): { key: string; version: number; content: string } {
   const found = templates[key];
   if (!found) {
-    throw new Error(`Missing prompt template "${key}" — seed the templates first`);
+    throw new Error(`Missing prompt template "${key}", seed the templates first`);
   }
   return found;
 }
@@ -70,7 +70,7 @@ export function materializeBlock(draft: BlockDraft, text?: string): CompiledBloc
 }
 
 // ---------------------------------------------------------------------------
-// Rendering helpers (formats the fake gateway also parses — keep stable)
+// Rendering helpers (formats the fake gateway also parses, keep stable)
 // ---------------------------------------------------------------------------
 
 export function renderBeatLine(beat: ContextBeat): string {
@@ -78,7 +78,7 @@ export function renderBeatLine(beat: ContextBeat): string {
   return `${speaker}: ${beat.text}`;
 }
 
-/** "id: Name (tier, storyRole)" — parsed by the fake gateway. */
+/** "id: Name (tier, storyRole)", parsed by the fake gateway. */
 export function renderRoleLine(role: {
   id: string;
   name: string;
@@ -107,7 +107,7 @@ export function renderRelationLines(relations: RelationLine[]): string {
   return relations
     .map(
       (relation) =>
-        `- ${relation.name} — ${relation.dynamic} (tension ${relation.tension.toFixed(2)}): ${relation.historyNote} Knows: ${relation.knowsAbout}`,
+        `- ${relation.name}, ${relation.dynamic} (tension ${relation.tension.toFixed(2)}): ${relation.historyNote} Knows: ${relation.knowsAbout}`,
     )
     .join("\n");
 }

@@ -12,8 +12,8 @@ import { DEFAULT_KEYMAP, formatKey, type KeymapScope } from "@/lib/keymap";
 import { useUiStore } from "@/stores/ui";
 
 /**
- * Keyboard shortcuts dialog (Appendix B, Phase 3.5). Renders the registry —
- * adding a binding to DEFAULT_KEYMAP automatically documents it here.
+ * Keyboard shortcuts dialog. Renders the registry, so adding a binding to
+ * DEFAULT_KEYMAP automatically documents it here.
  */
 
 const SCOPE_LABELS: Record<KeymapScope, string> = {

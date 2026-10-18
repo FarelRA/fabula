@@ -77,7 +77,7 @@ function FieldSection({
   const name = role.card.identity.name;
   return (
     <section
-      aria-label={`${label} — ${name}`}
+      aria-label={`${label}, ${name}`}
       className={cn(
         "rounded-lg border border-border/60 px-2.5 py-2",
         changed && "border-primary/50 bg-primary/5",
@@ -130,7 +130,7 @@ function FieldSection({
 }
 
 /**
- * One auditioner card (PLAN §9.5). Every field group has edit, lock and
+ * One auditioner card. Every field group has edit, lock and
  * regenerate affordances; changed groups from the last regeneration carry a
  * diff badge. Off-stage roles collapse but are never deleted.
  */
@@ -174,7 +174,7 @@ export function RoleCardView({
         <div className="min-w-0 flex-1">
           <p className="truncate font-heading text-sm font-medium">{name}</p>
           <p className="text-xs text-muted-foreground">
-            Off-stage — existing beats are untouched.
+            Off-stage, existing beats are untouched.
           </p>
         </div>
         <Button variant="outline" size="sm" onClick={onRestore}>
@@ -317,7 +317,7 @@ export function RoleCardView({
             onToggleLock={onToggleLock}
             onRegen={onRegenField}
           >
-            {card.voice.register} — {card.voice.rhythm}
+            {card.voice.register}, {card.voice.rhythm}
           </FieldSection>
 
           <FieldSection

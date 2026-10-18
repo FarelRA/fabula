@@ -1,7 +1,7 @@
 import type { BranchInfo, TreeBeat, TreeCandidate } from "./types";
 
 /**
- * Branch gutter/minimap model (PLAN Phase 6.1). The gutter is a rail beside
+ * Branch gutter/minimap model. The gutter is a rail beside
  * the thread: one marker per active-path beat (diamonds at decision points)
  * plus fork markers where other branches diverge. Positions are proportional
  * to scene seq, so the rail mirrors the full story tree even while the thread

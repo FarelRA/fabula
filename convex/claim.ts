@@ -3,7 +3,7 @@ import { v } from "convex/values";
 import { requireScene, requireUser } from "./lib/authz";
 
 /**
- * Anonymous → account claim (PLAN §2.1): scenes created before sign-in are
+ * Anonymous → account claim: scenes created before sign-in are
  * owned by the anonymous user; after the visitor authenticates, the app
  * claims them here. Ownership transfer only happens FROM an anonymous owner.
  */

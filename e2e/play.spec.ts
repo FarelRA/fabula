@@ -10,13 +10,13 @@ import {
 } from "./helpers";
 
 /**
- * Play-loop scenarios (PLAN §11.5):
- *  - E2E-02: two contexts pick-sync on the same scene.
- *  - E2E-03: reload mid-stream resumes without lost/duplicated tokens.
- *  - keyboard pick (⌥1–4) and floor mention.
+ * Play-loop scenarios:
+ *  - two contexts pick-sync on the same scene.
+ *  - reload mid-stream resumes without lost/duplicated tokens.
+ *  - keyboard pick (⌥1 to 4) and floor mention.
  */
 
-test("E2E-02 · a pick in one context becomes canon in another", async ({
+test("a pick in one context becomes canon in another", async ({
   browser,
   page,
   baseURL,
@@ -56,7 +56,7 @@ test("E2E-02 · a pick in one context becomes canon in another", async ({
   }
 });
 
-test("E2E-03 · reload mid-stream resumes with no lost or duplicated tokens", async ({
+test("reload mid-stream resumes with no lost or duplicated tokens", async ({
   page,
 }) => {
   const words = Array.from({ length: 20 }, (_, index) => `token${index + 1}`);
@@ -147,7 +147,7 @@ test("pause stops auto-floor; resume restarts it", async ({ page }) => {
   // The opener is on stage and auto-burst is armed. Pause before the first
   // response lands, then wait for any already-running generation to settle.
   await page.getByRole("button", { name: /Pause auto-floor/ }).first().click();
-  await expect(page.getByText(/Paused — auto-floor is off/)).toBeVisible();
+  await expect(page.getByText(/Paused, auto-floor is off/)).toBeVisible();
   await expect(page.getByText(/speaking/)).toHaveCount(0, { timeout: 20_000 });
   await expect
     .poll(async () => await owner.query(api.generation.runs.active, { sceneId }), {
@@ -162,7 +162,7 @@ test("pause stops auto-floor; resume restarts it", async ({ page }) => {
   expect(await owner.query(api.generation.runs.active, { sceneId })).toBeNull();
 
   // Resuming re-arms the floor. Serve whichever state the engine hands us:
-  // the burst starts a turn, or a decision point is (or becomes) open — then
+  // the burst starts a turn, or a decision point is (or becomes) open, then
   // the director picks and the scene continues. (The first keypress can race
   // the resume mutation's busy window, so keep offering the pick.)
   await page.getByRole("button", { name: /Resume auto-floor/ }).first().click();

@@ -1,7 +1,7 @@
 import { jaccard, normalizedEqual, tokenize } from "../lib/text";
 
 /**
- * Fact dedupe (PLAN §3.4): candidates are compared against the existing
+ * Fact dedupe: candidates are compared against the existing
  * ledger and against each other; near-duplicates are dropped before insert.
  */
 

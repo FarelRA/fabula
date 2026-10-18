@@ -1,21 +1,21 @@
-# ADR-006 — E2E against the local Convex backend
+# End-to-end tests against the local Convex backend
 
-**Status:** Accepted (Phase 5)
+**Status:** Accepted
 **Date:** 2026-10-18
-**Deciders:** A0 (orchestrator), A8 (QA), A9 (docs/DX)
+**Deciders:** orchestrator, QA, docs/DX
 
 ## Context
 
-Phase 4 E2E-01 ran on the deterministic fixtures session. Phase 5’s gate
+Early browser coverage ran on the deterministic fixtures session. The play-loop gate
 requires:
 
-- **E2E-02** — two browser contexts observing the same scene and a pick;
-- **E2E-03** — reload while a model stream is in flight, then token-exact
+- **Live sync**, two browser contexts observing the same scene and a pick;
+- **Reload resume**, reload while a model stream is in flight, then token-exact
   resume.
 
 Fixtures are page-scoped (`sessionStorage`) and simulate generation locally;
-they cannot prove cross-context reactivity or durable stream resume. PLAN
-§11.1/§15.4 already specify E2E with the fake gateway against a local Convex
+they cannot prove cross-context reactivity or durable stream resume. The plan
+already specifies end-to-end runs with the fake gateway against a local Convex
 backend.
 
 ## Decision

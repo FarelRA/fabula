@@ -36,7 +36,7 @@ const BranchMapView = dynamic(
 );
 
 /**
- * Inspector pane (PLAN §9.7, Phase 6): Memory · Prompts · Map · Usage, driven
+ * Inspector pane: Memory · Prompts · Map · Usage, driven
  * entirely by the `?inspector=` / `?beat=` URL state so every panel is
  * linkable. Inline on desktop, a sheet everywhere else.
  */

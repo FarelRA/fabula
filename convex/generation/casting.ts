@@ -21,7 +21,7 @@ import { toProposedRole } from "./helpers";
 import type { RoleView } from "./context";
 
 /**
- * Casting agent (PLAN §2.3, §7.4): full cast with programmatic constraint
+ * Casting agent: full cast with programmatic constraint
  * checks + up to 2 repair passes, cast regen and field regen that respect
  * locks (locked values are copied from the previous card and excluded from
  * the ask). Residual violations surface as non-blocking warnings.
@@ -70,7 +70,7 @@ export const castDraft = action({
       sceneId: args.sceneId,
     });
     if (view.scene.activeTipBeatId !== undefined) {
-      throw new Error("Scene is already playing — cast changes are versioned (reviseRole)");
+      throw new Error("Scene is already playing. Cast changes must go through the role revision flow.");
     }
     const castSize = Math.min(8, Math.max(1, Math.round(args.castSize)));
     const resolved = resolveModel("spotlight");
@@ -280,7 +280,7 @@ export const castRegen = action({
 
     if (roles.length !== existing.length) {
       warnings.push(
-        `Model returned ${roles.length} roles for ${existing.length} slots — deterministically padded/truncated.`,
+        `Model returned ${roles.length} roles for ${existing.length} slots, deterministically padded/truncated.`,
       );
       roles = Array.from(
         { length: existing.length },

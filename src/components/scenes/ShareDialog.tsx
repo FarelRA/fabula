@@ -16,7 +16,7 @@ import { shareUrl, type SharePermission } from "@/lib/share/links";
 import { ShareLinksPanel, type ShareLinkRowView } from "./ShareLinksPanel";
 
 /**
- * Share dialog (PLAN §12 Phase 7.4 / E2E-07): create viewer/director links,
+ * Share dialog: create viewer/director links,
  * copy them, revoke them. Creation copies to the clipboard immediately; the
  * URL stays visible in the list either way.
  */
@@ -81,7 +81,7 @@ export function ShareDialog({
   const handleCopy = (row: ShareLinkRowView) => {
     void copyToken(row.token).then((copied) => {
       if (copied) toast.success("Link copied");
-      else toast.error("Copy failed — select the link text instead");
+      else toast.error("Copy failed. Select the link text instead.");
     });
   };
 

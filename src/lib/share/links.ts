@@ -1,8 +1,8 @@
 import type { Doc } from "@convex/_generated/dataModel";
 
 /**
- * Share-link helpers (PLAN §12 Phase 7.4). Pure: given a token, a browser
- * origin and a row, produce what the dialog renders — linkable URLs and a
+ * Share-link helpers. Pure: given a token, a browser
+ * origin and a row, produce what the dialog renders, linkable URLs and a
  * four-state status that the owner can act on.
  */
 

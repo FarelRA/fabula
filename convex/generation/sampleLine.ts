@@ -11,8 +11,8 @@ import { scenePromptData } from "./context";
 import { recordEstimatedUsage } from "./record";
 
 /**
- * Sample lines (PLAN §2.3): hear a role's voice before playing. Cached per
- * revision hash (ADR-004) so repeated auditions don't re-pay for the same
+ * Sample lines: hear a role's voice before playing. Cached per
+ * revision hash so repeated auditions don't re-pay for the same
  * card; `force` regenerates deliberately.
  */
 export const generate = action({

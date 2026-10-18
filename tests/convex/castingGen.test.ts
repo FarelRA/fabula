@@ -4,7 +4,7 @@ import { api } from "../../convex/_generated/api";
 import { makeCard, makeT, makeUser, seedScene } from "./helpers";
 
 /**
- * Casting agent (PLAN Phase 2.5): full cast + constraints, mid-play revisions,
+ * Casting agent: full cast + constraints, mid-play revisions,
  * cast regen and field regen respecting locks.
  */
 

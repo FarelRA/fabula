@@ -5,9 +5,9 @@ import { logAction } from "./actions";
 import { projectPath } from "./lib/path";
 
 /**
- * Branch metadata + switching (PLAN §6, Phase 1.3).
+ * Branch metadata + switching.
  * Switching the active branch is pure navigation: the active path defines
- * memory/context (L5), nothing is regenerated, nothing is destroyed.
+ * memory/context, nothing is regenerated, nothing is destroyed.
  */
 
 export const list = query({
@@ -39,7 +39,7 @@ export const list = query({
 });
 
 /**
- * Full story tree for the branch map (PLAN §9, Phase 6.2). One lazy-loaded
+ * Full story tree for the branch map. One lazy-loaded
  * payload: branches, every beat (with a text preview), and candidates per
  * decision point. `activeBeatIds` marks the path the director is on.
  */

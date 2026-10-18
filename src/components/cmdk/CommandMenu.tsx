@@ -18,8 +18,8 @@ import { buildShellCommands, type ShellCommand, type ShellCommandGroup } from "@
 import { useUiStore } from "@/stores/ui";
 
 /**
- * Command palette (⌘K, Phase 3.5, PLAN Appendix B). Command lists are
- * registry-driven: later phases append play/scene commands to the same menu.
+ * Command palette. Command lists are
+ * registry-driven: later surfaces append play and scene commands to the same menu.
  */
 
 const GROUP_ORDER: ShellCommandGroup[] = ["Navigate", "Appearance", "Help"];

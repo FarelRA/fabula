@@ -2,10 +2,10 @@ import dagre from "@dagrejs/dagre";
 import type { BranchInfo, TreeBeat, TreeCandidate } from "./types";
 
 /**
- * Story-map graph model (PLAN Phase 6.2). Nodes are beats (colored by their
+ * Story-map graph model. Nodes are beats (colored by their
  * branch), edges are parent→child canon links; the active path and the active
  * tip are flagged for highlighting. Layout is delegated to dagre (maintained
- * layout engine — never hand-rolled). This module is imported only from the
+ * layout engine, never hand-rolled). This module is imported only from the
  * lazy map chunk so dagre never enters the play route's initial JS.
  */
 

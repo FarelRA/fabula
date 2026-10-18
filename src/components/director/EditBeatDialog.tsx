@@ -15,8 +15,8 @@ import { Textarea } from "@/components/ui/textarea";
 import type { PlayBeat } from "@/lib/play/types";
 
 /**
- * Edit-fork confirmation (PLAN §8.4 / Phase 5.6): the copy names the branch
- * law explicitly — editing forks, and the original stays intact.
+ * Edit-fork confirmation: the copy names the branch
+ * law explicitly, editing forks, and the original stays intact.
  */
 export function EditBeatDialog({
   beat,

@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { PlayScene } from "@/lib/play/types";
 
-/** Director controls (PLAN §8.4 / Phase 5.6): undo, offer, pause, end. */
+/** Director controls: undo, offer, pause, end. */
 export function DirectorBar({
   scene,
   canUndo,

@@ -2,7 +2,7 @@ import type { RoleCard } from "@convex/shared/contracts";
 import type { CastRole, RoleCardPatch } from "./types";
 
 /**
- * Lockable role fields (PLAN §9.5 / Phase 4.2). Group-level locks map 1:1 to
+ * Lockable role fields. Group-level locks map 1:1 to
  * the backend regeneration payloads (`fieldRegen` skips locked fields;
  * `castRegen` copies locked paths from the previous card).
  */

@@ -4,7 +4,7 @@ import { modelTierFor } from "./tierPolicy";
 import type { CastRole, RoleCard } from "./types";
 
 /**
- * Blank/duplicate role construction (PLAN §9.5) and deterministic ids for the
+ * Blank/duplicate role construction and deterministic ids for the
  * fixtures session. Live mode receives ids from Convex.
  */
 

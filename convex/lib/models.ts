@@ -1,5 +1,5 @@
 /**
- * Logical model tiers → concrete provider/model resolution (PLAN §3.3).
+ * Logical model tiers → concrete provider/model resolution.
  * Tiers keep meta-agents cheap and spotlight roles strong, while allowing
  * per-deployment overrides via environment variables.
  */

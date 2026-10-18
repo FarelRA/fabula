@@ -5,7 +5,7 @@ import { branchColor } from "@/lib/branches/colors";
 import { cn } from "cn";
 
 /**
- * Branch explorer for the archive (PLAN §12 Phase 7.2): read-only navigation
+ * Branch explorer for the archive: read-only navigation
  * between every branch of the old tree. Selecting a branch replays its chain
  * root → tip; nothing here mutates.
  */

@@ -4,11 +4,11 @@ import type { LanguageModel } from "ai";
 import { buildFakeLanguageModel } from "./fakeLanguageModel";
 
 /**
- * Model resolution (PLAN §3.3, §13.4).
+ * Model resolution.
  *
  * Tiers resolve to "provider/model" refs in `lib/models.ts`; this module turns
  * a ref into an AI SDK LanguageModel. When the deterministic fake is active
- * (FABULA_MODEL_FAKE=1, or no process env at all — the test simulator), every
+ * (FABULA_MODEL_FAKE=1, or no process env at all, the test simulator), every
  * ref resolves to the scripted FakeLanguageModel.
  */
 
@@ -45,7 +45,7 @@ export function resolveLanguageModel(ref: string): LanguageModel {
       return createAnthropic({ apiKey: readKey("ANTHROPIC_API_KEY") })(modelId);
     default:
       throw new Error(
-        `Unknown model provider "${provider}" — add it in convex/lib/modelRegistry.ts`,
+        `Unknown model provider "${provider}", add it in convex/lib/modelRegistry.ts`,
       );
   }
 }

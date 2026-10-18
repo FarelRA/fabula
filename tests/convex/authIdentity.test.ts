@@ -3,7 +3,7 @@ import { api } from "../../convex/_generated/api";
 import { makeT, makeUser, defaultSettings } from "./helpers";
 
 /**
- * Convex Auth identity shape regression (Phase 4 live smoke).
+ * Convex Auth identity shape regression.
  *
  * Convex Auth issues `sub = <userId>|<sessionId>` (and Convex wraps that in
  * `tokenIdentifier = <issuer>|<userId>|<sessionId>`). The domain layer must

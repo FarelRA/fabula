@@ -1,6 +1,5 @@
 /**
- * Dot-path helpers for lock-aware role card edits (PLAN §2.3: locked fields
- * are excluded from regeneration and re-applied from the previous card).
+ * Dot-path helpers for lock-aware role card edits.
  */
 
 export function getPath(obj: Record<string, unknown>, path: string): unknown {

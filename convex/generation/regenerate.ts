@@ -15,9 +15,9 @@ import type { TurnContextView } from "./context";
 import { relationsForRole, scenePromptData } from "./context";
 
 /**
- * Regenerate a beat (PLAN §6.1, §8.4, Phase 5.6).
+ * Regenerate a beat.
  *
- * Law L4: never edit in place. The action forks a new branch from the target's
+ * Law fork-on-edit: never edit in place. The action forks a new branch from the target's
  * parent, streams the same role's voice into a new beat with the current path
  * context (+ optional director instruction), and leaves the original branch
  * untouched. If generation fails, the active pointers are restored so a failed

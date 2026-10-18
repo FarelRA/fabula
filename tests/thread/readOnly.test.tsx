@@ -29,7 +29,7 @@ function renderBeat(readOnly: boolean) {
   );
 }
 
-describe("read-only beats for shared viewers (PLAN Phase 7.4)", () => {
+describe("read-only beats for shared viewers", () => {
   test("readOnly strips menus and pick buttons entirely", () => {
     renderBeat(true);
     expect(screen.queryByRole("button", { name: /Actions for beat 9/ })).toBeNull();

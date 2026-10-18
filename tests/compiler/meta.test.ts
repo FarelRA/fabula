@@ -61,7 +61,7 @@ describe("casting prompts", () => {
       castSize: 3,
       locks: ["hook", "voice"],
       vibe: "darker",
-      castSummary: "Linh — protagonist",
+      castSummary: "Linh, protagonist",
       scene: "rain, wrong door",
     });
     expect(result.system).toContain("Cast size: 3 roles");

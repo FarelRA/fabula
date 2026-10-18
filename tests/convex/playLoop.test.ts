@@ -12,7 +12,7 @@ import {
 } from "./helpers";
 
 /**
- * Phase 5 backend surface: pending stream rows, scene-wide offered options,
+ * Play-loop backend surface: pending stream rows, scene-wide offered options,
  * public floor state, regeneration forks, and the streaming transport query.
  */
 

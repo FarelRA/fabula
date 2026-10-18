@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { planEditFork, planPick, planRegenerate } from "../convex/domain/branchPlans";
 
-describe("planPick — laws L1–L3", () => {
+describe("planPick, laws attach, fork-from-ghost", () => {
   test("extends the active branch when the parent is the active tip", () => {
     const plan = planPick({
       activeBranchId: "b_main",
@@ -35,7 +35,7 @@ describe("planPick — laws L1–L3", () => {
   });
 });
 
-describe("planEditFork / planRegenerate — law L4", () => {
+describe("planEditFork / planRegenerate, law fork-on-edit", () => {
   test("edit forks from the parent, never in place", () => {
     const plan = planEditFork({ id: "beat_5", parentBeatId: "beat_4", branchId: "b_main" });
     expect(plan).toEqual({ forkedFromBeatId: "beat_4", forkReason: "edit" });

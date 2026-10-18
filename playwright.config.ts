@@ -1,8 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
 
 /**
- * E2E harness (PLAN §11.5). Phase 5 runs against the real self-hosted Convex
- * backend with the deterministic fake model (`scripts/e2e-server.ts`) — no
+ * The end-to-end harness runs against the real self-hosted Convex
+ * backend with the deterministic fake model (`scripts/e2e-server.ts`), no
  * cloud account, no provider calls. `bun run test:e2e` builds live (fixtures
  * off) and then Playwright owns the isolated backend + app.
  */

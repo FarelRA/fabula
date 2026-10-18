@@ -13,7 +13,7 @@ import { nowMs } from "./lib/time";
 import { settingsV } from "./lib/validators";
 
 /**
- * Scenes + settings (PLAN §5, Phase 1.1).
+ * Scenes + settings.
  * Creating a scene also creates its mainline branch; the active tip stays
  * undefined until the opening beat exists.
  */
@@ -160,9 +160,9 @@ export const setStatus = mutation({
 });
 
 /**
- * Wrap & archive (PLAN §8.4/§8.6, Phase 7.1): freezes the tree, stamps
+ * Wrap & archive: freezes the tree, stamps
  * `endedAt`, kicks off the final summary pass for any uncovered tail and logs
- * a reversible `patchScene` inverse — so ⌘Z reopens the scene (L6) while
+ * a reversible `patchScene` inverse, so ⌘Z reopens the scene while
  * every story mutation is blocked until then.
  */
 export const endScene = mutation({
@@ -202,7 +202,7 @@ export const endScene = mutation({
 });
 
 /**
- * End-detection signal (PLAN §8.6, Phase 7.1): the director meta-agent's
+ * End-detection signal: the director meta-agent's
  * `endingSuggested` flag increments a consecutive-result streak on the scene;
  * the play shell offers a non-modal "Wrap scene?" suggestion at streak ≥ 2.
  * Never auto-archives.

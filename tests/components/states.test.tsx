@@ -12,7 +12,7 @@ import {
 import "./testUtils"; // registers RTL cleanup between tests
 
 /**
- * States catalog (PLAN §9.9 / Phase 3.4): every surface composes loading,
+ * States catalog: every surface composes loading,
  * empty, error, offline and reconnecting states from these primitives.
  */
 

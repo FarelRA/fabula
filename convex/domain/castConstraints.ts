@@ -1,9 +1,9 @@
 import { jaccard, tokenize } from "../lib/text";
 
 /**
- * Cast constraint checker (PLAN §7.4) — pure, runs AFTER zod validation, up
- * to 2 repair passes in the casting action, residual violations surface as
- * non-blocking warnings in the audition UI.
+ * Cast constraint checker. Pure; runs AFTER zod validation, drives up
+ * to 2 repair passes in the casting action, and residual violations surface
+ * as non-blocking warnings in the audition UI.
  */
 
 export type CastRoleLite = {

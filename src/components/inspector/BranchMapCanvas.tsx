@@ -82,7 +82,7 @@ function BeatMapNode({ data }: NodeProps<BeatFlowNode>) {
 const nodeTypes = { beat: BeatMapNode };
 
 /**
- * Story map (PLAN Phase 6.2): React Flow + dagre, beats colored by branch,
+ * Story map: React Flow + dagre, beats colored by branch,
  * canon vs alternative edges, metadata side panel (who/how/when), keyboard
  * node list, and (flag-gated) read-only branch compare. Loaded only on demand.
  */

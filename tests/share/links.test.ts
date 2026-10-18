@@ -7,7 +7,7 @@ import {
   shareUrl,
 } from "@/lib/share/links";
 
-describe("share link helpers (PLAN Phase 7.4)", () => {
+describe("share link helpers", () => {
   test("builds absolute share URLs from any origin shape", () => {
     expect(shareUrl("https://fabula.example", "tok_123")).toBe(
       "https://fabula.example/share/tok_123",

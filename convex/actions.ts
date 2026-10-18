@@ -6,8 +6,7 @@ import { assertSceneAccess, requireScene } from "./lib/authz";
 import { nowMs } from "./lib/time";
 
 /**
- * Action log + undo (PLAN §8.4 "Undo", law L6: nothing is ever destroyed;
- * everything is reversible). Every reversible director action logs an inverse
+ * Action log + undo. Every reversible director action logs an inverse
  * op; `undoLast` applies the newest unconsumed inverse inside a transaction.
  */
 
@@ -33,7 +32,7 @@ export type InverseAction =
       kind: "patchScene";
       sceneId: Id<"scenes">;
       patch: Record<string, unknown>;
-      /** `patch` can't carry `undefined` through the log — this clears it. */
+      /** `patch` can't carry `undefined` through the log, this clears it. */
       clearEndedAt?: boolean;
     }
   | { kind: "patchRoleOrder"; entries: Array<{ roleId: Id<"roles">; sortKey: string }> };

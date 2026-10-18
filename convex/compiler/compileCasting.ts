@@ -2,8 +2,8 @@ import { finalizeSingleBlock } from "./blocks";
 import type { CompileResult, ModelRef, TemplateMap } from "./types";
 
 /**
- * Casting-agent prompts (PLAN §7.4): full cast, cast regen (locks + vibe),
- * field regen (locks respected — locked fields are EXCLUDED from the prompt
+ * Casting-agent prompts: full cast, cast regen (locks + vibe),
+ * field regen (locks respected, locked fields are EXCLUDED from the prompt
  * and re-applied by the action).
  */
 

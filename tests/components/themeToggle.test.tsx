@@ -15,7 +15,7 @@ afterEach(() => {
   document.documentElement.classList.remove("dark", "light");
 });
 
-describe("ThemeToggle (Phase 3.1)", () => {
+describe("ThemeToggle", () => {
   test("switches the document theme to dark", async () => {
     const user = userEvent.setup();
     render(

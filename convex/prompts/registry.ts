@@ -1,12 +1,12 @@
 import type { Doc } from "../_generated/dataModel";
 
 /**
- * Prompt template registry helpers (PLAN §7.5, §7.8).
- * Pure functions over `promptTemplates` docs — the insert side lives in
+ * Prompt template registry helpers.
+ * Pure functions over `promptTemplates` docs, the insert side lives in
  * `prompts/seed.ts`.
  */
 
-/** FNV-1a 32-bit — provenance/dedup hash for snapshots; not cryptographic. */
+/** FNV-1a 32-bit, provenance/dedup hash for snapshots; not cryptographic. */
 export function stableHash(text: string): string {
   let hash = 0x811c9dc5;
   for (let i = 0; i < text.length; i += 1) {

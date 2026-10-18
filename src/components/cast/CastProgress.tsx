@@ -3,7 +3,7 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
 /**
- * Casting progress (PLAN §9.3 screen 2): progressive skeletons while the cast
+ * Casting progress: progressive skeletons while the cast
  * is generated. The opening beat is drafted right after the cast, so this
  * surface is the bridge between premise and audition.
  */

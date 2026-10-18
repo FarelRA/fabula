@@ -1,10 +1,10 @@
-# ADR-001: Pinned facts are explicit scene-global canon overrides
+# Pinned facts as explicit scene-global canon overrides
 
-**Status:** Accepted (Phase 1)
+**Status:** Accepted
 
 ## Context
 
-Law L5 (PLAN §1.1) says the active path defines memory: facts from other
+Law path isolation says the active path defines memory: facts from other
 branches must never leak into a compiled prompt. But the director's chair also
 needs a "make canon" action: the user can pin a fact, which means "this is
 true in this story regardless of the branch I'm on". Those two requirements
@@ -28,5 +28,5 @@ the product promise.
 
 - "No leak, ever" is precisely: *no automatic cross-path leakage*. Explicit
   director overrides are part of the product, auditable and reversible.
-- The H2 merge tool (Phase 11.3, ADR-003) reuses this exact override semantics
+- The a later horizon merge tool reuses this exact override semantics
   with a `merged` marker instead of `pinned`.

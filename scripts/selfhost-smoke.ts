@@ -2,7 +2,7 @@ import { ConvexHttpClient } from "convex/browser";
 import { api } from "../convex/_generated/api";
 
 /**
- * Self-host smoke (PLAN §15.5–15.6, Phase 0.7 / Phase 8.7):
+ * Self-host smoke:
  *   backend health → template bootstrap → app responds.
  * Works against any backend URL: compose stack, Convex Cloud, or dev.
  */

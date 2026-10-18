@@ -5,13 +5,13 @@ import type { Id } from "../convex/_generated/dataModel";
 import { createLiveScene, firstOptionText, waitForOptions } from "./helpers";
 
 /**
- * E2E-04 (PLAN §11.5, Phase 6.8 · Gate G6): edit a past beat → a new branch is
+ * editing a past beat → a new branch is
  * created, the original stays intact (map shows both), the memory panel shows
  * only active-path facts, and switching back restores the original context.
  * Facts are seeded through the authenticated HTTP client so the leak
  * assertions are token-exact.
  */
-test("E2E-04 · edit forks a branch; memory and map follow the active path", async ({
+test("edit forks a branch; memory and map follow the active path", async ({
   page,
 }, testInfo) => {
   const sceneUrl = await createLiveScene(page);
@@ -32,7 +32,7 @@ test("E2E-04 · edit forks a branch; memory and map follow the active path", asy
     })
     .toBeGreaterThanOrEqual(4);
   await page.getByRole("button", { name: /Pause auto-floor/ }).first().click();
-  await expect(page.getByText(/Paused — auto-floor is off/)).toBeVisible();
+  await expect(page.getByText(/Paused, auto-floor is off/)).toBeVisible();
 
   const pathA = await client.query(api.beats.listPath, { sceneId });
   const tipA = pathA.beats[pathA.beats.length - 1]!;
@@ -54,7 +54,7 @@ test("E2E-04 · edit forks a branch; memory and map follow the active path", asy
   // Close so the thread is interactive again on small viewports.
   await page.getByRole("button", { name: "Close inspector" }).click();
 
-  // Edit the tip beat → L4 fork; the original branch stays.
+  // Edit the tip beat → fork-on-edit fork; the original branch stays.
   await page.getByRole("button", { name: `Actions for beat ${tipA.seq}` }).click();
   await page.getByRole("menuitem", { name: /Edit \(forks\)/ }).click();
   await page.getByLabel("Edited beat text").fill(
@@ -75,7 +75,7 @@ test("E2E-04 · edit forks a branch; memory and map follow the active path", asy
   const pathB = await client.query(api.beats.listPath, { sceneId });
   const tipB = pathB.beats[pathB.beats.length - 1]!;
   expect(tipB._id).not.toBe(tipA._id);
-  expect(tipB.parentBeatId).toBe(tipA.parentBeatId); // L4: forks from the parent
+  expect(tipB.parentBeatId).toBe(tipA.parentBeatId); // fork-on-edit: forks from the parent
   await client.mutation(api.facts.add, {
     sceneId,
     nodeId: tipB._id,
@@ -102,7 +102,7 @@ test("E2E-04 · edit forks a branch; memory and map follow the active path", asy
     await page.screenshot({ path: "docs/screenshots/branch-map-1280.png" });
   }
 
-  // Switching back recomputes projection (L5): A returns, B never leaks.
+  // Switching back recomputes projection: A returns, B never leaks.
   await page.getByRole("button", { name: "Switch" }).first().click();
   await expect(page.getByText(/Context updated/)).toBeVisible({ timeout: 10_000 });
   await page.getByRole("tab", { name: "Memory" }).click();

@@ -3,7 +3,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 /**
- * Terminology lint (PLAN §11.6): the words "thread" and "agent" never appear
+ * Terminology lint: the words "thread" and "agent" never appear
  * in user-facing strings. We scan string literals and JSX text in src/ and
  * fail the build on any hit.
  */

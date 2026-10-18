@@ -1,0 +1,25 @@
+# Traefik static configuration for the Fabula TLS overlay.
+# Routers and services are attached to the stack containers with Docker
+# labels in docker-compose.tls.yml; this file only defines entrypoints and
+# the Docker provider. The ACME certificate resolver is appended by the
+# overlay's command flags so its email address can come from docker/.env.
+
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+  websecure:
+    address: ":443"
+
+providers:
+  docker:
+    exposedByDefault: false
+
+log:
+  level: INFO
+
+accessLog: {}

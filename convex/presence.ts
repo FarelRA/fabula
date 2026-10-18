@@ -5,8 +5,8 @@ import { components } from "./_generated/api";
 import { Presence } from "@convex-dev/presence";
 
 /**
- * Presence for shared scenes (PLAN §3.1, §9.10, Phase 7.4): the room id is the
- * share token itself, so the token is the only credential — the wrappers
+ * Presence for shared scenes: the room id is the
+ * share token itself, so the token is the only credential, the wrappers
  * validate it against `shareLinks` (not revoked, not expired) before touching
  * the presence component. Identity-based rooms can be added later without
  * changing the shape.
@@ -52,7 +52,7 @@ export const list = query({
   args: { roomToken: v.string() },
   handler: async (ctx, { roomToken }) => {
     // `roomToken` is the component's opaque room credential returned by
-    // heartbeat — it is not the share link. Room access is gated at
+    // heartbeat, it is not the share link. Room access is gated at
     // heartbeat time (only valid share tokens can open a session).
     return await presence.list(ctx, roomToken);
   },

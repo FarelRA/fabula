@@ -5,7 +5,7 @@ import { generationModeV } from "../lib/validators";
 import { assertSceneAccess, requireScene } from "../lib/authz";
 
 /**
- * Prompt provenance (PLAN §7.5): every generation writes a snapshot with its
+ * Prompt provenance: every generation writes a snapshot with its
  * compiled blocks (text + hashes + template versions) and token accounting.
  * The prompt inspector reads these rows.
  */
@@ -63,7 +63,7 @@ export const write = internalMutation({
 });
 
 /**
- * Prompt inspector reads (PLAN §7.7, Phase 6.6). Snapshots store rendered
+ * Prompt inspector reads. Snapshots store rendered
  * block text at write time, so the inspector shows exactly what was compiled
  * even after templates or revisions change.
  */

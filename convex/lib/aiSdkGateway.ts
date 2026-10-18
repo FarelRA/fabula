@@ -4,7 +4,7 @@ import type { GenerationRequest, ModelGateway, ObjectRequest } from "./gateway";
 import { contextWindowFor, resolveLanguageModel } from "./modelRegistry";
 
 /**
- * Real ModelGateway on the Vercel AI SDK (PLAN §3.3, §5). Provider-agnostic:
+ * Real ModelGateway on the Vercel AI SDK. Provider-agnostic:
  * the ref string ("openai/gpt-4.1", "anthropic/claude-sonnet-4.5", …) is
  * resolved by lib/modelRegistry.ts. Structured outputs are validated twice:
  * by the provider (JSON schema) and by us (zod) before anything is persisted.

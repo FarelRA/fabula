@@ -22,9 +22,9 @@ import { serializeSceneToMarkdown } from "@/lib/export/markdown";
 import type { ExportBundle } from "@/lib/export/types";
 
 /**
- * Export dialog (PLAN §12 Phase 7.3 / §10): markdown for reading, JSON for
- * `jq` and round-trips. Files are generated in the browser from the bundle —
- * no server storage involved. Presentational: the parent owns the query.
+ * Export dialog: markdown for reading, JSON for `jq` and round-trips. Files
+ * are generated in the browser from the bundle, with no server storage
+ * involved. Presentational: the parent owns the query.
  */
 export function ExportDialog({
   open,
@@ -105,7 +105,7 @@ export function ExportDialog({
               <div className="min-w-0 flex-1">
                 <p className="text-xs font-medium">JSON</p>
                 <p className="text-[11px] text-muted-foreground">
-                  Lossless tree — ids, branch links, candidates, facts.
+                  Lossless tree, ids, branch links, candidates, facts.
                 </p>
               </div>
               <Button

@@ -5,7 +5,7 @@ import { nowMs } from "./lib/time";
 import { logAction } from "./actions";
 
 /**
- * Director notes — steering, standing constraints, do-not list (PLAN §8.4).
+ * Director notes, steering, standing constraints, do-not list.
  * Active notes feed the compiler's director block (block 7, never shrunk).
  */
 

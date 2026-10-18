@@ -1,8 +1,7 @@
 import { ROLE_ACCENTS } from "@/lib/cast/avatar";
 
 /**
- * Branch accents reuse the 8-slot role palette (PLAN §5.1: `colorIndex` is a
- * stable accent for gutter/map). Helpers return CSS-variable strings so the
+ * Branch accents reuse the 8-slot role palette. Helpers return CSS-variable strings so the
  * same color works in inline styles and React Flow.
  */
 

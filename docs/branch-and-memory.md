@@ -3,25 +3,26 @@
 Fabula's story is a tree, not a transcript. This document describes the six
 branch laws, how picks/edits/regenerations mutate the tree, and how memory
 (facts, summaries, context) is projected along the active path. It mirrors
-PLAN §6; every mutation, field and test below is verified against the code.
+the implementation. Every mutation, field and test below is verified against
+the code.
 
 ## 1. The six laws
 
-| # | Law | Enforced by |
-|---|---|---|
-| L1 | Candidates attach to a parent beat; picking one appends it and makes it canon. | `candidates.pick` (`convex/candidates.ts`) → `createBeatRow` (`convex/beats.ts`) |
-| L2 | Picking at the active tip **extends** the current branch. | `planPick` (`convex/domain/branchPlans.ts`) returns `{ kind: "extend" }` when the candidate’s parent is the active tip; the beat is written into the active branch. |
-| L3 | Picking a ghost (parent ≠ active tip) **forks** a new branch from that parent. | `planPick` returns `{ kind: "fork" }`; a `branches` row is inserted with `forkedFromBeatId`, `forkedFromBranchId`, `forkReason: "pick"`. |
-| L4 | Editing, rewriting or regenerating any past beat forks from its **parent**. The original is always preserved. | `planEditFork` / `planRegenerate`; mutations `beats.editFork` and `beats.regenerateFork` (plus `createRegenerateFork` for streaming regeneration). |
-| L5 | The active path defines memory/context; switching recomputes it. Nothing leaks across branches. | `projectPath` (`convex/lib/path.ts`) + the leak suite (`tests/convex/projectionLeak.test.ts`), E2E-04. |
-| L6 | Nothing is ever destroyed; everything is reversible. | No destructive mutations; `actions` log with inverse ops (`convex/actions.ts`), soft states (`offstage`, `muted`, `isArtifact`, `archived`). |
+| Law | Enforced by |
+|---|---|
+| Attach | Candidates attach to a parent beat; picking one appends it and makes it canon. | `candidates.pick` (`convex/candidates.ts`) → `createBeatRow` (`convex/beats.ts`) |
+| Extend | Picking at the active tip **extends** the current branch. | `planPick` (`convex/domain/branchPlans.ts`) returns `{ kind: "extend" }` when the candidate’s parent is the active tip; the beat is written into the active branch. |
+| Fork from ghosts | Picking a ghost (parent ≠ active tip) **forks** a new branch from that parent. | `planPick` returns `{ kind: "fork" }`; a `branches` row is inserted with `forkedFromBeatId`, `forkedFromBranchId`, `forkReason: "pick"`. |
+| Fork on edit | Editing, rewriting or regenerating any past beat forks from its **parent**. The original is always preserved. | `planEditFork` / `planRegenerate`; mutations `beats.editFork` and `beats.regenerateFork` (plus `createRegenerateFork` for streaming regeneration). |
+| Path isolation | The active path defines memory and context; switching recomputes it. Nothing leaks across branches. | `projectPath` (`convex/lib/path.ts`) and the leak suite (`tests/convex/projectionLeak.test.ts`), plus the fork-and-leak browser scenario. |
+| Reversibility | Nothing is ever destroyed; everything is reversible. | No destructive mutations; `actions` log with inverse ops (`convex/actions.ts`), soft states (`offstage`, `muted`, `isArtifact`, `archived`). |
 
 `createBeatRow` is the single append primitive: it allocates `seq` from
 `scene.seqCounter`, computes `depth` from the parent, inserts the beat, and
-moves the branch tip — except for streaming beats, which pass
+moves the branch tip, except for streaming beats, which pass
 `setBranchTip: false` and only canonize in `generation.lifecycle.completeRun`.
 
-## 2. Extend vs fork — the pick reducer
+## 2. Extend vs fork, the pick reducer
 
 ```text
 planPick({ activeBranchId, activeTipBeatId, candidateParentBeatId,
@@ -41,13 +42,13 @@ candidates.pick:
 ```
 
 Branch labels are human-readable (`Alternate · beat N`: the fork point for
-picks, the edited/regenerated beat’s seq for forks), `colorIndex` cycles 0–7
+picks, the edited/regenerated beat’s seq for forks), `colorIndex` cycles 0 to 7
 for the map, and `forkReason` is one of `pick`, `edit`, `regenerate`.
 
 ## 3. Ghost candidates and later-pick forking
 
-Unpicked candidates stay `status: "offered"` forever — the “ghost alternatives”
-of PLAN §6.2. Nothing sweeps them; they remain visible history.
+Unpicked candidates stay `status: "offered"` forever, the “ghost alternatives”
+of.2. Nothing sweeps them; they remain visible history.
 
 - `candidates.listForScene` decorates every offered candidate with
   `parentSeq` and `parentIsTip`.
@@ -56,9 +57,9 @@ of PLAN §6.2. Nothing sweeps them; they remain visible history.
   unused paths at that beat (`src/components/options/OptionCards.tsx`).
 - Picking a ghost opens a confirm step (`PlayShell` dialog kind `ghostPick`)
   that states the consequence: this forks the story from that beat.
-- Confirming executes L3: the original canon continues on its branch and the
+- Confirming executes fork-from-ghost: the original canon continues on its branch and the
   new branch holds the ghost’s continuation.
-- E2E-02 asserts both contexts see the same ghost list after one side picks
+- The live-sync browser scenario asserts both contexts see the same ghost list after one side picks
   (`e2e/play.spec.ts`).
 
 ## 4. Edit and regenerate forks
@@ -75,7 +76,7 @@ target’s parent, never touch the target**.
   or discarded abort the previous pointers are restored
   (`regenerate.restorePointers`), so a failed attempt can never become canon.
 - **Root opener:** editing or regenerating the opening beat forks from
-  `parentBeatId: undefined` — the mainline keeps the original opener and the
+  `parentBeatId: undefined`, the mainline keeps the original opener and the
   fork becomes the new root. Covered by
   `tests/convex/playLoop.test.ts` (“regenerating the opening forks the root
   and preserves the original”).
@@ -85,7 +86,7 @@ target’s parent, never touch the target**.
 ## 5. Active-path projection
 
 `convex/lib/path.ts` is the single place that computes “the active path”
-(L5). Everything that needs path-scoped context goes through it.
+(path isolation). Everything that needs path-scoped context goes through it.
 
 ```text
 activeChain(ctx, scene, tip?)  = buildChain(beats, tip ?? scene.activeTipBeatId)
@@ -93,9 +94,9 @@ activeChain(ctx, scene, tip?)  = buildChain(beats, tip ?? scene.activeTipBeatId)
   It throws on cycles and on missing beats.
 
 projectPath(ctx, scene, tip?) returns:
-  chain      — active-path beats (seq order)
-  facts      — active-status facts with (isPinned || nodeId on path)
-  summaries  — summaries whose coveredThroughSeq is on the path
+  chain, active-path beats (seq order)
+  facts, active-status facts with (isPinned || nodeId on path)
+  summaries, summaries whose coveredThroughSeq is on the path
 ```
 
 `pathSets(chain)` yields the `ids` and `seqs` sets used by the two filters.
@@ -120,7 +121,7 @@ fact.status === "active" && (fact.isPinned || pathIds.has(fact.nodeId))
 
 - **Global pins** (`isPinned = true`) are explicit scene-global canon
   overrides: a fact pinned on branch A compiles on branch B too. This is the
-  one sanctioned cross-path exception (ADR-001); pins are set only by an
+  one sanctioned cross-path exception; pins are set only by an
   explicit user action, labelled “make canon”, visually distinct in the memory
   panel, and undoable.
 - **Muted facts** (`status: "muted"`) never enter prompts, pinned or not.
@@ -140,8 +141,7 @@ fact.status === "active" && (fact.isPinned || pathIds.has(fact.nodeId))
   summarized window; `coveredThroughBeatId` is the window’s last beat.
 - **Collapse rule:** the compiler renders only the **two most recent**
   applicable summaries, oldest first (`renderSummaryText`); older text
-  collapses into the newer summary’s coverage. Summaries are never deleted —
-  collapsing is a rendering rule, not a mutation.
+  collapses into the newer summary’s coverage. Summaries are never deleted, collapsing is a rendering rule, not a mutation.
 - On branch switch, the applicable set recomputes instantly because the path
   gate (`coveredThroughSeq ∈ path seqs`) changes.
 
@@ -157,13 +157,13 @@ fact.status === "active" && (fact.isPinned || pathIds.has(fact.nodeId))
 The UI (`PlayShell.switchBranch`) calls it and shows the “Context updated”
 toast: *“Memory now follows <branch label>. Nothing was regenerated.”*
 `branches.list` exposes each branch with `beatCount` and `isActive`;
-`branches.tree` powers the lazy-loaded map. `tests/convex/phase6.test.ts` and
-`tests/convex/branchLaws.test.ts` (L5 case) assert the projected fact set
+`branches.tree` powers the lazy-loaded map. `tests/convex/branchMetaSurfaces.test.ts` and
+`tests/convex/branchLaws.test.ts` (path isolation case) assert the projected fact set
 follows the switch.
 
-## 9. The leak test — the crown jewel
+## 9. The leak test, the crown jewel
 
-`tests/convex/projectionLeak.test.ts` (convex-test, PLAN §6.4 / §11.4):
+`tests/convex/projectionLeak.test.ts`:
 
 Fixture shape (`seedTwoBranchScene`): one playable scene → one opener beat
 carrying `TOKEN_OPENER` → two candidates at the opener → pick the first
@@ -174,19 +174,18 @@ Assertions:
 
 | Case | Expectation |
 |---|---|
-| Facts on active path | Opener + own-branch fact present; the other branch’s fact absent — in both directions (switch via `branches.setActive`). |
+| Facts on active path | Opener + own-branch fact present; the other branch’s fact absent, in both directions (switch via `branches.setActive`). |
 | Pins | After switching away, pinning A’s fact makes it visible on B (`isPinned: true`); unpinning removes it again. |
 | Mute | Muting A’s fact removes it from A’s own path too. |
 | Summaries | A summary applies only when its `coveredThroughSeq` is on the active path; switching to A shows both opener and A summaries, B shows only the opener summary. |
 
 CI enforcement: `bun run test` runs the whole Vitest suite including this file
 (`.github/workflows/ci.yml` job `verify`), so an unpinned cross-path fact
-surfacing in a projected context — the input to every compiled prompt — fails
+surfacing in a projected context, the input to every compiled prompt, fails
 the build. The same suite proves the pinned case positively; compiled-prompt
-coverage rides on the projection plus the compiler goldens and E2E-04.
+coverage rides on the projection, the compiler goldens and the fork-and-leak browser scenario.
 
-The same behavior is exercised end to end on an **edit-fork** (E2E-04,
-`e2e/branch.spec.ts`): after editing the tip, the memory panel shows
+The same behavior is exercised end to end on an **edit-fork**: after editing the tip, the memory panel shows
 `FACT_B_44E` and hides `FACT_A_9C1`, the map shows both branches and the
 preserved original, switching back restores A’s context, and the prompt
 inspector still resolves the original beat’s turn snapshot (≥6 blocks,
@@ -196,26 +195,25 @@ Compiler-level goldens additionally prove the pinned-extra window behavior:
 pinned beats older than `contextBeatsK` are always included
 (`tests/compiler/compileRolePrompt.test.ts`).
 
-## 10. Private knowledge — schema readiness
+## 10. Private knowledge, schema readiness
 
-v1 ships **all-public** knowledge, but the schema is ready for H2 secrets:
+v1 ships **all-public** knowledge, but the schema is ready for a later horizon secrets:
 
 - `facts.visibility = { kind: "public" | "private", roleIds: Id<"roles">[] }`
   (`convex/schema.ts`). The memory agent stores `roleIds = subjects` for
   private facts (`generation.memory.ts`).
-- A role’s own card — including `psychology.secret` and `drives.secretGoal` —
-  is always rendered into its own identity block (`identity` template), so a
+- A role’s own card, including `psychology.secret` and `drives.secretGoal`, is always rendered into its own identity block (`identity` template), so a
   role knows its own secret.
 - The role-scoped projection (`visibility.roleIds` filtering in
   `projectPath`/`context.ts`) is **not applied yet**: the current
   `filterFactsAlongPath` keeps every active path fact regardless of
-  visibility. That is the deliberate v1 stance — H2 (“characters with real
+  visibility. That is the deliberate v1 stance, a later horizon (“characters with real
   secrets”) wires the per-subject filter without schema changes.
 
-PLAN §6.3’s “private facts compile only into prompts of subject roles” is
-therefore schema-ready but not yet enforced; treat it as the H2 contract.
+The rule that private facts compile only into prompts of subject roles is
+therefore schema-ready but not yet enforced; treat it as the a later horizon contract.
 
-## 11. Undo — the inverse-op map
+## 11. Undo, the inverse-op map
 
 Every reversible action logs an inverse (`convex/actions.ts`);
 `actions.undoLast` applies the newest unconsumed inverse inside the
@@ -232,9 +230,9 @@ transaction.
 | notes, warnings, candidates | `patchNote`, `patchWarning`, `patchCandidate` |
 | `scene.end` (wrap) | `patchScene` (+ `clearEndedAt`) |
 
-Coverage: `tests/convex/branchLaws.test.ts` (L1–L5, originals preserved),
+Coverage: `tests/convex/branchLaws.test.ts` (attach, path isolation, originals preserved),
 `tests/convex/projectionLeak.test.ts` (leak + pins + summaries),
-`tests/convex/phase6.test.ts` (tree, inspector, memory flags, branch switch),
+`tests/convex/branchMetaSurfaces.test.ts` (tree, inspector, memory flags, branch switch),
 `tests/convex/playLoop.test.ts` (regenerate/undo/root forks),
 `tests/convex/actionsUndo.test.ts` (undo semantics).
 

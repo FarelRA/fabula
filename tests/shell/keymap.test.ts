@@ -15,7 +15,7 @@ import {
 } from "@/lib/keymap";
 
 /**
- * Keymap registry (PLAN Appendix B / Phase 3.5). The action IDs are frozen at
+ * Keymap registry. The action IDs are frozen at
  * G0; the registry must stay collision-free across overlapping scopes.
  */
 
@@ -116,7 +116,7 @@ describe("resolveKey", () => {
 
   test("shift is enforced for letter chords but tolerated on symbol keys", () => {
     // "?" is documented as shift+slash, but symbol events often arrive with
-    // shiftKey=false (Playwright, some IMEs) — the glyph itself carries it.
+    // shiftKey=false (Playwright, some IMEs), the glyph itself carries it.
     expect(resolveKey(DEFAULT_KEYMAP, ["global"], event({ key: "?", shiftKey: true }))?.action).toBe(
       "shortcuts.dialog",
     );

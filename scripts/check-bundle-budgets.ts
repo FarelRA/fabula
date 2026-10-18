@@ -3,10 +3,10 @@ import { join } from "node:path";
 import { gzipSync } from "node:zlib";
 
 /**
- * Route JS budget assertion (PLAN §11.7, Phase 8.1): every shipped route must
+ * Route JS budget assertion: every shipped route must
  * stay within its gzipped first-load budget. Measures the union of the route's
  * initial chunks and the shared layout chunks from the App Router build
- * manifest — the same JS the browser downloads before first paint.
+ * manifest, the same JS the browser downloads before first paint.
  *
  * Runs after `bun run build` (wired into `bun run check:bundles` + CI).
  */
@@ -27,8 +27,7 @@ const manifest = JSON.parse(
   readFileSync(join(nextDir, "app-build-manifest.json"), "utf8"),
 ) as { pages: Record<string, string[]> };
 
-// Next's own "First Load JS" is the gzip sum of each route's manifest entry —
-// the chunk set every visitor downloads before first paint.
+// Next's own "First Load JS" is the gzip sum of each route's manifest entry, // the chunk set every visitor downloads before first paint.
 let failures = 0;
 for (const { route, maxKb } of BUDGETS) {
   const routeChunks = manifest.pages[route];

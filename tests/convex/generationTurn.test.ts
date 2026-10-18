@@ -4,7 +4,7 @@ import { api, internal } from "../../convex/_generated/api";
 import { asUser, defaultSettings, makeCard, makeT, makeUser, seedScene, type T } from "./helpers";
 
 /**
- * Turn generation (PLAN Phase 2.3): streaming persistence via the agent
+ * Turn generation: streaming persistence via the agent
  * component, snapshot-first provenance, usage recording, and the failure /
  * abort state machine that guarantees the tree is never corrupted.
  */
@@ -44,7 +44,7 @@ test("a turn streams, finalizes the beat, moves the tip, and persists provenance
   const beat = await client.query(api.beats.getWithOptions, { beatId: turn.beatId });
   expect(beat?.beat.status).toBe("finished");
   expect(beat?.beat.text).toBe(FAKE_TURN_TEXT);
-  expect(beat?.beat.streamMessageId).toBeDefined(); // transport link (PLAN §2.4)
+  expect(beat?.beat.streamMessageId).toBeDefined(); // transport link
   const scene = await client.query(api.scenes.get, { sceneId });
   expect(scene.scene.activeTipBeatId).toBe(turn.beatId);
   expect(scene.scene.status).toBe("playing");
@@ -109,7 +109,7 @@ test("failure before the first delta leaves NO beat row", async () => {
   expect(turn.beatId).toBeUndefined();
 
   const path = await client.query(api.beats.listPath, { sceneId: created.sceneId });
-  expect(path.beats).toHaveLength(1); // opener only — tree intact
+  expect(path.beats).toHaveLength(1); // opener only, tree intact
 
   const runs = await t.run(async (ctx) =>
     await ctx.db

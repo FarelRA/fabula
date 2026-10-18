@@ -28,7 +28,7 @@ beforeEach(() => {
   useUiStore.setState({ paletteOpen: true, shortcutsOpen: false, activePanel: null });
 });
 
-describe("CommandMenu (Phase 3.5)", () => {
+describe("CommandMenu", () => {
   test("filters commands as the director types", async () => {
     const user = userEvent.setup();
     renderPalette([

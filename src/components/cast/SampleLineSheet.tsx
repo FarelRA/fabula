@@ -13,7 +13,7 @@ import { RoleAvatar } from "@/components/cast/RoleAvatar";
 import type { CastRole } from "@/lib/cast/types";
 
 /**
- * Sample-line sheet (PLAN §9.5 / Phase 4.4): bottom sheet on every viewport,
+ * Sample-line sheet: bottom sheet on every viewport,
  * focus-trapped by Radix. Cached lines render instantly; "Write another"
  * forces a fresh standard-tier generation.
  */

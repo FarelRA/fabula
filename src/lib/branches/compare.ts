@@ -1,5 +1,5 @@
 /**
- * Two-branch alignment for the compare view (PLAN Phase 6.4 / H2 11.1).
+ * Two-branch alignment for the compare view.
  * Beats align by `depth` along each branch; rows flag missing beats or text
  * divergence. Read-only by construction: this module never produces edits.
  */

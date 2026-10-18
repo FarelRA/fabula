@@ -16,7 +16,7 @@ const beat = makeBeat({
   speakerRoleId: "role_0",
 });
 
-describe("edit-fork confirmation (PLAN Phase 5.6)", () => {
+describe("edit-fork confirmation", () => {
   test("states the fork law and only saves a changed beat", async () => {
     const user = userEvent.setup();
     const onConfirm = vi.fn();

@@ -2,7 +2,7 @@ import { finalizeSingleBlock, renderBeatLine } from "./blocks";
 import type { CompileResult, ContextBeat, ModelRef, TemplateMap } from "./types";
 
 /**
- * Memory-agent prompts (PLAN §7.4): summary, facts, continuity.
+ * Memory-agent prompts: summary, facts, continuity.
  */
 
 export function compileSummaryPrompt(args: {

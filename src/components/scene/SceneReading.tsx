@@ -6,9 +6,9 @@ import { tierLabel } from "@/lib/cast/labels";
 import type { CastScene } from "@/lib/cast/types";
 
 /**
- * Play handoff (PLAN Phase 4.6 → Phase 5): renders the scene's path beats with
+ * Play handoff: renders the scene's path beats with
  * the reading measure and cast strip. The full director console (composer,
- * options, floor, inspector) lands in Phase 5; this surface only ever shows
+ * options, floor, inspector) runs live in the play shell; this surface only ever shows
  * real, committed beats.
  */
 export function SceneReading({ scene }: { scene: CastScene }) {

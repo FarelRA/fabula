@@ -1,9 +1,9 @@
 import type { ExportBundle } from "./types";
 
 /**
- * JSON export (PLAN §12 Phase 7.3, §17.1 #14): the bundle exactly as read —
- * ids, branch links, candidates, facts all survive `JSON.parse`/`jq` without
- * transformation. `exportedAt` is injected here so the query stays pure.
+ * JSON export: the bundle is written exactly as read, so ids, branch links,
+ * candidates and facts all survive `JSON.parse`/`jq` without transformation.
+ * `exportedAt` is injected here so the query stays pure.
  */
 export function serializeSceneToJson(
   bundle: ExportBundle,

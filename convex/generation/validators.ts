@@ -1,7 +1,7 @@
 import { v } from "convex/values";
 import { generationModeV } from "../lib/validators";
 
-/** Shared validator for compiled prompt snapshots (PLAN §7.5). */
+/** Shared validator for compiled prompt snapshots. */
 export const snapshotV = v.object({
   mode: generationModeV,
   blocks: v.array(

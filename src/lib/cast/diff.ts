@@ -2,8 +2,7 @@ import type { RoleCard } from "@convex/shared/contracts";
 import { ROLE_FIELDS, type RoleField } from "./fields";
 
 /**
- * Diff badges after cast regeneration (PLAN §9.5: "diff badges show changed
- * cards"). Compares whole field groups, matching the lock granularity.
+ * Diff badges after cast regeneration. Compares whole field groups, matching the lock granularity.
  */
 
 const SERIALIZE: Record<RoleField, (card: RoleCard) => unknown> = {

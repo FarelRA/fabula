@@ -21,8 +21,8 @@ import type {
 } from "./types";
 
 /**
- * Memory panel (PLAN §6.3, Phase 6.5): what the active path remembers.
- * Path facts, global pins (visually distinct — they cross branches by
+ * Memory panel: what the active path remembers.
+ * Path facts, global pins (visually distinct, they cross branches by
  * explicit override), muted rows, off-path exclusions, summaries and
  * continuity warnings. Pin/mute are reversible.
  */
@@ -154,7 +154,7 @@ export function MemoryPanel({
                   {summary.text}
                 </p>
                 <p className="mt-1 text-[10px] text-muted-foreground">
-                  covers beats {summary.coveredFromSeq}–{summary.coveredThroughSeq}
+                  covers beats {summary.coveredFromSeq} to {summary.coveredThroughSeq}
                 </p>
               </li>
             ))}

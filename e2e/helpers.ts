@@ -55,7 +55,7 @@ export async function pauseAndSettle(
   sceneId: Id<"scenes">,
 ): Promise<void> {
   await page.getByRole("button", { name: /Pause auto-floor/ }).first().click();
-  await expect(page.getByText(/Paused — auto-floor is off/)).toBeVisible();
+  await expect(page.getByText(/Paused, auto-floor is off/)).toBeVisible();
   await expect
     .poll(async () => await owner.query(api.generation.runs.active, { sceneId }), {
       timeout: 20_000,

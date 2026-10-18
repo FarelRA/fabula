@@ -1,7 +1,7 @@
 import type { Doc } from "@convex/_generated/dataModel";
 
 /**
- * UI view models for branch & meta surfaces (PLAN Phase 6). These are mapped
+ * UI view models for branch & meta surfaces. These are mapped
  * from the frozen queries (`branches.list`, `branches.tree`) so pure helpers
  * and presentational components stay Convex-free and unit-testable.
  */

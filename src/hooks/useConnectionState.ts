@@ -3,14 +3,14 @@
 import { useEffect, useState } from "react";
 import { useConvexConnectionState } from "convex/react";
 
-/** Shared connection vocabulary for banners and mutation locks (PLAN §9.9). */
+/** Shared connection vocabulary for banners and mutation locks. */
 export type ConnectionState = "online" | "reconnecting" | "offline";
 
 /**
  * Browser reachability + Convex websocket health, in that priority order.
  * `offline` = the device itself lost the network; `reconnecting` = the socket
  * dropped after having been established and is retrying (Convex owns backoff).
- * Mutating affordances lock only on `offline` — reconnecting mutations are
+ * Mutating affordances lock only on `offline`, reconnecting mutations are
  * queued by the Convex client and delivered on resume.
  */
 export function useConnectionState(): ConnectionState {

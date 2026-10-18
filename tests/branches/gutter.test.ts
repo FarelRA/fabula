@@ -18,7 +18,7 @@ const beats = [
   makeTreeBeat({ id: "beat_4", seq: 4, branchId: "branch_alt", parentBeatId: "beat_2", origin: "edit" }),
 ];
 
-describe("gutter markers (PLAN Phase 6.1)", () => {
+describe("gutter markers", () => {
   test("maps active-path beats proportionally to scene seq", () => {
     const markers = buildGutterMarkers({
       beats,

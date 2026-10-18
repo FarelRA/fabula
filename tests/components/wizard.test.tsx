@@ -40,7 +40,7 @@ function renderWizard(
   return { onStepChange, onCreated };
 }
 
-describe("guided wizard (PLAN §9.4 / Phase 4.1)", () => {
+describe("guided wizard", () => {
   test("premise step validates before advancing", async () => {
     const user = userEvent.setup();
     const { onStepChange } = renderWizard("premise");

@@ -98,8 +98,7 @@ export function BeatRow({
               {speakerName}&apos;s attempt failed
             </p>
             <p className="text-xs leading-relaxed text-muted-foreground">
-              The partial text was kept off the active path. The scene is intact —
-              try the beat again or steer the cast.
+              The partial text was kept off the active path. The scene is intact, try the beat again or steer the cast.
             </p>
             {beat.text ? (
               <p className="rounded-md bg-muted/50 px-2 py-1 text-xs text-muted-foreground">

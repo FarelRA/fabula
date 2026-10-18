@@ -23,7 +23,7 @@ export type ShareLinkRowView = {
 };
 
 /**
- * Share-link list (PLAN §12 Phase 7.4): presentational — the live dialog owns
+ * Share-link list: presentational, the live dialog owns
  * queries/mutations, this owns the markup and the copy/revoke affordances so
  * component tests stay Convex-free.
  */
@@ -66,8 +66,7 @@ export function ShareLinksPanel({
           />
         </div>
         <p className="text-[11px] text-muted-foreground">
-          Links are the only credential a visitor needs. Revoke one any time —
-          the scene itself is untouched.
+          Links are the only credential a visitor needs. Revoke one any time, the scene itself is untouched.
         </p>
       </div>
 

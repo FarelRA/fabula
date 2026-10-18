@@ -6,7 +6,7 @@ import {
   toneSummary,
 } from "@/lib/cast/presets";
 
-/** Appendix A seeds (Phase 4.1): every template preseed is complete. */
+/** Appendix A seeds: every template preseed is complete. */
 
 describe("genre presets", () => {
   test("ships the six Appendix-A seeds with unique ids", () => {

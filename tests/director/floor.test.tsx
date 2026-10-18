@@ -31,7 +31,7 @@ function floorProps(overrides: Partial<React.ComponentProps<typeof FloorIndicato
   return { scene, ...handlers };
 }
 
-describe("floor indicator (PLAN Phase 5.3)", () => {
+describe("floor indicator", () => {
   test("previews the next speaker and burst counter", () => {
     const { scene } = floorProps();
     expect(
@@ -91,7 +91,7 @@ describe("floor indicator (PLAN Phase 5.3)", () => {
         onOffer={vi.fn()}
       />,
     );
-    expect(screen.getByText(/Paused — auto-floor is off/)).toBeInTheDocument();
+    expect(screen.getByText(/Paused, auto-floor is off/)).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: /Resume/ }));
     expect(onPause).toHaveBeenCalled();
 
@@ -116,7 +116,7 @@ describe("floor indicator (PLAN Phase 5.3)", () => {
   });
 });
 
-describe("director bar (PLAN Phase 5.6)", () => {
+describe("director bar", () => {
   test("wires undo, offer, pause and end-scene", async () => {
     const user = userEvent.setup();
     const handlers = {

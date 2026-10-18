@@ -1,6 +1,6 @@
 /**
  * Control markers understood ONLY by the deterministic fake model + fake
- * gateway (tests, CI, E2E — PLAN §11.1). They travel inside the *system
+ * gateway. They travel inside the *system
  * prompt* (e.g. via the scene premise or a director note), so tests can steer
  * fake behavior without any global state or injection seam. The real gateway
  * ignores them entirely; they are inert text.

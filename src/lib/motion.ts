@@ -1,8 +1,8 @@
 import type { Transition, Variants } from "motion/react";
 
 /**
- * Shared motion presets (Phase 3.3, PLAN §9.8). Every component that animates
- * must pass the reduced-motion flag through these resolvers — or rely on the
+ * Shared motion presets. Every component that animates
+ * must pass the reduced-motion flag through these resolvers, or rely on the
  * app-level `MotionConfig reducedMotion="user"` (see src/app/providers.tsx).
  */
 

@@ -19,7 +19,7 @@ vi.mock("@/lib/export/download", async (importOriginal) => {
 
 const { downloadTextFile } = await import("@/lib/export/download");
 
-describe("export dialog (PLAN Phase 7.3)", () => {
+describe("export dialog", () => {
   test("downloads markdown and JSON from the bundle with dated filenames", async () => {
     const user = userEvent.setup();
     const bundle = makeExportBundle();

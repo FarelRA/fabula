@@ -1,5 +1,5 @@
 /**
- * Responsive layout matrix (PLAN §9.7, Phase 3.2):
+ * Responsive layout matrix:
  *
  *  - single  ≤ 768px  phone portrait, landscape, foldables (dense single column)
  *  - two     ≥ 769px  tablet: cast | thread (inspector slides over)

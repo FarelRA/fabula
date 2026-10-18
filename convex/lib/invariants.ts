@@ -1,5 +1,5 @@
 /**
- * Lightweight invariant assertions (PLAN §5.3). Called from mutations after
+ * Lightweight invariant assertions. Called from mutations after
  * pointer changes; thrown errors roll the whole mutation back (Convex
  * transactions are atomic), so a violated invariant can never persist.
  */

@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Page not found · Fabula",
 };
 
-/** 404 surface (Phase 8.3): calm copy, one clear way forward. */
+/** 404 surface: calm copy, one clear way forward. */
 export default function NotFound() {
   return (
     <RouteError

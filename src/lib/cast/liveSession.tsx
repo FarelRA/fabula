@@ -65,12 +65,12 @@ function asDraftCard(card: RoleCard): DraftRoleCard {
 }
 
 /**
- * Live session: the same interface as fixtures, backed by Convex (PLAN
- * §13.4). Cast generation runs through the Phase 2 actions; drafts/edits use
- * the Phase 1 mutations; the opening is previewed via
+ * Live session: the same interface as fixtures, backed by Convex. Cast
+ * generation runs through the generation actions; draft edits use the domain
+ * mutations; the opening is previewed via
  * `generation.opening.draft` and committed with `beats.appendOpening`.
  *
- * Anonymous sign-in happens on the first mutating action — no account wall.
+ * Anonymous sign-in happens on the first mutating action, no account wall.
  */
 export function LiveCastSession({
   children,

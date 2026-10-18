@@ -21,7 +21,7 @@ import { ArchiveReplay } from "./ArchiveReplay";
 import { BranchExplorer } from "./BranchExplorer";
 
 /**
- * Archive view (PLAN §9.1 / §12 Phase 7.2): read-only replay of any branch
+ * Archive view: read-only replay of any branch
  * with the full branch explorer, ledger and exports. Works for playing scenes
  * too (a live snapshot), but archived scenes are the point: nothing here can
  * mutate, and the wrap banner links back to the frozen play shell.
@@ -132,7 +132,7 @@ export function ArchivePage({ sceneId }: { sceneId: Id<"scenes"> }) {
               : ""}
             {scene.endedAt !== undefined
               ? `ended ${formatDistanceToNow(scene.endedAt, { addSuffix: true })}`
-              : "still playing — this replay is a live read-only snapshot"}
+              : "still playing, and this replay is a live read-only snapshot"}
             {usage
               ? ` · est. ${formatUsd(usage.costEstimateUsd)} · ${formatTokens(
                   usage.tokensIn + usage.tokensOut,
@@ -165,7 +165,7 @@ export function ArchivePage({ sceneId }: { sceneId: Id<"scenes"> }) {
       {scene.status === "archived" ? (
         <p className="mt-3 rounded-lg border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
           This scene is archived. Every branch, beat, ghost path and fact is
-          preserved below — replay is read-only, and nothing was deleted.
+          preserved below, replay is read-only, and nothing was deleted.
         </p>
       ) : null}
 

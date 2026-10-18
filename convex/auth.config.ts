@@ -1,5 +1,5 @@
 /**
- * Convex Auth custom-JWT verification (PLAN §3.1).
+ * Convex Auth custom-JWT verification.
  *
  * The auth implementation issues RS256 tokens from the deployment's site URL
  * (`CONVEX_SITE_URL`, automatically present on self-hosted and Cloud

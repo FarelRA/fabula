@@ -11,14 +11,14 @@ import { relationsForRole, scenePromptData, type TurnContextView } from "./conte
 import { recordEstimatedUsage } from "./record";
 
 /**
- * Opening draft (PLAN Phase 4.6, ADR-004).
+ * Opening draft.
  *
  * The audition lets the director reroll the opening beat before canonizing it.
  * This action runs the same opening-turn prompt as `generation.turn.start`
  * (spotlight speaker, full provenance) but **writes no beat**: the audition
  * previews the text, and the chosen version is committed atomically through
- * `beats.appendOpening`. That keeps "nothing is destroyed" intact — no
- * abandoned opening beats pile up from rerolls — and lets the scene stay in
+ * `beats.appendOpening`. That keeps "nothing is destroyed" intact, no
+ * abandoned opening beats pile up from rerolls, and lets the scene stay in
  * draft until the director presses Start.
  */
 export const draft = action({
@@ -82,7 +82,7 @@ export const draft = action({
     }
     text = text.trim();
     if (text.length === 0) {
-      throw new Error("The opening came back empty — try again");
+      throw new Error("The opening came back empty. Try again.");
     }
 
     await ctx.runMutation(internal.generation.snapshots.write, {

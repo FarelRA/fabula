@@ -10,8 +10,8 @@ installDomShims();
 
 const roles = makeRoles();
 
-describe("inline path options (PLAN Phase 5.4)", () => {
-  test("renders 2–4 non-modal cards with strategy, speaker and shortcut hints", () => {
+describe("inline path options", () => {
+  test("renders 2 to 4 non-modal cards with strategy, speaker and shortcut hints", () => {
     const options = [
       makeOption({ id: "a", optionIndex: 1, label: "Push inside" }),
       makeOption({
@@ -31,7 +31,7 @@ describe("inline path options (PLAN Phase 5.4)", () => {
     expect(screen.getByText("Wait outside")).toBeInTheDocument();
     expect(screen.getByText("Escalate")).toBeInTheDocument();
     expect(screen.getByText("Deflect")).toBeInTheDocument();
-    expect(screen.getByText(/Alt\+1–2 picks/)).toBeInTheDocument();
+    expect(screen.getByText(/Alt\+1 to 2 picks/)).toBeInTheDocument();
   });
 
   test("picking is explicit and disabled while another pick is pending", async () => {

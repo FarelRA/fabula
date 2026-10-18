@@ -70,7 +70,7 @@ function renderThread(overrides: Partial<React.ComponentProps<typeof ThreadView>
   );
 }
 
-describe("virtualized thread (PLAN Phase 5.1/5.7)", () => {
+describe("virtualized thread", () => {
   test("renders a window of a 200-beat scene, not 200 rows", () => {
     renderThread();
     const rows = screen.getAllByTestId("beat-row");

@@ -11,7 +11,7 @@ import {
 
 /**
  * Deterministic placeholder first, avatar image crossfades in when ready
- * (PLAN §9.5). The placeholder is pure CSS, so it paints with the first frame;
+ *. The placeholder is pure CSS, so it paints with the first frame;
  * image generation never blocks the audition.
  */
 export function RoleAvatar({

@@ -42,7 +42,7 @@ const snapshot: SnapshotDetailView = {
   ],
 };
 
-describe("prompt inspector (PLAN Phase 6.6)", () => {
+describe("prompt inspector", () => {
   test("shows compiled block text, template versions and budget action", () => {
     render(<PromptInspector snapshots={[snapshot]} contextLabel="beat 3" />);
     expect(screen.getByText(/Prompts · beat 3/)).toBeInTheDocument();
@@ -81,7 +81,7 @@ describe("prompt inspector (PLAN Phase 6.6)", () => {
   });
 });
 
-describe("usage meter (PLAN Phase 6.7)", () => {
+describe("usage meter", () => {
   const usage = {
     tokensIn: 12_400,
     tokensOut: 3_600,
@@ -115,7 +115,7 @@ describe("usage meter (PLAN Phase 6.7)", () => {
   });
 });
 
-describe("compare view (PLAN Phase 6.4)", () => {
+describe("compare view", () => {
   const beat = (depth: number, text: string): CompareBeat => ({
     id: `b${depth}`,
     seq: depth + 1,
@@ -151,7 +151,7 @@ describe("compare view (PLAN Phase 6.4)", () => {
   });
 });
 
-describe("branch gutter (PLAN Phase 6.1)", () => {
+describe("branch gutter", () => {
   test("scrolls for path markers and switches for fork markers", async () => {
     const user = userEvent.setup();
     const onScrollToBeat = vi.fn();

@@ -1,5 +1,5 @@
 /**
- * Structural view of `exportScene.getBundle` rows (PLAN §12 Phase 7.3).
+ * Structural view of `exportScene.getBundle` rows.
  * Only the fields the serializers read are named; the query's richer rows are
  * assignable to these shapes, and the export stays lossless because the JSON
  * serializer writes the bundle as received.

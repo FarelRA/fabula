@@ -5,11 +5,11 @@ import type { Id } from "../convex/_generated/dataModel";
 import { createLiveScene, waitForOptions } from "./helpers";
 
 /**
- * E2E-07 (PLAN §11.5 / Gate G7): viewer links watch the live stream read-only;
+ * viewer links watch the live stream read-only;
  * director links can pick path options; revocation closes the door. Guest
- * contexts carry no session at all — the token is the whole credential.
+ * contexts carry no session at all, the token is the whole credential.
  */
-test("E2E-07 · shared viewers watch read-only; director picks; revoke closes", async ({
+test("shared viewers watch read-only; director picks; revoke closes", async ({
   page,
   browser,
 }, testInfo) => {
@@ -19,7 +19,7 @@ test("E2E-07 · shared viewers watch read-only; director picks; revoke closes", 
 
   // Stabilize the floor, then share through the real dialog.
   await page.getByRole("button", { name: /Pause auto-floor/ }).first().click();
-  await expect(page.getByText(/Paused — auto-floor is off/)).toBeVisible();
+  await expect(page.getByText(/Paused, auto-floor is off/)).toBeVisible();
   await expect
     .poll(async () => await owner.query(api.generation.runs.active, { sceneId }), {
       timeout: 20_000,

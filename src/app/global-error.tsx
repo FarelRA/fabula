@@ -3,8 +3,8 @@
 import { useEffect } from "react";
 
 /**
- * Last-resort boundary (Phase 8.3): the root layout itself failed, so this
- * renders its own document with inline styles — it cannot rely on globals.css
+ * Last-resort boundary: the root layout itself failed, so this
+ * renders its own document with inline styles, it cannot rely on globals.css
  * or any provider. Copy stays calm and honest: the data is server-side, only
  * the screen failed.
  */

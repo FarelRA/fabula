@@ -4,9 +4,9 @@ import Link from "next/link";
 import { ErrorState } from "@/components/shell/states";
 
 /**
- * Shared frame for route-level error boundaries (PLAN §9.9, Phase 8.3):
+ * Shared frame for route-level error boundaries:
  * consistent recovery copy, a retry wired to the boundary's `reset`, and a
- * way home. Each route supplies surface-appropriate wording — none of them
+ * way home. Each route supplies surface-appropriate wording, none of them
  * ever imply story data was lost.
  */
 export function RouteError({

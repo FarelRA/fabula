@@ -1,5 +1,5 @@
 /**
- * Keymap registry (PLAN Appendix B, Phase 3.5) — action IDs frozen at G0.
+ * Keymap registry, action IDs frozen at G0.
  *
  * The registry is data: `resolveKey` powers the useKeymap hook, the shortcuts
  * dialog renders `DEFAULT_KEYMAP` directly, and `findCollisions` is CI-tested
@@ -193,7 +193,7 @@ export function bindingMatches(binding: KeyBinding, event: KeyEventLike): boolea
   if (Boolean(binding.alt) !== event.altKey) return false;
   // For letters/digits, shift is a real modifier and must match exactly.
   // For symbol keys (".", "?", …) the character itself already encodes shift
-  // — some browsers/IMEs/synthetic events deliver "?" with shiftKey=false,
+  //, some browsers/IMEs/synthetic events deliver "?" with shiftKey=false,
   // so demanding shift there would make the shortcut unreliable.
   const shiftMatters = /^[a-z0-9]$/.test(binding.key);
   if (shiftMatters && Boolean(binding.shift) !== event.shiftKey) return false;
@@ -266,7 +266,7 @@ export function formatKey(binding: KeyBinding, platform: Platform = "other"): st
     const parts = [
       binding.mod ? "⌘" : "",
       binding.alt ? "⌥" : "",
-      // "?" is shift+slash by definition — its glyph already implies shift.
+      // "?" is shift+slash by definition, its glyph already implies shift.
       binding.shift && binding.key !== "?" ? "⇧" : "",
     ].join("");
     return `${parts}${keyLabel(binding.key, platform)}`;

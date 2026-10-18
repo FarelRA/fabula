@@ -108,10 +108,10 @@ describe("checkCast", () => {
 });
 
 describe("tierPolicy", () => {
-  test("2–4: everyone can be spotlight", () => {
+  test("2 to 4: everyone can be spotlight", () => {
     expect(tierPolicy(3)).toEqual({ maxSpotlight: 3, maxSupporting: 3 });
   });
-  test("5–6: max 4 spotlight", () => {
+  test("5 to 6: max 4 spotlight", () => {
     expect(tierPolicy(5)).toEqual({ maxSpotlight: 4, maxSupporting: 5 });
   });
   test("7+: max 3 spotlight, 2 supporting", () => {

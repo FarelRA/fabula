@@ -3,7 +3,7 @@ import { v } from "convex/values";
 import { assertSceneAccess, requireScene } from "./lib/authz";
 
 /**
- * Scene export (PLAN §10/§12 Phase 7.3, §13.4): one lossless JSON bundle for
+ * Scene export: one lossless JSON bundle for
  * the archive, markdown export and `jq`. Every row keeps its Convex id so
  * parent/branch links survive a round-trip; prompt snapshots are optional
  * because they dominate the payload (`includeSnapshots`).

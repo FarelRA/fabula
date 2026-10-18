@@ -1,6 +1,6 @@
 import type { NormalizedTierUsage } from "@/lib/usage/format";
 
-/** Presentational view models for the inspector (Phase 6.5–6.7). */
+/** Presentational view models for the inspector. */
 
 export type MemoryFactView = {
   id: string;

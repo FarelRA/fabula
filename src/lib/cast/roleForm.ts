@@ -10,7 +10,7 @@ import { modelTierFor } from "./tierPolicy";
 import { splitList } from "./wizard";
 
 /**
- * Role card editor form (PLAN §9.5, Phase 4.2): RHF + zod, one schema for AI
+ * Role card editor form: RHF + zod, one schema for AI
  * and human roles. Lists edit as comma/newline separated text, then the card
  * is re-validated through the frozen RoleCard contract before saving.
  */

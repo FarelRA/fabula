@@ -4,7 +4,7 @@ import { api } from "../../convex/_generated/api";
 import { makeCard, makeT, makeUser, seedPlayableScene } from "./helpers";
 
 /**
- * Undo + reversibility (law L6, PLAN §8.4): every reversible director action
+ * Undo + reversibility: every reversible director action
  * can be undone; the story tree is never destroyed, only pointers move.
  */
 
@@ -73,7 +73,7 @@ test("undoing fact mute and role retire restores them", async () => {
     kind: "ai",
     card: makeCard("Linh"),
   });
-  // Note: role was added AFTER play started (mid-story casting) — versioned path.
+  // Note: role was added AFTER play started (mid-story casting), versioned path.
   const factId = await client.mutation(api.facts.add, {
     sceneId,
     nodeId: openerBeatId,

@@ -11,7 +11,7 @@ export function installDomShims(): void {
   if (typeof window === "undefined") return;
 
   // jsdom defines matchMedia on the Window prototype, which vitest's global
-  // population does not copy — always install a deterministic stub.
+  // population does not copy, always install a deterministic stub.
   window.matchMedia = ((query: string) =>
     makeMediaQueryList(query, false)) as typeof window.matchMedia;
 

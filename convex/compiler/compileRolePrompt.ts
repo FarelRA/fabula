@@ -23,7 +23,7 @@ import type {
 } from "./types";
 
 /**
- * compileRolePrompt — the heart of role quality (PLAN §7.1).
+ * compileRolePrompt, the heart of role quality.
  *
  * Pure and deterministic: fixed block order, path-filtered context (the
  * caller passes the active-path projection), token-budget compaction, and a

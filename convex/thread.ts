@@ -10,14 +10,14 @@ import { components } from "./_generated/api";
 import { assertSceneAccess, assertShareLink, requireScene } from "./lib/authz";
 
 /**
- * Streaming transport read (PLAN §2, §13.4): one Agent thread per scene.
+ * Streaming transport read: one Agent thread per scene.
  *
  * Beats remain the source of truth; this query exists only so the client can
  * materialize in-flight deltas (`useUIMessages(..., {stream:true})`) and resume
  * a generation after reload. Finished text always comes from the beat row, so
  * transport messages are never rendered twice.
  *
- * Share visitors pass `shareToken` instead of an identity (Phase 7.4); the
+ * Share visitors pass `shareToken` instead of an identity; the
  * token is validated for this scene and reads stay open to viewers.
  */
 export const listMessages = query({

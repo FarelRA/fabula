@@ -6,7 +6,7 @@ import usePresence from "@convex-dev/presence/react";
 import { api } from "@convex/_generated/api";
 
 /**
- * Presence badge for shared scenes (PLAN §3.1 / Phase 7.4): the presence
+ * Presence badge for shared scenes: the presence
  * component owns heartbeats + disconnects; the room is the share token. The
  * display name is stable per tab so reloads don't inflate the count.
  */

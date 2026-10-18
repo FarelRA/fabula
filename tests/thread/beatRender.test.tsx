@@ -9,7 +9,7 @@ import { installDomShims } from "../components/testUtils";
 
 installDomShims();
 
-describe("BeatContent — presentation styles", () => {
+describe("BeatContent, presentation styles", () => {
   test.each(["chat", "script", "novel"] as const)("%s golden", (style) => {
     const { container } = render(
       <BeatContent

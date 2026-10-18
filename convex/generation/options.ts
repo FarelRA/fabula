@@ -15,7 +15,7 @@ import { recordEstimatedUsage } from "./record";
 import type { RoleView } from "./context";
 
 /**
- * Path options (PLAN §7.3, §8.3): generateObject with validation → one
+ * Path options: generateObject with validation → one
  * repair pass → deterministic fallback. Candidates + snapshot persist
  * atomically; option cards render inline under the beat they attach to.
  *
@@ -77,7 +77,7 @@ export const offer = action({
       tipBeatId: args.parentBeatId,
     });
     if (view.scene.status === "archived") {
-      throw new Error("This scene is archived — the story is frozen. Undo the wrap to keep playing.");
+      throw new Error("This scene is archived. The story is frozen, but undoing the wrap reopens it.");
     }
     const activeRoles = view.roles.filter((role) => role.status === "active");
     if (activeRoles.length === 0) throw new Error("No active roles to offer paths for");
@@ -133,13 +133,13 @@ export const offer = action({
       try {
         options = (
           await ask(
-            `Your previous response failed validation (${message}). Return 2–4 valid options now.`,
+            `Your previous response failed validation (${message}). Return 2 to 4 valid options now.`,
           )
         ).options;
       } catch {
         options = null;
         warnings.push(
-          "Model options failed validation twice — deterministic fallback used",
+          "Model options failed validation twice and the deterministic fallback ran",
         );
       }
     }

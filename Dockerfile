@@ -1,4 +1,4 @@
-# Fabula app image (PLAN §15.5): multi-stage, standalone Next.js build,
+# Fabula app image: multi-stage, standalone Next.js build,
 # non-root runtime. The Convex backend runs as a separate service.
 
 # --- deps --------------------------------------------------------------------

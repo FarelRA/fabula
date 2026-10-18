@@ -16,7 +16,7 @@ import { StoryRoleBadge, TierBadge } from "@/components/cast/CastMeta";
 import type { PlayRun, PlayScene } from "@/lib/play/types";
 import { cn } from "cn";
 
-/** Cast rail (PLAN §9.7): seats, tiers, and director floor controls. */
+/** Cast rail: seats, tiers, and director floor controls. */
 export function CastRail({
   scene,
   run,

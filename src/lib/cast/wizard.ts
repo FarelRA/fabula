@@ -9,7 +9,7 @@ import { presetById, skeletonVibe, type GenrePreset } from "./presets";
 import type { SceneDraftInput } from "./types";
 
 /**
- * New-scene forms (PLAN §9.3–9.4, Phase 4.1). One schema powers quick start and
+ * New-scene forms. One schema powers quick start and
  * the guided wizard; step-specific field lists drive RHF validation per step.
  */
 

@@ -6,7 +6,7 @@ import {
   roleValuesFromCard,
 } from "@/lib/cast/roleForm";
 
-/** Role editor form (Phase 4.2): round-trips through the frozen contract. */
+/** Role editor form: round-trips through the frozen contract. */
 
 describe("roleFormSchema", () => {
   test("accepts values derived from a valid card", () => {
@@ -21,7 +21,7 @@ describe("roleFormSchema", () => {
     expect(roleFormSchema.safeParse({ ...values, hook: "  " }).success).toBe(false);
   });
 
-  test("clamps dials to 0–1", () => {
+  test("clamps dials to 0 to 1", () => {
     const values = roleValuesFromCard(blankRoleCard(0));
     expect(roleFormSchema.safeParse({ ...values, warmth: 1.2 }).success).toBe(false);
     expect(roleFormSchema.safeParse({ ...values, warmth: 1 }).success).toBe(true);

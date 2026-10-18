@@ -10,7 +10,7 @@ import {
 import type { UsageView } from "./types";
 
 /**
- * Usage meter (PLAN Appendix C, Phase 6.7): scene totals + per-tier
+ * Usage meter: scene totals + per-tier
  * breakdown, soft-cap warning at 80% / 100%. Numbers are estimates and the UI
  * says so; generation is never hard-blocked in v1.
  */
@@ -131,7 +131,7 @@ export function UsageMeter({
         <p className="flex items-start gap-1.5 rounded-lg border border-amber-500/30 bg-amber-500/10 p-2 text-[11px] text-amber-700 dark:text-amber-300">
           <TriangleAlertIcon className="mt-0.5 size-3.5 shrink-0" aria-hidden />
           {budget.level === "over"
-            ? `Estimated cost ${formatUsd(usage.costEstimateUsd)} is over the soft cap. Generation still works — raise the cap or wrap the scene.`
+            ? `Estimated cost ${formatUsd(usage.costEstimateUsd)} is over the soft cap. Generation still works, raise the cap or wrap the scene.`
             : `Estimated cost is approaching the soft cap (${budget.label}).`}
         </p>
       ) : null}

@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 /**
- * E2E backend + app server (PLAN §11.5 / §15.4).
+ * E2E backend + app server.
  *
  * Playwright starts this in place of `next start`. It:
  *  1. boots the open-source Convex backend via `convex dev` (the local

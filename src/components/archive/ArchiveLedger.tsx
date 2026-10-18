@@ -9,9 +9,9 @@ import type {
 } from "@/lib/export/types";
 
 /**
- * Ledger sections of the archive (PLAN §12 Phase 7.2): the frozen facts,
+ * Ledger sections of the archive: the frozen facts,
  * summaries, director notes and continuity warnings of the archived scene.
- * Purely informational — every action here is a read.
+ * Purely informational, every action here is a read.
  */
 export function ArchiveLedger({
   facts,
@@ -79,7 +79,7 @@ export function ArchiveLedger({
                   {summary.text}
                 </p>
                 <p className="text-[10px] text-muted-foreground">
-                  covers beats {summary.coveredFromSeq}–{summary.coveredThroughSeq}
+                  covers beats {summary.coveredFromSeq} to {summary.coveredThroughSeq}
                 </p>
               </li>
             ))}

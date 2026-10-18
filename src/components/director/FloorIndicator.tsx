@@ -20,7 +20,7 @@ import type { CastRole } from "@/lib/cast/types";
 import type { PlayRun, PlayScene } from "@/lib/play/types";
 
 /**
- * Floor indicator (PLAN §8.2 / Phase 5.3): who is speaking, the next
+ * Floor indicator: who is speaking, the next
  * deterministic speaker preview, burst counter, pause/abort and the manual
  * “Offer paths” affordance. Never renders per-token updates.
  */
@@ -53,10 +53,10 @@ export function FloorIndicator({
 
   let statusLabel: string;
   if (archived) statusLabel = "Scene archived";
-  else if (paused) statusLabel = "Paused — auto-floor is off";
+  else if (paused) statusLabel = "Paused, auto-floor is off";
   else if (run) statusLabel = `${run.roleName ?? "The cast"} is speaking…`;
   else if (openOptions > 0)
-    statusLabel = `${openOptions} path${openOptions === 1 ? "" : "s"} open — your direction`;
+    statusLabel = `${openOptions} path${openOptions === 1 ? "" : "s"} open, your direction`;
   else statusLabel = nextSpeaker ? `Next: ${nextSpeaker.card.identity.name}` : "Floor is open";
 
   return (

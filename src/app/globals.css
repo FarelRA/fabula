@@ -3,7 +3,7 @@
 @import "shadcn/tailwind.css";
 
 /*
- * Fabula design tokens (PLAN §9.7, Phase 3.1) — dark-first, light available.
+ * Fabula design tokens, dark-first, light available.
  *
  * Conventions:
  *  - Every `--x` color that has text/icons rendered on it declares
@@ -11,7 +11,7 @@
  *    meets WCAG 2.2 AA (≥ 4.5:1) in both themes.
  *  - `--role-*` is the 8-slot identity palette (avatars, accents, branch
  *    colors); branch `colorIndex` indexes into it.
- *  - Reading measure is 72ch for the thread column (PLAN §9.7 desktop).
+ *  - Reading measure is 72ch for the thread column.
  */
 
 @custom-variant dark (&:is(.dark *));
@@ -205,9 +205,9 @@
   }
 }
 
-/* --- layout utilities (Phase 3.2) --- */
+/* --- layout utilities --- */
 
-/* Reading column for the thread (PLAN §9.7: max-width ≈ 72ch on desktop). */
+/* Reading column for the thread. */
 @utility reading-measure {
   max-width: var(--reading-measure);
 }

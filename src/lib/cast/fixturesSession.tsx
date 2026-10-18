@@ -53,7 +53,7 @@ type FixturesProviderProps = {
  * Fixtures session: same interface as the live Convex session, fully
  * deterministic and local. Cast generation is simulated; edits, locks,
  * samples, reorders and the opening draft persist in sessionStorage so the
- * handoff to `/s/[sceneId]` works. E2E-01 runs against this layer.
+ * handoff to `/s/[sceneId]` works. The quick-start end-to-end spec runs against this layer.
  */
 export function FixturesCastSession({
   children,

@@ -7,8 +7,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "cn";
 
 /**
- * States catalog (PLAN §9.9, Phase 3.4): every surface designs loading, empty,
- * error, offline and reconnecting states — these are the shared primitives.
+ * States catalog: every surface designs loading, empty,
+ * error, offline and reconnecting states, these are the shared primitives.
  */
 
 export function EmptyState({
@@ -47,7 +47,7 @@ export function EmptyState({
 
 export function ErrorState({
   title = "Something went wrong",
-  description = "The last action didn't go through. Your story is safe — try again.",
+  description = "The last action didn't go through. Your story is safe. Try again.",
   onRetry,
   retryLabel = "Try again",
   className,
@@ -104,7 +104,7 @@ export function LoadingState({
 }
 
 export function OfflineBanner({
-  message = "You're offline — actions that change the story are paused until you reconnect.",
+  message = "You're offline, actions that change the story are paused until you reconnect.",
 }: {
   message?: string;
 }) {

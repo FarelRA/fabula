@@ -5,7 +5,7 @@ import { Slider } from "@/components/ui/slider";
 import { TONE_DIALS } from "@/lib/cast/wizard";
 import { cn } from "cn";
 
-/** Three tone dials in [-1, 1] with plain-language ends (PLAN §9.3). */
+/** Three tone dials in [-1, 1] with plain-language ends. */
 export function ToneDials({
   value,
   onChange,

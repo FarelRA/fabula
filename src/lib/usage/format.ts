@@ -1,5 +1,5 @@
 /**
- * Usage-meter formatting and budget policy (PLAN §3.3, Appendix C; Phase 6.7).
+ * Usage-meter formatting and budget policy.
  * Numbers are estimates and the UI labels them as such.
  */
 
@@ -61,7 +61,7 @@ export function budgetState(
     return {
       level: "over",
       pct,
-      label: `${Math.round(pct * 100)}% of the soft cap — over budget`,
+      label: `${Math.round(pct * 100)}% of the soft cap, over budget`,
     };
   }
   if (pct >= 0.8) {

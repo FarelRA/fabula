@@ -2,8 +2,8 @@
 
 How Fabula turns scene state into role prompts: the compiler pipeline, the eight
 prompt blocks, output contracts per mode, the token budget, provenance, and
-template versioning. This mirrors PLAN §7; every path and API below is verified
-against the implementation. Where the code is narrower than the PLAN, the
+template versioning. This mirrors; every path and API below is verified
+against the implementation. Where the code is narrower than the design, the
 difference is called out.
 
 ## 1. Pipeline
@@ -17,7 +17,7 @@ convex/generation/context.ts        DB → plain data (access checks run here)
         │
         ▼
 convex/compiler/compileRolePrompt.ts          ← pure: no DB writes, no clock, no RNG
-  block drafts 1–8        (convex/compiler/blocks.ts)
+  block drafts 1 to 8        (convex/compiler/blocks.ts)
   context window: last K = sceneSettings.contextBeatsK beats on the active path
   pinned beats older than the window → a separate “Pinned canon” user message
   fitToBudget             (convex/lib/tokenBudget.ts)
@@ -62,7 +62,7 @@ the golden tests all address blocks by `key`.
 Rendering helpers live in `convex/compiler/blocks.ts`: `renderBeatLine`
 (`"Name: text"`, `"Narration: …"` when speakerless), `renderFactLines`
 (appends `(pinned)`), `renderSummaryText` (keeps the **last two** summaries in
-`coveredThroughSeq` order — older ones collapse into the next summary),
+`coveredThroughSeq` order, older ones collapse into the next summary),
 `renderRelationLines`, `renderNotes`, `styleFormatFor`, `lengthWordsFor`,
 `worldVars`, `identityVars`.
 
@@ -70,7 +70,7 @@ Rendering helpers live in `convex/compiler/blocks.ts`: `renderBeatLine`
 
 - The window is the last `contextBeatsK` beats of the active path, sorted by
   `seq`; the shared dev/test settings default is 30 (`SceneSettingsSchema`
-  allows 4–80).
+  allows 4 to 80).
 - Pinned beats older than the window are **always** included, prepended as one
   user message titled `Pinned canon (always in context):`.
 - Beats spoken by the compiled role render as `assistant` messages; every other
@@ -80,20 +80,20 @@ Rendering helpers live in `convex/compiler/blocks.ts`: `renderBeatLine`
 ## 3. Output contracts by mode
 
 All structured outputs parse against zod schemas in `convex/shared/contracts.ts`
-before anything is persisted. `PathOption.label` is refined post-parse to 2–4
+before anything is persisted. `PathOption.label` is refined post-parse to 2 to 4
 words; `Summary` must satisfy `coveredFromSeq ≤ coveredThroughSeq`.
 
 | Mode | Entry point | Contract | Transport | Model tier |
 |---|---|---|---|---|
 | `turn` | `generation.turn.start`, `generation.regenerate.beat`, `generation.opening.draft` | Free text, formatted per presentation style | `Agent` component `streamText` with `saveStreamDeltas` (opening draft: `gateway.stream`) | speaker `modelTier` |
-| `options` | `generation.options.offer` | `PathOptionsSchema` (2–4 options; strategy enum; state-changing strategy required) | `gateway.object` | spotlight |
+| `options` | `generation.options.offer` | `PathOptionsSchema` (2 to 4 options; strategy enum; state-changing strategy required) | `gateway.object` | spotlight |
 | `summary` | `generation.memory.runPass` | `SummarySchema` `{ summary, coveredFromSeq, coveredThroughSeq }` | `gateway.object` | cheap |
 | `facts` | `generation.memory.runPass` | `FactsSchema` `{ facts: [{ text, subjects, visibility, nodeId }] }` | `gateway.object` | cheap |
-| `casting` | `generation.casting.castDraft` | `CastingSchema` (premise + 1–8 role cards) | `gateway.object` | spotlight |
+| `casting` | `generation.casting.castDraft` | `CastingSchema` (premise + 1 to 8 role cards) | `gateway.object` | spotlight |
 | `castRegen` | `generation.casting.castRegen` | `RoleListSchema` | `gateway.object` | spotlight |
 | `fieldRegen` | `generation.casting.fieldRegen` | `FieldRegenSchema` (patch object; applier validates per field) | `gateway.object` | standard |
 | `directorMeta` | `generation.directorMeta.decide` | `DirectorMetaSchema` `{ decisionPoint, reason, responders, pacingNote, endingSuggested }` | `gateway.object` | cheap |
-| `sampleLine` | `generation.sampleLine.generate` | `SampleLinesSchema` (2–3 lines) | `gateway.object` | standard |
+| `sampleLine` | `generation.sampleLine.generate` | `SampleLinesSchema` (2 to 3 lines) | `gateway.object` | standard |
 | `continuity` | `generation.memory.runPass` | `ContinuitySchema` (≤ a few warnings, severity low/medium/high) | `gateway.object` | cheap |
 
 ### Turn formatting
@@ -113,33 +113,32 @@ output tokens (short/medium/long) and doubles as `maxOutputTokens`.
 
 ### Validation, repair and deterministic fallback
 
-- **options** — after parse, `optionProblems()` checks: every `speakerRoleId`
+- **options**, after parse, `optionProblems()` checks: every `speakerRoleId`
   is an active role; ≥2 distinct strategies; ≥1 state-changing strategy
-  (`escalate | reveal | confront | commit` — `STATE_CHANGING_STRATEGIES`).
-  A repair pass re-asks the model — after a parse/transport failure, or with
+  (`escalate | reveal | confront | commit`, `STATE_CHANGING_STRATEGIES`).
+  A repair pass re-asks the model, after a parse/transport failure, or with
   the problem list. If the result is still invalid, `fallbackOptions()` emits a
   deterministic batch (rotating speakers, labels “Force the moment / Hold the
   line / Change the subject”, strategies escalate/deflect/commit) and
   `offer` returns `fallback: true` plus warnings. Note: options are generated
   by a single structured call, not as independent parallel requests
-  (PLAN §8.3 describes per-option failure dropping; v1 has the batch-level
-  repair + fallback path instead).
-- **casting** — zod first, then the programmatic cast checker
+ .
+- **casting**, zod first, then the programmatic cast checker
   (`convex/domain/castConstraints.ts`), then up to two repair passes; residual
   violations are returned as non-blocking warnings the audition surfaces.
-- **facts** — deduped against the existing ledger with
+- **facts**, deduped against the existing ledger with
   `isDuplicateFact()` (normalized-string fallback, `convex/domain/factDedupe.ts`);
   `subjects` are filtered to real scene roles; `nodeId` is clamped to the
   summarized window; private facts store `visibility.roleIds = subjects`.
-- **summary** — `coveredFromSeq` is clamped into the summarized window;
+- **summary**, `coveredFromSeq` is clamped into the summarized window;
   `coveredThroughBeatId` is the window’s last beat, so a summary only applies
   when that beat is on the active path.
-- **fieldRegen** — locked fields never reach the model; the applier validates
+- **fieldRegen**, locked fields never reach the model; the applier validates
   each returned field individually and drops invalid patches with a warning.
-- **directorMeta** — never fails the caller: on any error it returns
+- **directorMeta**, never fails the caller: on any error it returns
   `{ meta: null }` and the turn action falls back to deterministic floor
   resolution (see `docs/orchestration.md`).
-- **memory pass** — each of the three products (summary, facts, continuity) is
+- **memory pass**, each of the three products (summary, facts, continuity) is
   individually non-fatal; a failure leaves the beat stream intact.
 
 ## 4. Casting constraint checks
@@ -155,17 +154,17 @@ output parses. Violations carry stable codes:
 | `similar-hooks` | Pairwise hook token overlap (Jaccard) < 0.7. |
 | `similar-voices` | Pairwise sample-line overlap < 0.8 and not identical register+rhythm. |
 | `duplicate-names`, `self-relation`, `unknown-relation` | Structural sanity. |
-| `tier-policy` | `tierPolicy(size)`: ≤4 → all spotlight allowed; 5–6 → max 4 spotlight; 7+ → max 3 spotlight + 2 supporting. |
+| `tier-policy` | `tierPolicy(size)`: ≤4 → all spotlight allowed; 5 to 6 → max 4 spotlight; 7+ → max 3 spotlight + 2 supporting. |
 
 The request-side human role note, cast sizing and vibe steers are inputs to
 `compileCastingPrompt`; cast-level checks are never trusted to the model.
 
 ## 5. Token budget policy (`convex/lib/tokenBudget.ts`)
 
-- `estimateTokens()` = `ceil(chars / 4)` — the documented fallback until a
-  provider tokenizer lands (PLAN §19.1 item 7).
+- `estimateTokens()` = `ceil(chars / 4)`, the documented fallback until a
+  provider tokenizer lands.
 - `computeUsable(contextWindow, outputReserve, protocolOverhead = 512)` =
-  `contextWindow − outputReserve − 512`.
+  `contextWindow - outputReserve - 512`.
 - `systemTokenBudget(usable)` = 25% of usable (`SYSTEM_TARGET_PCT = 0.25`).
 - `fitToBudget()` enforces two constraints at once: system ≤ target *and*
   system + context + outputReserve ≤ usable.
@@ -179,7 +178,7 @@ Compaction order when over budget:
    `MIN_BLOCK_CHARS = 200`, and keeps an ellipsis marker.
 3. Protected blocks (`contract`, `boundaries`, `directorNotes`, `mode`) are
    **never** shrunk. If the prompt is still over budget after step 2, the fit
-   result sets `overBudget: true` — nothing is silently truncated.
+   result sets `overBudget: true`, nothing is silently truncated.
 
 `overBudgetAction` recorded in snapshots:
 
@@ -188,11 +187,11 @@ Compaction order when over budget:
 - meta/single-block prompts (`finalizeSingleBlock`): `"single-block over budget"`
   when system or total exceed the usable window on the first pass.
 
-Deferred vs PLAN §7.6: the “fail cleanly and retry once with context halved”
+Deferred vs.6: the “fail cleanly and retry once with context halved”
 behavior is not wired in v1; the flag persists instead so the inspector and
 usage views can show it.
 
-## 6. Provenance — `promptSnapshots`
+## 6. Provenance, `promptSnapshots`
 
 Every generation persists a snapshot row. Fields (see `convex/schema.ts` and
 `convex/generation/snapshots.ts`):
@@ -202,7 +201,7 @@ Every generation persists a snapshot row. Fields (see `convex/schema.ts` and
 | `sceneId`, `mode` | Which scene, which generation mode. |
 | `beatId` / `roleId` / `candidateId` | The beat, role or candidate the snapshot belongs to (options batches link every candidate to one snapshot). |
 | `blocks[]` | Per block: `key`, `templateKey`, `templateVersion`, rendered `text`, `hash` (FNV-1a via `stableHash`), `tokens`, `chars`. |
-| `model` | `{ provider, modelId, params }` — params include temperature when the role pins one. |
+| `model` | `{ provider, modelId, params }`, params include temperature when the role pins one. |
 | `tokenCounts` | `{ system, context, outputReserve, total }`. |
 | `budget` | `{ contextWindow, systemTargetPct, overBudgetAction? }`. |
 | `createdAt` | Write time. |
@@ -210,14 +209,14 @@ Every generation persists a snapshot row. Fields (see `convex/schema.ts` and
 Write paths: `generation.lifecycle.completeRun` (turn/regenerate),
 `candidates.createBatchWithSnapshot` (options at inserts snapshot + candidates
 atomically), `generation.snapshots.write` (director meta, memory products,
-casting, sample line), `generation.opening.draft` (audition preview — no beat).
+casting, sample line), `generation.opening.draft` (audition preview, no beat).
 
 The prompt inspector (`convex/generation/snapshots.ts` queries
 `getForBeat` / `getForCandidate` / `listForScene`, rendered by
 `src/components/inspector/PromptInspector.tsx`) shows block-by-block rendered
 text, the template key + version per block, token counts and over-budget
 actions. Because snapshot blocks store text at write time, old snapshots stay
-readable after templates change. E2E-04 asserts this end to end
+readable after templates change. The fork-and-leak browser scenario asserts this end to end
 (`e2e/branch.spec.ts` expects ≥6 prompt blocks and the literal
 `contract.roleplay v1`).
 
@@ -233,7 +232,7 @@ readable after templates change. E2E-04 asserts this end to end
   stays visible as `{{var}}` rather than rendering empty. Seeded templates
   declare their `vars`; the seed also derives them with `templateVars()` when
   omitted.
-- Rule (PLAN §7.8): **any prose change ships as a new version**, never an
+- Rule: **any prose change ships as a new version**, never an
   in-place edit. The seed has one release-window exception: before the first
   public release, `seedV1` converges v1 content in place so early builds stay
   fixable. After release, bump `version`.
@@ -255,8 +254,8 @@ prompts. Additional invariants tested there:
 
 ```bash
 bun run test tests/compiler          # run the prompt goldens
-bun x vitest run tests/compiler -u   # update snapshots — requires a PR note
-                                     # explaining the behavioral change (§7.8)
+bun x vitest run tests/compiler -u   # update snapshots, requires a PR note
+                                     # explaining the behavioral change
 ```
 
 Update goldens only when the prompt change is intentional; the snapshot diff is

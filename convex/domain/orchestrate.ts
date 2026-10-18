@@ -1,5 +1,5 @@
 /**
- * Turn orchestration — PURE core (PLAN §8).
+ * Turn orchestration. PURE core.
  *
  * Floor priority: forced mention → director queue → turn mode. Reactive mode
  * (default) answers who is addressed/affected; the deterministic ordering in
@@ -149,7 +149,7 @@ function resolveReactive(input: FloorInput, active: OrchestrationRole[]): FloorD
 }
 
 /**
- * Auto-burst gate (PLAN §8.2): let 2–3 characters exchange before returning
+ * Auto-burst gate: let 2 to 3 characters exchange before returning
  * the floor, but never past a decision point and never after user direction.
  */
 export function shouldAutoBurst(args: {
@@ -164,7 +164,7 @@ export function shouldAutoBurst(args: {
 }
 
 /**
- * Stall detection (PLAN §8.6): three consecutive canon beats with no state
+ * Stall detection: three consecutive canon beats with no state
  * change (no new facts, no picked options) means the scene is spinning.
  */
 export function detectStall(args: { beatsSinceStateChange: boolean[] }): boolean {

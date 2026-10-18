@@ -1,0 +1,60 @@
+# TLS overlay: puts Traefik in front of the stack as the public entry point.
+#
+#   docker/.env:
+#     ACME_EMAIL=ops@example.com
+#     APP_HOST=fabula.example.com
+#     CONVEX_HOST=api.fabula.example.com
+#     CONVEX_SITE_HOST=site.fabula.example.com
+#     CONVEX_CLOUD_ORIGIN=https://api.fabula.example.com
+#     CONVEX_SITE_ORIGIN=https://site.fabula.example.com
+#     NEXT_PUBLIC_CONVEX_URL=https://api.fabula.example.com
+#
+#   docker compose --env-file docker/.env \
+#     -f docker-compose.yml -f docker-compose.tls.yml up -d --build
+#
+# The base compose file binds every service to 127.0.0.1; this overlay is the
+# only thing that listens publicly. Certificates are issued by Let's Encrypt
+# through the HTTP-01 challenge and stored in the traefik-acme volume.
+
+services:
+  traefik:
+    image: traefik:${TRAEFIK_IMAGE_TAG:-v3.5}
+    restart: unless-stopped
+    command:
+      - --configFile=/etc/traefik/traefik.yml
+      - --certificatesresolvers.le.acme.email=${ACME_EMAIL:?Set ACME_EMAIL in docker/.env}
+      - --certificatesresolvers.le.acme.storage=/acme/acme.json
+      - --certificatesresolvers.le.acme.httpchallenge.entrypoint=web
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - traefik-acme:/acme
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  backend:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.convex-api.rule=Host(`${CONVEX_HOST:?Set CONVEX_HOST in docker/.env}`)"
+      - "traefik.http.routers.convex-api.entrypoints=websecure"
+      - "traefik.http.routers.convex-api.tls.certresolver=le"
+      - "traefik.http.services.convex-api.loadbalancer.server.port=3210"
+      - "traefik.http.routers.convex-site.rule=Host(`${CONVEX_SITE_HOST:?Set CONVEX_SITE_HOST in docker/.env}`)"
+      - "traefik.http.routers.convex-site.entrypoints=websecure"
+      - "traefik.http.routers.convex-site.tls.certresolver=le"
+      - "traefik.http.services.convex-site.loadbalancer.server.port=3211"
+
+  app:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.fabula-app.rule=Host(`${APP_HOST:?Set APP_HOST in docker/.env}`)"
+      - "traefik.http.routers.fabula-app.entrypoints=websecure"
+      - "traefik.http.routers.fabula-app.tls.certresolver=le"
+      - "traefik.http.services.fabula-app.loadbalancer.server.port=3000"
+
+volumes:
+  traefik-acme:

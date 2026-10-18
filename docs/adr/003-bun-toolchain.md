@@ -1,10 +1,10 @@
-# ADR-003: Bun as the standard toolchain (scripts stay PM-agnostic)
+# Bun as the standard toolchain (scripts stay package-manager agnostic)
 
-**Status:** Accepted (Phase 0)
+**Status:** Accepted
 
 ## Context
 
-PLAN.md §3 selected pnpm. The implementation environment provides a Bun-based
+The original stack decision selected pnpm. The implementation environment provides a Bun-based
 toolchain (node/npm/pnpm are Bun shims), and the ecosystem state at
 implementation time is:
 
@@ -33,14 +33,14 @@ implementation time is:
 
 - Zero divergence between local, CI and Docker builds in this environment.
 - A future migration to TS 7 / ESLint 10 requires only devDependency bumps
-  once the lint stack catches up (tracked in PLAN §19.1 style spikes).
+  once the lint stack catches up.
 
-## Update — Phase 3 (app shell)
+## Update. App shell work
 
 Three more Bun-ecosystem pins surfaced while building the app shell:
 
 - **jsdom pinned to `^26`**: jsdom ≥ 27's generated-IDL brand checks fail
-  under Bun — even a bare `new JSDOM()` throws
+  under Bun, even a bare `new JSDOM()` throws
   `'addEventListener' called on an object that is not a valid instance of
   EventTarget`. jsdom 26 passes; revisit when upstream or Bun fixes it.
 - **Vitest JSX via `oxc`**: Next's tsconfig uses `jsx: "preserve"`, and
@@ -51,5 +51,5 @@ Three more Bun-ecosystem pins surfaced while building the app shell:
   infrastructure service (Basic-auth Express), so the E2E webServer honors
   `FABULA_E2E_PORT` with default 3100; CI uses the same default.
 - **Keymap robustness**: symbol chords (e.g. `?`) match even when the event
-  reports `shiftKey=false` (Playwright, some IMEs) — for symbol keys the
+  reports `shiftKey=false` (Playwright, some IMEs), for symbol keys the
   character itself encodes shift; letters/digits still require exact shift.

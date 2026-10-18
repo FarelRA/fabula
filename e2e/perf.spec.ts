@@ -5,7 +5,7 @@ import type { Id } from "../convex/_generated/dataModel";
 import { createLiveScene } from "./helpers";
 
 /**
- * Thread performance evidence (PLAN §11.7 / Gate G5): a 200-beat scene must
+ * Thread performance evidence: a 200-beat scene must
  * stay virtualized (a small DOM window) and scroll at interactive frame rates.
  * Seeds through the authenticated Convex HTTP client, then measures rAF while
  * scrolling the thread.

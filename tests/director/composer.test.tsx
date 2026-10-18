@@ -35,7 +35,7 @@ function renderComposer(overrides: Partial<ComponentProps<typeof SteerComposer>>
   return handlers;
 }
 
-describe("steer composer (PLAN Phase 5.5)", () => {
+describe("steer composer", () => {
   test("sends a steer with the send button and clears the input", async () => {
     const user = userEvent.setup();
     const { onSteer } = renderComposer();

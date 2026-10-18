@@ -11,7 +11,7 @@ import { isDuplicateFact } from "../domain/factDedupe";
 import { recordEstimatedUsage } from "./record";
 
 /**
- * Memory agent (PLAN §3.4, §7.4): rolling summaries every N beats, fact
+ * Memory agent: rolling summaries every N beats, fact
  * extraction with dedupe, continuity warnings. Runs non-fatally after beats;
  * each product writes its own prompt snapshot and usage event.
  */

@@ -6,7 +6,7 @@ import type { Id } from "../convex/_generated/dataModel";
 import { createLiveScene } from "./helpers";
 
 /**
- * Wrap → archive → export (PLAN §12 Phase 7.1–7.3 / Gate G7). The wrap offer
+ * Wrap → archive → export. The wrap offer
  * only appears after ≥2 consecutive meta end-signals, never auto-archives,
  * and the exports download as files that parse cleanly (JSON) and read as
  * markdown.
@@ -18,7 +18,7 @@ test("wrap offer, archive replay, and jq-grade exports", async ({ page }, testIn
 
   // Freeze the floor, then steer two consecutive meta results toward an end.
   await page.getByRole("button", { name: /Pause auto-floor/ }).first().click();
-  await expect(page.getByText(/Paused — auto-floor is off/)).toBeVisible();
+  await expect(page.getByText(/Paused, auto-floor is off/)).toBeVisible();
   await expect
     .poll(async () => await owner.query(api.generation.runs.active, { sceneId }), {
       timeout: 20_000,
@@ -43,7 +43,7 @@ test("wrap offer, archive replay, and jq-grade exports", async ({ page }, testIn
   await page.reload();
   const wrapOffer = page.getByTestId("wrap-offer");
   await expect(wrapOffer).toBeVisible({ timeout: 20_000 });
-  await expect(page.getByText(/Paused — auto-floor is off/)).toBeVisible();
+  await expect(page.getByText(/Paused, auto-floor is off/)).toBeVisible();
   await page.getByRole("button", { name: "Wrap scene" }).click();
   await page.getByRole("button", { name: "Wrap & archive" }).click();
   await expect(page.getByText("Scene wrapped and archived")).toBeVisible({
@@ -72,7 +72,7 @@ test("wrap offer, archive replay, and jq-grade exports", async ({ page }, testIn
     await page.screenshot({ path: "docs/screenshots/archive-1280.png" });
   }
 
-  // Export JSON — parses like `jq`, tree links intact.
+  // Export JSON, parses like `jq`, tree links intact.
   await page.getByRole("button", { name: "Export" }).click();
   const jsonWait = page.waitForEvent("download");
   await page.getByRole("button", { name: ".json" }).click();
@@ -94,7 +94,7 @@ test("wrap offer, archive replay, and jq-grade exports", async ({ page }, testIn
   expect(bundle.beats.length).toBeGreaterThanOrEqual(3);
   expect(bundle.beats.some((beat) => beat.parentBeatId)).toBe(true);
 
-  // Export markdown — opens as a readable document.
+  // Export markdown, opens as a readable document.
   const mdWait = page.waitForEvent("download");
   await page.getByRole("button", { name: ".md" }).click();
   const mdDownload = await mdWait;

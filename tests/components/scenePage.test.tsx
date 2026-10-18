@@ -37,7 +37,7 @@ function playableScene() {
   return { scene: playable, text };
 }
 
-describe("scene handoff (Phase 4.6 → play route)", () => {
+describe("scene handoff", () => {
   test("renders the committed opening beat and the cast strip", async () => {
     const { scene, text } = playableScene();
     render(<ScenePage sceneId={scene.id} />);

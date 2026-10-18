@@ -22,7 +22,7 @@ beforeEach(() => {
   routerMock.replace.mockClear();
 });
 
-describe("quick start (PLAN §9.3 / E2E-01)", () => {
+describe("quick start", () => {
   test("premise → audition → start scene with an opening beat", async () => {
     const user = userEvent.setup();
     render(<QuickStartPage />);

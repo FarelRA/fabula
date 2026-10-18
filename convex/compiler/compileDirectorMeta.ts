@@ -2,7 +2,7 @@ import { finalizeSingleBlock } from "./blocks";
 import type { CompileResult, ModelRef, TemplateMap } from "./types";
 
 /**
- * Director meta-agent prompt (PLAN §7.4): floor ordering, decision points,
+ * Director meta-agent prompt: floor ordering, decision points,
  * pacing, ending detection. Never writes in-fiction content.
  */
 export function compileDirectorPrompt(args: {

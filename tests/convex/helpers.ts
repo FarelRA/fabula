@@ -4,8 +4,7 @@ import { register as registerPresence } from "@convex-dev/presence/test";
 import { api } from "../../convex/_generated/api";
 import schema from "../../convex/schema";
 
-// Deterministic model layer for the whole backend suite (real providers are
-// never called in tests or CI — PLAN §11.1).
+// Deterministic model layer for the whole backend suite.
 process.env.FABULA_MODEL_FAKE = "1";
 
 /**

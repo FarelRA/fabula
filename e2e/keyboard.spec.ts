@@ -9,18 +9,18 @@ import {
 } from "./helpers";
 
 /**
- * E2E-09 (PLAN §11.5 / Appendix B): the play loop is fully keyboard-operable
- * — ⌥1–4 picks, ⌘Z undo, ⌘I inspector, ⌘B map (desktop panes), ⌘J jump to
- * latest, ⌘. abort. The palette/shortcuts dialog half of E2E-09 lives in
+ * The play loop is fully keyboard-operable
+ *, ⌥1 to 4 picks, ⌘Z undo, ⌘I inspector, ⌘B map (desktop panes), ⌘J jump to
+ * latest, ⌘. abort. The palette and shortcuts dialog coverage lives in
  * shell.spec.ts (⌘K filters, ? lists bindings).
  *
  * The inspector/map half asserts the inline desktop panes; on phones the same
- * keybindings set the tab and the sheet opens from the header — the mobile
- * sheet flow is covered by E2E-08's responsive screenshots and component
+ * keybindings set the tab and the sheet opens from the header, the mobile
+ * sheet flow is covered by the responsive screenshots and component
  * tests, so those two assertions are desktop-scoped here.
  */
 
-test("E2E-09 · keyboard walkthrough: pick, undo, inspector, map, jump, abort", async ({
+test("keyboard walkthrough: pick, undo, inspector, map, jump, abort", async ({
   page,
 }, testInfo) => {
   const desktop = testInfo.project.name.includes("desktop");
@@ -121,7 +121,7 @@ test("E2E-09 · keyboard walkthrough: pick, undo, inspector, map, jump, abort", 
   await page.keyboard.press("Control+j");
   await expect(jumpPill).toBeHidden({ timeout: 15_000 });
 
-  // ⌘. → abort mid-stream; the partial stays per abortedKeepsPartial (§8.5).
+  // ⌘. → abort mid-stream; the partial stays per abortedKeepsPartial.
   // 16 chunks at 250 ms gives slow engines ample window to land the abort.
   const noteId = await owner.mutation(api.directorNotes.add, {
     sceneId,

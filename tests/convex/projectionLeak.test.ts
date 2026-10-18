@@ -4,10 +4,10 @@ import { api, internal } from "../../convex/_generated/api";
 import { makeT, makeUser, seedPlayableScene, type T } from "./helpers";
 
 /**
- * The crown jewel (PLAN §6.4 / §11.4): memory is projected along the active
+ * The crown jewel: memory is projected along the active
  * path. Switching branches must never leak unpinned facts, private data, or
  * summaries from the other path. Pinned facts are explicit global canon
- * overrides (ADR-001).
+ * overrides.
  */
 
 async function seedTwoBranchScene(t: T, owner: string) {

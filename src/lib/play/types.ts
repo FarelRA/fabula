@@ -1,7 +1,7 @@
 import type { SceneSettings } from "@convex/shared/contracts";
 import type { CastRole } from "@/lib/cast/types";
 
-/** UI read models for the play loop (PLAN Phase 5). */
+/** UI read models for the play loop. */
 
 export type PlayBeat = {
   id: string;
@@ -72,7 +72,7 @@ export type PlayScene = {
   threadId?: string;
   /** Monotonic scene beat counter; positions the branch gutter. */
   seqCounter: number;
-  /** Consecutive director-meta ending signals (Phase 7 wrap offer). */
+  /** Consecutive director-meta ending signals. */
   endingStreak?: number;
 };
 

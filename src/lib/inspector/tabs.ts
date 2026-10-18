@@ -1,5 +1,5 @@
 /**
- * Inspector surface registry (PLAN §9.1/§9.7, Phase 6). Tabs are URL state
+ * Inspector surface registry. Tabs are URL state
  * (`?inspector=memory|prompts|map|usage`), so every panel is linkable.
  */
 
@@ -17,7 +17,7 @@ export function isInspectorTab(value: string | null | undefined): value is Inspe
   return value !== null && value !== undefined && (INSPECTOR_TABS as readonly string[]).includes(value);
 }
 
-/** Branch-compare flag (PLAN §3.2; graduates in H2 Phase 11). */
+/** Branch-compare flag. */
 export function isCompareEnabled(): boolean {
   return process.env.NEXT_PUBLIC_FABULA_FF_COMPARE === "1";
 }

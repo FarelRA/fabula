@@ -8,11 +8,11 @@ import type {
 } from "./types";
 
 /**
- * Markdown export (PLAN §12 Phase 7.3): a deterministic, human-readable
+ * Markdown export: a deterministic, human-readable
  * screenplay-ish document. Mainline first; alternate branches print only the
  * beats they add after their divergence point; ghosts, facts (with global
  * pins and mutes), summaries and director notes follow. Pure: no clock, no
- * randomness — golden-testable.
+ * randomness, golden-testable.
  */
 export function serializeSceneToMarkdown(bundle: ExportBundle): string {
   const lines: string[] = [];
@@ -104,7 +104,7 @@ export function serializeSceneToMarkdown(bundle: ExportBundle): string {
   } else {
     for (const summary of bundle.summaries) {
       lines.push(
-        `- **Beats ${summary.coveredFromSeq}–${summary.coveredThroughSeq}:** ${summary.text}`,
+        `- **Beats ${summary.coveredFromSeq} to ${summary.coveredThroughSeq}:** ${summary.text}`,
       );
     }
     lines.push("");

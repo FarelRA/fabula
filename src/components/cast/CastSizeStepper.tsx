@@ -11,7 +11,7 @@ import {
 import { cn } from "cn";
 
 /**
- * Cast size stepper (PLAN Phase 4.5): 1–8, 2–4 recommended, ≥5 explains turn
+ * Cast size stepper: 1 to 8, 2 to 4 recommended, ≥5 explains turn
  * throughput/cost inline (never a modal). Also previews the tier assignment so
  * the sizing policy is honest before generation.
  */
@@ -68,7 +68,7 @@ export function CastSizeStepper({
           <PlusIcon />
         </Button>
         <span className="text-sm text-muted-foreground">roles</span>
-        <span className="ml-1 text-xs text-muted-foreground">2–4 recommended</span>
+        <span className="ml-1 text-xs text-muted-foreground">2 to 4 recommended</span>
       </div>
 
       {showTierPreview ? (

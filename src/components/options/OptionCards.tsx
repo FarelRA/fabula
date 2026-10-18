@@ -23,7 +23,7 @@ const STRATEGY_STYLES: Record<string, string> = {
 };
 
 /**
- * Inline path options (PLAN §9.6 / Phase 5.4). Never a modal: 2–4 cards live
+ * Inline path options. Never a modal: 2 to 4 cards live
  * under their parent beat. Ghost candidates under older beats carry a fork
  * warning and pick through a confirmation (handled by the container).
  */
@@ -86,7 +86,7 @@ export function OptionCards({
         <div className="flex items-center gap-2">
           {ghostMode || readOnly ? null : (
             <span className="text-[11px] text-muted-foreground">
-              {platform === "mac" ? "⌥" : "Alt+"}1–{Math.min(4, options.length)} picks
+              {platform === "mac" ? "⌥" : "Alt+"}1 to {Math.min(4, options.length)} picks
             </span>
           )}
           {ghostMode ? (

@@ -66,20 +66,20 @@ export async function requireScene(
 }
 
 /**
- * Story immutability (PLAN §8.4, Phase 7.1): once a scene is archived its
+ * Story immutability: once a scene is archived its
  * tree, cast, memory and notes are frozen. Scene-level operations (sharing,
  * export, the undo log) stay available; `actions.undoLast` remains the
  * explicit reversibility path for a wrap.
  */
 export function assertSceneMutable(scene: Doc<"scenes">): void {
   if (scene.status === "archived") {
-    throw new Error("This scene is archived — the story is frozen. Undo the wrap to keep playing.");
+    throw new Error("This scene is archived. The story is frozen, but undoing the wrap reopens it.");
   }
 }
 
 /**
- * Share-link credential check (PLAN §8.7, Phase 7.4). A valid token is the
- * only credential a viewer/director needs — no identity required. Director
+ * Share-link credential check. A valid token is the
+ * only credential a viewer/director needs, no identity required. Director
  * links additionally authorize the pick mutation; everything else with a
  * token is read-only by construction.
  */

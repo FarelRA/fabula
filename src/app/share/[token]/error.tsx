@@ -4,8 +4,8 @@ import { useEffect } from "react";
 import { RouteError } from "@/components/shell/RouteError";
 
 /**
- * Shared-scene boundary (Phase 8.3): a visitor's link failed to render. The
- * scene itself is untouched — this is a screen problem, not a story problem.
+ * Shared-scene boundary: a visitor's link failed to render. The
+ * scene itself is untouched, this is a screen problem, not a story problem.
  */
 export default function ShareError({
   error,
@@ -21,7 +21,7 @@ export default function ShareError({
   return (
     <RouteError
       title="This shared scene could not open"
-      description="The connection to the scene failed. Nothing about the story changed — try again."
+      description="The connection to the scene failed. Nothing about the story changed. Try again."
       onRetry={reset}
       homeHref="/"
       homeLabel="Start your own scene"

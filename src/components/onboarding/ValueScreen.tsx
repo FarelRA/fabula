@@ -15,12 +15,12 @@ const DIRECT_MODES = [
   {
     icon: RouteIcon,
     title: "Pick a path",
-    copy: "At decision points, 2–4 AI-written continuations appear inline. Picking one makes it canon.",
+    copy: "At decision points, 2 to 4 AI-written continuations appear inline. Picking one makes it canon.",
   },
   {
     icon: SlidersHorizontalIcon,
     title: "Steer",
-    copy: "Drop an out-of-character note — “make her suspicious”, “skip to the duel” — and the cast adjusts.",
+    copy: "Drop an out-of-character note, “make her suspicious”, “skip to the duel”, and the cast adjusts.",
   },
   {
     icon: PenLineIcon,
@@ -29,7 +29,7 @@ const DIRECT_MODES = [
   },
 ] as const;
 
-/** Value-first onboarding (PLAN §9.2): concept, proof, CTA, no account wall. */
+/** Value-first onboarding: concept, proof, CTA, no account wall. */
 export function ValueScreen({ demo }: { demo: boolean }) {
   return (
     <div className="mx-auto w-full max-w-5xl px-5 py-12 sm:px-6 sm:py-16">
@@ -47,8 +47,7 @@ export function ValueScreen({ demo }: { demo: boolean }) {
         </h1>
         <p className="reading-measure text-base leading-relaxed text-muted-foreground sm:text-lg">
           Fabula casts a troupe of distinct characters, then hands you the room:
-          choose the direction, steer from the wings, or step into any role —
-          your own words included. Every choice can branch. Nothing is ever
+          choose the direction, steer from the wings, or step into any role, your own words included. Every choice can branch. Nothing is ever
           destroyed.
         </p>
         <div className="flex flex-wrap items-center gap-3 pt-1">
@@ -77,7 +76,7 @@ export function ValueScreen({ demo }: { demo: boolean }) {
             A troupe like this walks in
           </h2>
           <span className="text-xs text-muted-foreground">
-            names, hooks and voices — every card editable before play
+            names, hooks and voices, every card editable before play
           </span>
         </div>
         <ul className="grid gap-3 sm:grid-cols-3">

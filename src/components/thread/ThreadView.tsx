@@ -41,7 +41,7 @@ function useThrottledValue<T>(value: T, delay: number): T {
 }
 
 /**
- * Virtualized active-path thread (PLAN §9.6 / Phase 5.1–5.2, 5.7).
+ * Virtualized active-path thread.
  *
  * TanStack Virtual keeps 200+ beats smooth. Finished text comes from beats;
  * only the in-flight row uses streamed Agent deltas. Autoscroll sticks to the

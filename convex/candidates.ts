@@ -15,8 +15,8 @@ import { planPick } from "./domain/branchPlans";
 import { snapshotV } from "./generation/validators";
 
 /**
- * Path options (candidates) — PLAN §6, laws L1–L3.
- * Candidates are created by the options generation action (Phase 2) or by
+ * Path options (candidates): attach to the active tip or fork from a ghost.
+ * Candidates are created by the options generation action or by
  * tests; picking one either extends the active branch (parent is the active
  * tip) or forks a new branch from the parent (ghost pick).
  */
@@ -40,7 +40,7 @@ export const createBatch = mutation({
     await assertSceneAccess(ctx, scene, { write: true });
     assertSceneMutable(scene);
     if (args.options.length < 1 || args.options.length > 4) {
-      throw new Error("A decision point carries 1–4 options");
+      throw new Error("A decision point carries 1 to 4 options");
     }
     const parent = await ctx.db.get(args.parentBeatId);
     if (!parent || parent.sceneId !== args.sceneId) {
@@ -73,7 +73,7 @@ export const pick = mutation({
   args: {
     candidateId: v.id("candidates"),
     /**
-     * Director share links may pick (PLAN Phase 7.4 / E2E-07). Viewer tokens
+     * Director share links may pick. Viewer tokens
      * are rejected by `assertShareLink`; without a token the owner identity
      * must hold write access.
      */
@@ -194,7 +194,7 @@ export const listForBeat = query({
 });
 
 /**
- * All offered paths for a scene, decorated with their parent's seq (Phase 5.4).
+ * All offered paths for a scene, decorated with their parent's seq.
  * The play thread renders tip options inline and older candidates as ghost
  * forks under their parent beat. Picked/dismissed rows are history, not UI.
  */
@@ -244,7 +244,7 @@ export const listForScene = query({
 });
 
 /**
- * Options generation write path (PLAN §2.4): candidates + their prompt
+ * Options generation write path: candidates + their prompt
  * snapshot are persisted atomically.
  */
 export const createBatchWithSnapshot = internalMutation({

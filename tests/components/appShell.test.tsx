@@ -39,7 +39,7 @@ beforeEach(() => {
   useUiStore.setState({ paletteOpen: false, shortcutsOpen: false, activePanel: null });
 });
 
-describe("AppShell responsive panes (PLAN §9.7 / Phase 3.2)", () => {
+describe("AppShell responsive panes", () => {
   test("desktop ≥ 1201px renders both panes inline", () => {
     stubMatchMedia(1440);
     renderShell();
@@ -54,7 +54,7 @@ describe("AppShell responsive panes (PLAN §9.7 / Phase 3.2)", () => {
     expect(screen.queryByRole("button", { name: "Open Inspector" })).not.toBeInTheDocument();
   });
 
-  test("tablet 769–1200px keeps the left pane inline and sheets the inspector", async () => {
+  test("tablet 769 to 1200px keeps the left pane inline and sheets the inspector", async () => {
     stubMatchMedia(900);
     const user = userEvent.setup();
     renderShell();

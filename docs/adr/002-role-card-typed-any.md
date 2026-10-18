@@ -1,13 +1,13 @@
-# ADR-002: `roleRevisions.card` is `v.any()`, typed through contracts
+# Role-card storage: `roleRevisions.card` as `v.any()` typed through contracts
 
-**Status:** Accepted (Phase 1)
+**Status:** Accepted
 
 ## Context
 
 `roleRevisions` stores frozen snapshots of the full role card for versioned
-revisions (PLAN §3.1). Convex validators must describe shapes structurally, and
-expressing the card — including nested objects, optional fields, and
-`relations: Array<{ toRoleId: Id<"roles">, ... }>` — a second time inside the
+revisions. Convex validators must describe shapes structurally, and
+expressing the card, including nested objects, optional fields, and
+`relations: Array<{ toRoleId: Id<"roles">, ... }>`, a second time inside the
 schema would duplicate `convex/lib/validators.ts` and drift from the zod
 `RoleCardSchema` over time.
 

@@ -7,9 +7,9 @@ import { logAction } from "./actions";
 import { projectPath } from "./lib/path";
 
 /**
- * Facts ledger (PLAN §3.4, §6.3, Phase 1.4): append-only canon rows tied to
+ * Facts ledger: append-only canon rows tied to
  * the beat where they were introduced. The active path filters them; pinned
- * facts are explicit scene-global overrides (ADR-001).
+ * facts are explicit scene-global overrides.
  */
 
 export const add = mutation({
@@ -96,7 +96,7 @@ export const listForPath = query({
 });
 
 /**
- * Whole-ledger read for the memory panel (PLAN §6.3, Phase 6.5). Unlike
+ * Whole-ledger read for the memory panel. Unlike
  * `listForPath`, this includes muted and off-path facts so the director can
  * mute/unmute, pin, and see exactly what the active path excludes.
  */
@@ -132,7 +132,7 @@ export const listForScene = query({
 });
 
 /**
- * Memory-agent writes (PLAN §3.4): extracted facts arrive pre-deduped from
+ * Memory-agent writes: extracted facts arrive pre-deduped from
  * the action; nodeIds are already validated against the window.
  */
 export const insertExtracted = internalMutation({

@@ -7,7 +7,7 @@ import { nowMs } from "../lib/time";
 import { generationModeV } from "../lib/validators";
 
 /**
- * Generation-run lifecycle (PLAN §8.5, §8.7): one active run per scene
+ * Generation-run lifecycle: one active run per scene
  * (invariant #1), abort requests checked by the streaming loop, watchdog
  * cron fails stale runs.
  */
@@ -107,7 +107,7 @@ export const fail = internalMutation({
   },
 });
 
-/** Public floor state for the play UI (Phase 5.3). */
+/** Public floor state for the play UI. */
 export const active = query({
   args: { sceneId: v.id("scenes") },
   handler: async (ctx, { sceneId }) => {

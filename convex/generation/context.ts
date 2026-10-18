@@ -17,7 +17,7 @@ import type {
 } from "../compiler/types";
 
 /**
- * Generation context loader (PLAN §7.1): DB → plain data for the pure
+ * Generation context loader: DB → plain data for the pure
  * compiler. Access checks run here; nested calls from actions inherit the
  * caller's identity.
  */

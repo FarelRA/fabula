@@ -1,7 +1,7 @@
 import { DEFAULT_KEYMAP, formatKey, type KeymapActionId, type Platform } from "@/lib/keymap";
 
 /**
- * Command palettes are registry-driven (Phase 3.5): later phases append
+ * Command palettes are registry-driven: later surfaces append
  * scene-specific commands (offer paths, toggle map, …) to the same list.
  */
 

@@ -6,10 +6,10 @@ import type { GutterMarker } from "@/lib/branches/gutter";
 import { cn } from "cn";
 
 /**
- * Branch gutter (PLAN §9.7 / Phase 6.1): a vertical rail beside the thread.
+ * Branch gutter: a vertical rail beside the thread.
  * Active-path beats appear as dots, decision points as diamonds, and other
  * branches as fork chips at their divergence beat. Click scrolls to the beat;
- * clicking a fork switches the active branch (context recomputes, L5).
+ * clicking a fork switches the active branch.
  */
 export function BranchGutter({
   markers,

@@ -10,7 +10,7 @@ import { installDomShims } from "../components/testUtils";
 
 installDomShims();
 
-describe("archive replay (PLAN Phase 7.2)", () => {
+describe("archive replay", () => {
   test("renders the chain read-only with speaker names, origins and ghosts", async () => {
     const user = userEvent.setup();
     const bundle = makeExportBundle();
@@ -81,7 +81,7 @@ describe("archive replay (PLAN Phase 7.2)", () => {
     );
     expect(screen.getByText("global")).toBeInTheDocument();
     expect(screen.getByText("muted")).toBeInTheDocument();
-    expect(screen.getByText(/covers beats 1–2/)).toBeInTheDocument();
+    expect(screen.getByText(/covers beats 1 to 2/)).toBeInTheDocument();
     expect(screen.getByText(/Raise the stakes/)).toBeInTheDocument();
     expect(screen.getByText(/Timeline is ambiguous/)).toBeInTheDocument();
   });

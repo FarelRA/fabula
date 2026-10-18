@@ -43,7 +43,7 @@ const beats = [
 const names: Record<string, string> = { role_0: "Linh" };
 const speakerName = (roleId?: string) => (roleId ? (names[roleId] ?? "Role") : "Narration");
 
-describe("story map graph (PLAN Phase 6.2)", () => {
+describe("story map graph", () => {
   test("builds branch-colored nodes and parent edges with active flags", () => {
     const graph = buildMapGraph({
       beats,

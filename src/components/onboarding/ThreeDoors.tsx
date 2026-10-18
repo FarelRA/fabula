@@ -26,12 +26,12 @@ const DOORS = [
     title: "Templates",
     tagline: "Six genre seeds",
     description:
-      "Noir, court intrigue, space crew, campus drama, cozy tavern, or a duel of letters — preseeded and editable.",
+      "Noir, court intrigue, space crew, campus drama, cozy tavern, or a duel of letters, all preseeded and editable.",
     points: ["Premise + tone", "Cast skeleton", "Same audition"],
   },
 ] as const;
 
-/** The three doors (PLAN §9.2, Phase 4.1). All three converge on one audition. */
+/** The three doors. All three converge on one audition. */
 export function ThreeDoors() {
   return (
     <ul className="grid gap-3 md:grid-cols-3">

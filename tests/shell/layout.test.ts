@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 import { BREAKPOINTS, layoutForWidth, LAYOUT_MEDIA } from "@/lib/layout";
 
 /**
- * Responsive layout matrix (PLAN §9.7 / Phase 3.2):
+ * Responsive layout matrix:
  *  - ≤ 768px → single pane
  *  - ≥ 769px → two panes
  *  - ≥ 1201px → three panes (desktop / ultrawide)

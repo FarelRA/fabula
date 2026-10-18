@@ -1,5 +1,5 @@
 /**
- * Token budget policy (PLAN §7.6).
+ * Token budget policy.
  *
  * Two constraints hold at once:
  *   1. system ≤ 25% of usable context (module blocks stay small)
@@ -15,7 +15,7 @@
 
 export function estimateTokens(text: string): number {
   // Provider tokenizers arrive with the real gateway; chars/4 is the
-  // documented fallback (PLAN §19.1 item 7).
+  // documented fallback.
   return Math.ceil(text.length / 4);
 }
 
@@ -106,7 +106,7 @@ export function fitToBudget(args: {
     }
   }
 
-  // (3) Never touch protected blocks — report overBudget for the caller.
+  // (3) Never touch protected blocks, report overBudget for the caller.
   const finalSystem = systemTokens();
   const finalTotal = totalTokens();
   return {

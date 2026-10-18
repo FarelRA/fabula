@@ -9,7 +9,7 @@ import { mapStoryTree } from "@/lib/branches/types";
 import { BranchMapCanvas } from "./BranchMapCanvas";
 
 /**
- * Live story-map wrapper (PLAN Phase 6.2). Imported dynamically by the
+ * Live story-map wrapper. Imported dynamically by the
  * inspector so @xyflow/react + dagre load only when the Map tab opens.
  */
 export function BranchMapView({

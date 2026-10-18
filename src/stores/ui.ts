@@ -1,8 +1,8 @@
 import { create } from "zustand";
 
 /**
- * Ephemeral UI state only (PLAN §3.2): Convex remains the source of truth for
- * story data. Phase 3 covers chrome state; composer/autoscroll intents land
+ * Ephemeral UI state only: Convex remains the source of truth for
+ * story data. Chrome state lives here; composer and autoscroll intents land
  * with the play loop.
  */
 

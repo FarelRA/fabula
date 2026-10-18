@@ -8,7 +8,7 @@ import { simulateReadableStream } from "ai";
 import { parseFakeStreamScript } from "./fakeMarkers";
 
 /**
- * Deterministic scripted LanguageModelV4 for tests/CI/E2E (PLAN §11.1).
+ * Deterministic scripted LanguageModelV4 for tests/CI/E2E.
  * Behavior is steered by control markers that reach the system prompt (see
  * fakeMarkers.ts); without markers it produces a stable default turn text.
  */

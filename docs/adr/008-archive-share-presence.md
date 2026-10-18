@@ -1,18 +1,18 @@
-# ADR-008 — Archive, share & presence surfaces
+# Archive, share and presence surfaces
 
-**Status:** Accepted (Phase 7)
+**Status:** Accepted
 **Date:** 2026-10-18
-**Deciders:** A0 (orchestrator), A1 (domain), A2 (generation), A7 (meta surfaces & archive)
+**Deciders:** orchestrator, domain, generation, meta surfaces & archive
 
 ## Context
 
-Phase 7 ships wrap & archive, markdown/JSON export, share links with presence
-badges, and E2E-07. PLAN §13.4 already names `shares.*`, `scenes.*` and
+This decision ships wrap and archive, markdown/JSON export, and share links
+with presence badges. The API table already names `shares.*`, `scenes.*` and
 `exportScene.getBundle`, but the surfaces needed decisions the frozen table did
 not spell out:
 
 - end detection (`endingSuggested`) was produced by the director meta-agent
-  and then dropped — nothing counted consecutive suggestions or surfaced a
+  and then dropped, nothing counted consecutive suggestions or surfaced a
   wrap offer;
 - `scenes.setStatus` archived a scene with no final summary pass, no audit
   entry and no reversibility path;
@@ -30,22 +30,22 @@ Additive, no breaking changes:
 **End detection & wrap**
 - `scenes.endingStreak?: number` (additive field): consecutive director-meta
   `endingSuggested=true` results; any `false` resets it to 0. The play shell
-  offers a non-modal "Wrap scene?" chip at streak ≥ 2 — the scene never
+  offers a non-modal "Wrap scene?" chip at streak ≥ 2, the scene never
   auto-archives.
 - `scenes.endScene({sceneId})`: freezes the tree (`status:"archived"` +
   `endedAt`), logs a reversible `patchScene` inverse (with an explicit
-  `clearEndedAt` flag — the action log cannot carry `undefined`), and
+  `clearEndedAt` flag, the action log cannot carry `undefined`), and
   schedules the final summary pass (`internal.generation.memory.runPass`
   `{force: true}`) for any beats beyond the last summary. Idempotent.
 - `assertSceneMutable(scene)` guards every story mutation (candidates, beats,
   branches, facts, warnings, notes, cast, scene settings/title, generation
-  actions). Scene-level operations — share create/revoke, export, the undo
-  log — stay allowed; `⌘Z` on the wrap is the reopen path (L6), so
+  actions). Scene-level operations, share create/revoke, export, the undo
+  log, stay allowed; `⌘Z` on the wrap is the reopen path, so
   `scenes.setStatus` cannot leave the archived state directly.
 
 **Share surface**
 - `shares.getByToken` grows additively: `pending`, `options` (with
-  `parentSeq`/`parentIsTip`), `run`, `notes` — the exact shape the play shell
+  `parentSeq`/`parentIsTip`), `run`, `notes`, the exact shape the play shell
   consumes, so both surfaces map through `buildPlayScene`.
 - `thread.listMessages` accepts an optional `shareToken` (viewer-level) and
   validates the link against the scene; `candidates.pick` accepts an optional
@@ -65,20 +65,20 @@ Additive, no breaking changes:
 - Pure serializers in `src/lib/export/`: markdown (golden-locked, mainline
   first then branch deltas, ghosts under their parent) and JSON
   (`exportedAt` injected at serialization time so the query stays reactive).
-  Downloads are browser blobs — no server storage, no REST layer.
+  Downloads are browser blobs, no server storage, no REST layer.
 - `/s/[sceneId]/archive` and `/share/[token]` render client-only through
   `next/dynamic` (`ssr: false`), the same boundary the play shell uses.
 
 **Shared-director scope (v1)**
 - Director links can pick offered path options and nothing else: no steering,
-  queueing, pause, abort or edits. H2 Phase 9 evolves seats, presence and
+  queueing, pause, abort or edits. A later release evolves seats, presence and
   multi-director reconciliation on this foundation.
 
 ## Consequences
 
 - The wrap is audited, summary-complete and reversible; the archive is
   story-immutable but fully readable, exportable and shareable.
-- E2E-07 proves viewer read-only, director pick, live propagation and
+- The share browser scenario proves viewer read-only, director pick, live propagation and
   revocation across independent browser contexts with no session.
 - The leak law is untouched: token scoping is an access layer over the same
   path projection.

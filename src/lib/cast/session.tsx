@@ -16,7 +16,7 @@ type CastSessionProviderProps = {
 };
 
 /**
- * Cast session boundary (Phase 4): fixtures for deterministic development and
+ * Cast session boundary: fixtures for deterministic development and
  * E2E, Convex for real deployments. Without a backend URL the app falls back
  * to fixtures so the director's chair is never a blank screen.
  */

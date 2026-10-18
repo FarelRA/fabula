@@ -11,11 +11,11 @@ import type { CastRole, CastScene, SceneDraftInput } from "./types";
 import { settingsFromInput } from "./wizard";
 
 /**
- * Deterministic fixtures session (PLAN Phase 0.6 / 4.7 / §13.6).
+ * Deterministic fixtures session.
  *
  * The three doors and the audition are fully usable without a backend:
  * casting, field/cast regeneration, locks, samples and the opening beat are
- * simulated deterministically. E2E-01 runs against this layer. Live mode
+ * simulated deterministically. The quick-start end-to-end spec runs against this layer. Live mode
  * (Convex) implements the same session interface.
  */
 
@@ -630,7 +630,7 @@ export function saveFixtureScene(scene: CastScene): void {
     storage.setItem(`${SCENE_PREFIX}${scene.id}`, JSON.stringify(scene));
     storage.setItem(LAST_SCENE_KEY, scene.id);
   } catch {
-    // Quota/private mode — fixtures still work in memory.
+    // Quota/private mode, fixtures still work in memory.
   }
 }
 

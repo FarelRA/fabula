@@ -2,8 +2,8 @@ import { DEFAULT_CONTEXT_WINDOW, type GenerationRequest, type ModelGateway, type
 import { FAKE_ENDING, FAKE_NO_DECISION, FAKE_NO_FACTS, FAKE_OPTIONS_BAD } from "./fakeMarkers";
 
 /**
- * FakeGateway — deterministic, scripted model responses for unit tests, CI
- * and E2E (PLAN §11.1). Streams are matched by the "MODE: <name>" marker;
+ * FakeGateway, deterministic, scripted model responses for unit tests, CI
+ * and E2E. Streams are matched by the "MODE: <name>" marker;
  * structured objects are matched by `schemaName`. By default the gateway
  * SYNTHESIZES valid objects (derived from the compiler's rendered prompt
  * lines) so integration tests need no scripting at all. Explicit scripts and
@@ -32,7 +32,7 @@ export function modeMarker(req: GenerationRequest): string {
 }
 
 // ---------------------------------------------------------------------------
-// Synthesizers — derive valid outputs from what the compiler rendered.
+// Synthesizers, derive valid outputs from what the compiler rendered.
 // ---------------------------------------------------------------------------
 
 /** Compiler renders present roles as "id: Name (tier, storyRole)" lines. */

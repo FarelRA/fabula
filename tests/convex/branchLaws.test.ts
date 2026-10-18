@@ -4,12 +4,12 @@ import { api } from "../../convex/_generated/api";
 import { makeT, makeUser, seedPlayableScene } from "./helpers";
 
 /**
- * Branch laws L1–L4 against the real Convex runtime (convex-test).
- * PLAN §6.1, gate G1.
+ * Branch laws attach, fork-on-edit against the real Convex runtime (convex-test).
+ *.1, gate G1.
  */
 
 describe("branch laws (integration)", () => {
-  test("L2: picking at the active tip extends the current branch", async () => {
+  test("extend: picking at the active tip extends the current branch", async () => {
     const t = makeT();
     const owner = await makeUser(t);
     const { sceneId, branchId, client, openerBeatId } = await seedPlayableScene(t, owner);
@@ -39,7 +39,7 @@ describe("branch laws (integration)", () => {
     expect(branches).toHaveLength(1);
   });
 
-  test("L3: picking a ghost candidate forks from its parent and preserves the original beat", async () => {
+  test("fork-from-ghost: picking a ghost candidate forks from its parent and preserves the original beat", async () => {
     const t = makeT();
     const owner = await makeUser(t);
     const { sceneId, client, openerBeatId } = await seedPlayableScene(t, owner);
@@ -80,7 +80,7 @@ describe("branch laws (integration)", () => {
     expect(path.beats.map((b) => b._id)).toEqual([openerBeatId, forked.beatId]);
   });
 
-  test("L4: editFork preserves the original and forks from its parent", async () => {
+  test("fork-on-edit: editFork preserves the original and forks from its parent", async () => {
     const t = makeT();
     const owner = await makeUser(t);
     const { sceneId, client, openerBeatId } = await seedPlayableScene(t, owner);
@@ -119,7 +119,7 @@ describe("branch laws (integration)", () => {
     expect(scene.scene.activeBranchId).toBe(edited.branchId);
   });
 
-  test("L4: regenerateFork behaves like editFork", async () => {
+  test("fork-on-edit: regenerateFork behaves like editFork", async () => {
     const t = makeT();
     const owner = await makeUser(t);
     const { sceneId, client, openerBeatId } = await seedPlayableScene(t, owner);
@@ -147,7 +147,7 @@ describe("branch laws (integration)", () => {
     expect(original?.beat.text).toBe("She pushes the door.");
   });
 
-  test("switching branches recomputes the active path instantly (L5, no regeneration)", async () => {
+  test("switching branches recomputes the active path instantly (path isolation, no regeneration)", async () => {
     const t = makeT();
     const owner = await makeUser(t);
     const { sceneId, client, openerBeatId } = await seedPlayableScene(t, owner);

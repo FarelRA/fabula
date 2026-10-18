@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import type { SnapshotDetailView } from "./types";
 
 /**
- * Prompt inspector (PLAN §7.7, Phase 6.6): block-by-block compiled text,
+ * Prompt inspector: block-by-block compiled text,
  * template versions, hashes, token counts and budget actions for any
  * generation. Snapshots store rendered block text at write time, so the view
  * stays truthful even after templates or role revisions change.

@@ -11,7 +11,7 @@ import {
 } from "./helpers";
 
 /**
- * Phase 6 backend surface: branch tree, snapshot inspector reads, scene-wide
+ * Branch and inspector backend surface: branch tree, snapshot reads, scene-wide
  * fact ledger with path flags, continuity warnings, and active-path switching.
  */
 
@@ -64,7 +64,7 @@ test("branches.tree exposes branches, path ids, beat previews and candidates", a
   expect(forked.branches).toHaveLength(2);
   expect(forked.activeBranchId).toBe(fork.branchId);
   expect(forked.activeBeatIds).not.toContain(turnBeatId);
-  // Both the original and the fork exist in the tree (law L4).
+  // Both the original and the fork exist in the tree.
   expect(forked.beats.map((beat) => beat._id)).toContain(turnBeatId);
   expect(forked.beats.map((beat) => beat._id)).toContain(fork.newBeatId);
 
@@ -167,7 +167,7 @@ test("facts.listForScene flags path membership, mute and global pins", async () 
   expect(muted?.inContext).toBe(false);
   const pinned = facts.find((fact) => fact._id === offPathFactId);
   expect(pinned?.onPath).toBe(false); // node is not on the new path…
-  expect(pinned?.inContext).toBe(true); // …but global pins cross paths (ADR-001)
+  expect(pinned?.inContext).toBe(true); // …but global pins cross paths
 
   // Switching back to the original path restores fact A's path membership.
   const tree = await client.query(api.branches.tree, { sceneId });

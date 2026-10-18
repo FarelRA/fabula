@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { describe, expect, test } from "vitest";
 
 /**
- * Theme contrast gate (Phase 3.1): every `--x` color that has a matching
+ * Theme contrast gate: every `--x` color that has a matching
  * `--x-foreground` must meet WCAG 2.2 AA (≥ 4.5:1) in both themes, and the
  * focus ring must stay visible against the stage (≥ 3:1, non-text UI).
  *

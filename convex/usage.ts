@@ -9,7 +9,7 @@ import { nowMs } from "./lib/time";
 import { generationModeV } from "./lib/validators";
 
 /**
- * Usage ledger + per-scene rollup (PLAN §4.5, Phase 1.7).
+ * Usage ledger + per-scene rollup.
  * The rollup updates transactionally with each event so the meter reads one
  * row. `recordUsageRow` is shared so action finalizers (lifecycle.completeRun)
  * can record inside their own transaction.

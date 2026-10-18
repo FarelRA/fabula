@@ -255,7 +255,7 @@ export const applyCastRegen = internalMutation({
         relations: [],
         meta: proposed.meta,
       };
-      // Locked fields win — copied from the previous card (byte-identical).
+      // Locked fields win, copied from the previous card (byte-identical).
       copyPaths(previous, nextCard, role.draftLocks);
 
       const relations: Doc<"roles">["relations"] = [];
@@ -320,7 +320,7 @@ export const setAvatar = internalMutation({
 });
 
 // ---------------------------------------------------------------------------
-// Voice samples (cached per revision hash, ADR-004)
+// Voice samples
 // ---------------------------------------------------------------------------
 
 export const getSampleCache = internalQuery({

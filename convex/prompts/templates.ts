@@ -1,9 +1,9 @@
 /**
- * v1 prompt templates as versioned data (PLAN §7.8).
+ * v1 prompt templates as versioned data.
  *
- * Prose lives HERE — never inline in compiler or action code. Any behavioral
+ * Prose lives HERE, never inline in compiler or action code. Any behavioral
  * change to a template ships as a new version (never an in-place edit);
- * golden snapshot tests act as the review gate in Phase 2.
+ * golden snapshot tests act as the review gate.
  */
 
 export type TemplateSeed = {
@@ -20,7 +20,7 @@ export const DEFAULT_TEMPLATES: TemplateSeed[] = [
   {
     key: "contract.roleplay",
     version: TEMPLATE_VERSION_V1,
-    notes: "Shared roleplay contract — block 1, never shrunk.",
+    notes: "Shared roleplay contract, block 1, never shrunk.",
     vars: ["roleName"],
     content: `You are one member of an all-AI cast improvising a scene, directed by a human.
 Rules, in order of priority:
@@ -34,7 +34,7 @@ Rules, in order of priority:
   {
     key: "identity",
     version: TEMPLATE_VERSION_V1,
-    notes: "Identity & voice — block 2.",
+    notes: "Identity & voice, block 2.",
     vars: [
       "roleName",
       "hook",
@@ -65,19 +65,19 @@ Rules, in order of priority:
 {{hook}}
 Identity: {{ageEra}} · {{occupation}} · {{pronouns}}.
 Traits: {{traits}}.
-Temperament (0–1): warmth {{warmth}}, impulse {{impulse}}, guile {{guile}}, optimism {{optimism}}.
+Temperament (0 to 1): warmth {{warmth}}, impulse {{impulse}}, guile {{guile}}, optimism {{optimism}}.
 Flaws: {{flaws}}. Fears: {{fears}}. Desires: {{desires}}.
 Secret (never state it; let it leak through behavior): {{secret}}.
 Public goal: {{publicGoal}}. Secret goal: {{secretGoal}}. Stakes in this scene: {{stakes}}.
 Lines {{roleName}} will not cross: {{boundaries}}.
-Voice — register: {{register}}; rhythm: {{rhythm}}; verbosity: {{verbosity}}; verbal tics: {{verbalTics}}.
+Voice, register: {{register}}; rhythm: {{rhythm}}; verbosity: {{verbosity}}; verbal tics: {{verbalTics}}.
 Never say: {{doNotSay}}.
 Example lines to anchor the voice: {{sampleLines}}`,
   },
   {
     key: "world",
     version: TEMPLATE_VERSION_V1,
-    notes: "World & tone — block 3.",
+    notes: "World & tone, block 3.",
     vars: [
       "premise",
       "genre",
@@ -97,7 +97,7 @@ Write all output in {{playLanguage}}.`,
   {
     key: "boundaries",
     version: TEMPLATE_VERSION_V1,
-    notes: "Content boundaries — block 4, never shrunk.",
+    notes: "Content boundaries, block 4, never shrunk.",
     vars: ["allowed", "blocked"],
     content: `# Content boundaries
 Allowed themes: {{allowed}}.
@@ -107,7 +107,7 @@ If the scene drifts toward a blocked theme, steer it away in-fiction without com
   {
     key: "memory",
     version: TEMPLATE_VERSION_V1,
-    notes: "Story memory — block 5, first to be compacted.",
+    notes: "Story memory, block 5, first to be compacted.",
     vars: ["summary", "facts"],
     content: `# Story memory (canon along the active path)
 Rolling summary: {{summary}}
@@ -117,7 +117,7 @@ Canon facts:
   {
     key: "relations",
     version: TEMPLATE_VERSION_V1,
-    notes: "Relationships present — block 6.",
+    notes: "Relationships present, block 6.",
     vars: ["relations"],
     content: `# Relationships present in this scene
 {{relations}}`,
@@ -125,9 +125,9 @@ Canon facts:
   {
     key: "directorNotes",
     version: TEMPLATE_VERSION_V1,
-    notes: "Director notes — block 7, never shrunk.",
+    notes: "Director notes, block 7, never shrunk.",
     vars: ["steers", "constraints", "doNot"],
-    content: `# Director's chair (out-of-character directives — highest priority after the contract)
+    content: `# Director's chair (out-of-character directives, highest priority after the contract)
 Active steering: {{steers}}
 Standing constraints: {{constraints}}
 Hard do-not list: {{doNot}}`,
@@ -135,11 +135,11 @@ Hard do-not list: {{doNot}}`,
   {
     key: "mode.turn",
     version: TEMPLATE_VERSION_V1,
-    notes: "Turn output contract — block 8.",
+    notes: "Turn output contract, block 8.",
     vars: ["roleName", "presentationStyle", "lengthTarget", "styleFormat", "narrationRule", "lengthWords"],
     content: `MODE: turn
 Task: write {{roleName}}'s next beat.
-Presentation: {{presentationStyle}} — {{styleFormat}}
+Presentation: {{presentationStyle}}, {{styleFormat}}
 {{narrationRule}}
 Length target: {{lengthTarget}} ({{lengthWords}} words).
 Output rules: in-fiction only; no meta commentary, no headings, no lists; do not write other characters' words, thoughts, or reactions.`,
@@ -147,20 +147,20 @@ Output rules: in-fiction only; no meta commentary, no headings, no lists; do not
   {
     key: "mode.options",
     version: TEMPLATE_VERSION_V1,
-    notes: "Path options contract — structured output.",
+    notes: "Path options contract, structured output.",
     vars: ["count", "presentationStyle", "lengthTarget", "roleIds"],
     content: `MODE: options
 Task: propose {{count}} candidate continuations of the scene at this decision point.
 Requirements:
 - Strategically divergent: cover escalate / de-escalate, reveal / conceal, ally / confront; at least one option must change scene state (escalate, reveal, confront, or commit).
 - Options may be spoken by different present characters; speakerRoleId must be one of: {{roleIds}}.
-- label: 2–4 words. text: a complete beat in {{presentationStyle}} form, {{lengthTarget}} length.
+- label: 2 to 4 words. text: a complete beat in {{presentationStyle}} form, {{lengthTarget}} length.
 Return JSON matching the schema: { options: [{ label, speakerRoleId, text, strategy }] }.`,
   },
   {
     key: "mode.summary",
     version: TEMPLATE_VERSION_V1,
-    notes: "Rolling summary contract — structured output.",
+    notes: "Rolling summary contract, structured output.",
     vars: ["fromSeq", "throughSeq"],
     content: `MODE: summary
 Task: update the rolling canon summary on the active path, covering seq {{fromSeq}} through {{throughSeq}}.
@@ -170,7 +170,7 @@ Return JSON: { summary, coveredFromSeq, coveredThroughSeq }.`,
   {
     key: "mode.facts",
     version: TEMPLATE_VERSION_V1,
-    notes: "Fact extraction contract — structured output.",
+    notes: "Fact extraction contract, structured output.",
     vars: ["fromSeq", "max", "existing", "window"],
     content: `MODE: facts
 Task: extract durable canon facts introduced since seq {{fromSeq}} (max {{max}}).
@@ -186,7 +186,7 @@ Return JSON: { facts: [{ text, subjects, visibility, nodeId }] }.`,
     notes: "Voice sample for the audition screen.",
     vars: ["roleName", "hook", "register", "rhythm", "tics", "doNotSay"],
     content: `MODE: sampleLine
-Task: write 2–3 short lines that show {{roleName}}'s speaking voice in this scene.
+Task: write 2 to 3 short lines that show {{roleName}}'s speaking voice in this scene.
 Context: {{hook}} · register {{register}} · rhythm {{rhythm}} · tics {{tics}}.
 Never use: {{doNotSay}}. No narration, dialogue only.
 Return JSON: { lines: ["…", "…"] }.`,
@@ -194,7 +194,7 @@ Return JSON: { lines: ["…", "…"] }.`,
   {
     key: "meta.casting",
     version: TEMPLATE_VERSION_V1,
-    notes: "Casting agent — full cast generation.",
+    notes: "Casting agent, full cast generation.",
     vars: ["premise", "genre", "settingEra", "castSize", "vibeSteer", "humanRoleNote"],
     content: `MODE: casting
 You are the casting director for an all-AI cast acting alongside a human director.
@@ -253,11 +253,11 @@ Respect every cast-level constraint from the casting contract. Return JSON for t
   {
     key: "meta.director",
     version: TEMPLATE_VERSION_V1,
-    notes: "Director meta-agent — floor, pacing, decision points, endings.",
+    notes: "Director meta-agent, floor, pacing, decision points, endings.",
     vars: ["lastBeat", "roles", "tensions", "branchFrequency", "turnMode"],
     content: `MODE: directorMeta
 You are the invisible director. You never write in-fiction content.
-Given: last finished beat — {{lastBeat}}
+Given: last finished beat, {{lastBeat}}
 Present roles: {{roles}}
 Tension map: {{tensions}}
 Turn mode: {{turnMode}} · Branch cadence: {{branchFrequency}}
@@ -271,7 +271,7 @@ Return JSON matching the schema.`,
   {
     key: "meta.continuity",
     version: TEMPLATE_VERSION_V1,
-    notes: "Continuity checker — warnings only, never in-fiction.",
+    notes: "Continuity checker, warnings only, never in-fiction.",
     vars: ["recentBeats", "facts"],
     content: `MODE: continuity
 Task: compare recent beats against the canon fact ledger and report contradictions.

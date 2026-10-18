@@ -7,7 +7,7 @@ import type {
 } from "@convex/shared/contracts";
 
 /**
- * UI-side cast types (PLAN §9.5, Phase 4). These are the shapes the audition
+ * UI-side cast types. These are the shapes the audition
  * components consume; both the fixtures session and the Convex session map
  * their data into them, so components never care where a cast came from.
  */

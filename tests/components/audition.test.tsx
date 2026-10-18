@@ -36,7 +36,7 @@ beforeEach(() => {
   window.sessionStorage.clear();
 });
 
-describe("audition grid (PLAN §9.5 / Phase 4.2)", () => {
+describe("audition grid", () => {
   test("renders the cast with tiers and the opening draft", () => {
     const { scene, first } = renderAudition();
     expect(screen.getByText("Audition")).toBeInTheDocument();
@@ -130,10 +130,10 @@ describe("audition grid (PLAN §9.5 / Phase 4.2)", () => {
     await user.click(screen.getByRole("button", { name: `More actions for ${name}` }));
     await user.click(await screen.findByRole("menuitem", { name: /Move off-stage/ }));
 
-    expect(await screen.findByText(/Off-stage — existing beats are untouched/)).toBeInTheDocument();
+    expect(await screen.findByText(/Off-stage, existing beats are untouched/)).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Restore" }));
     await waitFor(() =>
-      expect(screen.queryByText(/Off-stage — existing beats/)).not.toBeInTheDocument(),
+      expect(screen.queryByText(/Off-stage, existing beats/)).not.toBeInTheDocument(),
     );
   });
 
@@ -195,7 +195,7 @@ describe("audition grid (PLAN §9.5 / Phase 4.2)", () => {
   });
 });
 
-describe("audition failure isolation (Gate G4)", () => {
+describe("audition failure isolation", () => {
   test("an error banner leaves every card and the start affordance usable", () => {
     const scene = makeFixtureScene();
     const noop = vi.fn();
@@ -205,7 +205,7 @@ describe("audition failure isolation (Gate G4)", () => {
         busy={EMPTY_BUSY}
         changedFields={{}}
         warnings={[]}
-        error="Cast regeneration failed — the previous cast is intact."
+        error="Cast regeneration failed, the previous cast is intact."
         onDismissError={noop}
         onEdit={noop}
         onToggleLock={noop}
@@ -222,7 +222,7 @@ describe("audition failure isolation (Gate G4)", () => {
     );
 
     expect(screen.getByRole("alert")).toHaveTextContent(
-      "Cast regeneration failed — the previous cast is intact.",
+      "Cast regeneration failed, the previous cast is intact.",
     );
     for (const role of scene.roles) {
       expect(

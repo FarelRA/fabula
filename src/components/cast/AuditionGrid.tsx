@@ -85,7 +85,7 @@ function SortableCard({
 }
 
 /**
- * The audition grid (PLAN §9.5): one component for quick-start audition-lite
+ * The audition grid: one component for quick-start audition-lite
  * and the full wizard audition. Cards are sortable with @dnd-kit (pointer and
  * keyboard sensors); every destructive-looking action is a soft state.
  */

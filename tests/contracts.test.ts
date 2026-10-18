@@ -29,7 +29,7 @@ describe("role card contract", () => {
 });
 
 describe("path options contract", () => {
-  test("accepts 2–4 divergent options", () => {
+  test("accepts 2 to 4 divergent options", () => {
     const parsed = PathOptionsSchema.parse({
       options: [
         makeOption(),
@@ -54,7 +54,7 @@ describe("path options contract", () => {
     expect(result.success).toBe(false);
   });
 
-  test("enforces 2–4 word labels", () => {
+  test("enforces 2 to 4 word labels", () => {
     const pair = (label: string) => ({
       options: [makeOption({ label }), makeOption({ label: "Wait outside" })],
     });
@@ -72,7 +72,7 @@ describe("path options contract", () => {
 });
 
 describe("casting contract", () => {
-  test("accepts a cast of 1–8 roles", () => {
+  test("accepts a cast of 1 to 8 roles", () => {
     const parsed = CastingSchema.parse({
       premise: "A debt collector knocks on the wrong door.",
       roles: [makeRoleCard()],

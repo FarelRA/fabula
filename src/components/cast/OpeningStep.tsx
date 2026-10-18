@@ -9,7 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import type { OpeningDraft } from "@/lib/cast/types";
 
 /**
- * Opening beat step (PLAN Phase 4.6): preview/regenerate/write-your-own, then
+ * Opening beat step: preview/regenerate/write-your-own, then
  * Start. Nothing is canon until Start; the committed text is exactly what the
  * director sees here. All three paths land in the same scene page.
  */
@@ -53,7 +53,7 @@ export function OpeningStep({
       </div>
       <p className="max-w-prose text-sm text-muted-foreground">
         Set the stage. Generate it, reroll until it lands, or write the first
-        line yourself — nothing is canon until you press Start.
+        line yourself, nothing is canon until you press Start.
       </p>
 
       {drafting && !draft ? (

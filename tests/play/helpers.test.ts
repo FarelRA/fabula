@@ -16,7 +16,7 @@ import { makeBeat, makeOption, makeScene } from "./fixtures";
 
 const NO_RUN: PlayRun | null = null;
 
-describe("auto-burst gate (PLAN §8.2)", () => {
+describe("auto-burst gate", () => {
   test("starts after the opener and after director actions", () => {
     const scene = makeScene();
     expect(trailingAiBeats(scene.beats)).toBe(0);

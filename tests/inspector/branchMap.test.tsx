@@ -10,7 +10,7 @@ installDomShims();
 
 const speakerName = () => "Linh";
 
-describe("branch map (PLAN Phase 6.2)", () => {
+describe("branch map", () => {
   test("lists branches, switches, and exposes a keyboard node list", async () => {
     const user = userEvent.setup();
     const onSwitchBranch = vi.fn();

@@ -34,7 +34,7 @@ const NOTE_KIND_LABELS: Record<PlayNote["kind"], string> = {
 };
 
 /**
- * Three-mode composer (PLAN §9.6 / Phase 5.5): steer, write in-character, and
+ * Three-mode composer: steer, write in-character, and
  * quick steer chips. Mention uses cmdk. Notes persist as directorNotes and
  * feed block 7 of the next prompt.
  */
@@ -242,7 +242,7 @@ export function SteerComposer({
             disabled={archived}
             placeholder={
               mode === "steer"
-                ? "Steer from the wings — “make her suspicious”, “skip to the duel”…"
+                ? "Steer from the wings, “make her suspicious”, “skip to the duel”…"
                 : selectedRole
                   ? `Write a line as ${selectedRole.card.identity.name}…`
                   : "Choose a role to write as…"

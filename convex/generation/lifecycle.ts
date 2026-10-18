@@ -8,13 +8,13 @@ import { recordUsageRow } from "../usage";
 import { snapshotV } from "./validators";
 
 /**
- * Beat lifecycle for streamed generations (PLAN §8.5):
+ * Beat lifecycle for streamed generations:
  *  - beginBeat: creates the beat on the FIRST delta (failure before any
- *    output leaves no beat row — the tree can never be corrupted).
+ *    output leaves no beat row, the tree can never be corrupted).
  *  - completeRun: persists the snapshot, finalizes the beat (canon / artifact /
  *    failed), moves pointers only for canon output, records usage, closes the
  *    run. Aborted-discarded output becomes an artifact that never moves the
- *    active tip (law L6: nothing is destroyed).
+ *    active tip (law reversibility: nothing is destroyed).
  */
 
 export type RunOutcome = "done" | "failed" | "aborted";

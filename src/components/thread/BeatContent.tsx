@@ -8,7 +8,7 @@ import type { PresentationStyle } from "@convex/shared/contracts";
 import { cn } from "cn";
 
 /**
- * Beat body renderer (PLAN §7.3 / Phase 5.1): sanitized markdown, with the
+ * Beat body renderer: sanitized markdown, with the
  * three presentation styles expressed in typography rather than separate data.
  */
 export function BeatContent({

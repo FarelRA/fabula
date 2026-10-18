@@ -1,7 +1,7 @@
 import type { ChatMessage } from "../lib/gateway";
 
 /**
- * Prompt compiler types (PLAN §7). The compiler is pure: DB access happens in
+ * Prompt compiler types. The compiler is pure: DB access happens in
  * the callers; everything here is plain data in, deterministic output out.
  */
 

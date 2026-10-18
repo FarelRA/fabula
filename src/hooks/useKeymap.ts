@@ -6,7 +6,7 @@ import type { KeymapActionId, KeymapScope } from "@/lib/keymap";
 
 /**
  * Bind registry actions to handlers for the lifetime of a component
- * (Phase 3.5). Only registered actions fire; typing in text fields swallows
+ *. Only registered actions fire; typing in text fields swallows
  * bare-key bindings (⌘/Ctrl chords and `allowInInput` still work).
  */
 
