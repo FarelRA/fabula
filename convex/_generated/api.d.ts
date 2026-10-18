@@ -74,6 +74,7 @@ import type * as shares from "../shares.js";
 import type * as summaries from "../summaries.js";
 import type * as thread from "../thread.js";
 import type * as usage from "../usage.js";
+import type * as warnings from "../warnings.js";
 
 import type {
   ApiFromModules,
@@ -148,6 +149,7 @@ declare const fullApi: ApiFromModules<{
   summaries: typeof summaries;
   thread: typeof thread;
   usage: typeof usage;
+  warnings: typeof warnings;
 }>;
 
 /**

@@ -6,13 +6,35 @@ story three ways: pick one of the AI-generated paths, drop an out-of-character
 director note, or write a line yourself. Every choice can branch; nothing is
 ever destroyed.
 
-> **Status: Phases 0–5 complete** (foundation, domain core, generation engine,
-> app shell & design system, cast generation UX, play loop). The full plan —
-> schema, prompt architecture, orchestration spec, wireflows, phases, agents and
-> acceptance criteria — lives in [PLAN.md](./PLAN.md).
+> **Status: Phases 0–6 complete** (foundation, domain core, generation engine,
+> app shell & design system, cast generation UX, play loop, branch & meta
+> surfaces). The full plan — schema, prompt architecture, orchestration spec,
+> wireflows, phases, agents and acceptance criteria — lives in
+> [PLAN.md](./PLAN.md).
 
 ## What works today
 
+- **Branch & meta surfaces** (Phase 6): the inspector (Memory · Prompts · Map ·
+  Usage) is URL state (`?inspector=…&beat=…`), inline as a third desktop pane
+  and a sheet on tablet/mobile.
+  - **Branch gutter**: a rail beside the thread with active-path markers,
+    decision diamonds, pins/failures, and fork chips at divergence beats —
+    click scrolls to a beat; a fork chip switches branches.
+  - **Story map** (lazy `@xyflow/react` + dagre chunk, bundle-asserted by
+    `bun run check:bundles`): branches colored by the identity palette,
+    canon vs alternative edges, who/how/when metadata, a keyboard-navigable
+    beat list, and — behind `NEXT_PUBLIC_FABULA_FF_COMPARE=1` — a read-only
+    two-branch compare with divergence markers.
+  - **Branch switching** recomputes projection only (L5): a “Context updated”
+    toast, no regeneration, nothing destroyed.
+  - **Memory panel**: facts in context, global pins (visually distinct —
+    “crosses branches”), off-path exclusions, muted rows with unmute,
+    summaries, and dismissible continuity warnings — all reversible.
+  - **Prompt inspector**: rendered block-by-block text for any beat/options
+    generation plus recent casting/memory/director-meta snapshots, with
+    template key@version, block hashes, token counts and budget actions.
+  - **Usage meter**: estimated totals + per-tier breakdown and soft-cap
+    warnings at 80% / 100% (generation is never hard-blocked in v1).
 - **Play loop** (Phase 5): the `/s/[sceneId]` director console with a
   TanStack-Virtual thread (200-beat evidence: 8 rendered rows, 60.4 fps),
   chat/script/novel renderers with per-role accent borders, pin and
@@ -33,8 +55,9 @@ ever destroyed.
     pin beats, and wrap/end scene. Beat text is the source of truth; transport
     messages are never rendered twice.
   - Live E2E: E2E-01≤3 screens, E2E-02 two-context pick sync, E2E-03
-    reload-mid-stream token-exact resume, keyboard picks, mention override,
-    pause blocking auto-floor, and the 200-beat perf probe.
+    reload-mid-stream token-exact resume, E2E-04 edit-fork + memory leak +
+    branch switch, keyboard picks, mention override, pause blocking
+    auto-floor, and the 200-beat perf probe.
 - **Cast generation UX** (Phase 4): `/` onboarding, the three doors
   (`/new/quick`, `/new/wizard`, `/new/templates` with six Appendix-A presets),
   the validated four-step wizard (nuqs step state), and one audition surface:
@@ -101,9 +124,11 @@ the audition on deterministic local fixtures for UI-first development. E2E does
 Run everything:
 
 ```bash
-bun run check          # typecheck + lint + tests (368 unit/integration tests)
+bun run check          # typecheck + lint + tests (396 unit/integration tests)
 bun run test:e2e       # builds live, boots local Convex + fake model, Playwright
 bun run e2e:server     # the backend+app server Playwright starts (manual runs)
+bun run build          # production build
+bun run check:bundles  # lazy-chunk assertion (run after build; CI does)
 bun run seed           # seed prompt templates (needs a running backend)
 bun run fixtures       # regenerate UI fixtures
 bun run terminology    # guard: no internal jargon in user-facing strings

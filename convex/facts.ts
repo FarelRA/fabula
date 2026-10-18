@@ -93,6 +93,42 @@ export const listForPath = query({
 });
 
 /**
+ * Whole-ledger read for the memory panel (PLAN §6.3, Phase 6.5). Unlike
+ * `listForPath`, this includes muted and off-path facts so the director can
+ * mute/unmute, pin, and see exactly what the active path excludes.
+ */
+export const listForScene = query({
+  args: { sceneId: v.id("scenes") },
+  handler: async (ctx, { sceneId }) => {
+    const scene = await requireScene(ctx, sceneId);
+    await assertSceneAccess(ctx, scene);
+    const projection = await projectPath(ctx, scene);
+    const pathIds = new Set(projection.chain.map((beat) => beat._id));
+    const [active, muted] = await Promise.all([
+      ctx.db
+        .query("facts")
+        .withIndex("by_scene_status", (q) =>
+          q.eq("sceneId", sceneId).eq("status", "active"),
+        )
+        .collect(),
+      ctx.db
+        .query("facts")
+        .withIndex("by_scene_status", (q) =>
+          q.eq("sceneId", sceneId).eq("status", "muted"),
+        )
+        .collect(),
+    ]);
+    return [...active, ...muted]
+      .sort((a, b) => a.createdAt - b.createdAt)
+      .map((fact) => ({
+        ...fact,
+        onPath: pathIds.has(fact.nodeId),
+        inContext: pathIds.has(fact.nodeId) || fact.isPinned,
+      }));
+  },
+});
+
+/**
  * Memory-agent writes (PLAN §3.4): extracted facts arrive pre-deduped from
  * the action; nodeIds are already validated against the window.
  */

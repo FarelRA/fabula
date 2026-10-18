@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { RoleAvatar } from "@/components/cast/RoleAvatar";
 import { BeatRow } from "@/components/thread/BeatRow";
+import { BranchGutter } from "@/components/thread/BranchGutter";
 import { useKeymap } from "@/hooks/useKeymap";
 import { usePlatform } from "@/hooks/usePlatform";
 import { formatKey, DEFAULT_KEYMAP } from "@/lib/keymap";
@@ -21,6 +22,7 @@ import type {
   PlayRun,
   PlayScene,
 } from "@/lib/play/types";
+import type { GutterMarker } from "@/lib/branches/gutter";
 import { EmptyState } from "@/components/shell/states";
 
 type Row =
@@ -53,11 +55,16 @@ export function ThreadView({
   optimisticPick,
   pendingPickId,
   busy,
+  gutterMarkers = [],
+  selectedBeatId,
+  focusBeatId,
   onPick,
   onPin,
   onEdit,
   onRegenerate,
   onRetry,
+  onInspectBeat,
+  onSwitchBranch,
 }: {
   scene: PlayScene;
   run: PlayRun | null;
@@ -65,11 +72,16 @@ export function ThreadView({
   optimisticPick: PlayOption | null;
   pendingPickId: string | null;
   busy?: boolean;
+  gutterMarkers?: GutterMarker[];
+  selectedBeatId?: string;
+  focusBeatId?: string;
   onPick: (option: PlayOption) => void;
   onPin: (beat: PlayBeat, pinned: boolean) => void;
   onEdit: (beat: PlayBeat) => void;
   onRegenerate: (beat: PlayBeat) => void;
   onRetry: (beat: PlayBeat) => void;
+  onInspectBeat?: (beat: PlayBeat) => void;
+  onSwitchBranch?: (marker: GutterMarker) => void;
 }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [stick, setStick] = useState(true);
@@ -164,6 +176,23 @@ export function ThreadView({
     }
   }, [rows.length, virtualizer]);
 
+  const scrollToBeat = useCallback(
+    (beatId: string) => {
+      const index = rows.findIndex(
+        (row) => row.kind !== "cue" && row.beat.id === beatId,
+      );
+      if (index < 0) return;
+      setStick(false);
+      virtualizer.scrollToIndex(index, { align: "center" });
+    },
+    [rows, virtualizer],
+  );
+
+  useEffect(() => {
+    if (!focusBeatId) return;
+    scrollToBeat(focusBeatId);
+  }, [focusBeatId, scrollToBeat]);
+
   useKeymap([
     { scope: "play", action: "thread.jumpToLatest", handler: scrollToBottom },
   ]);
@@ -220,7 +249,7 @@ export function ThreadView({
         ref={scrollRef}
         onScroll={onScroll}
         data-testid="beat-scroll"
-        className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-4 sm:px-5"
+        className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-4 sm:px-5 lg:pr-10"
       >
         {rows.length === 0 ? (
           <EmptyState
@@ -287,11 +316,13 @@ export function ThreadView({
                       }
                       pendingPickId={pendingPickId}
                       disabled={busy}
+                      selected={selectedBeatId === row.beat.id}
                       onPick={onPick}
                       onPin={(pinned) => onPin(row.beat, pinned)}
                       onEdit={onEdit}
                       onRegenerate={onRegenerate}
                       onRetry={onRetry}
+                      onInspect={onInspectBeat}
                     />
                   )}
                 </div>
@@ -300,6 +331,13 @@ export function ThreadView({
           </div>
         )}
       </div>
+
+      <BranchGutter
+        markers={gutterMarkers}
+        selectedBeatId={selectedBeatId}
+        onScrollToBeat={scrollToBeat}
+        onSwitchBranch={(marker) => onSwitchBranch?.(marker)}
+      />
 
       <p className="sr-only" aria-live="polite" aria-atomic="true">
         {throttledStream}

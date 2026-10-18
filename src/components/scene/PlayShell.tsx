@@ -9,9 +9,10 @@ import {
   useQuery,
 } from "convex/react";
 import { useUIMessages } from "@convex-dev/agent/react";
+import { useQueryState, parseAsString, parseAsStringEnum } from "nuqs";
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
-import { ArrowLeftIcon, PanelLeftIcon } from "lucide-react";
+import { ArrowLeftIcon, PanelLeftIcon, PanelRightIcon } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -29,15 +30,23 @@ import { DirectorBar } from "@/components/director/DirectorBar";
 import { EditBeatDialog } from "@/components/director/EditBeatDialog";
 import { FloorIndicator } from "@/components/director/FloorIndicator";
 import { SteerComposer } from "@/components/director/SteerComposer";
+import { InspectorPane } from "@/components/inspector/InspectorPane";
 import { ThreadView } from "@/components/thread/ThreadView";
 import { OfflineBanner, ReconnectingBanner } from "@/components/shell/states";
 import { useKeymap } from "@/hooks/useKeymap";
+import { useViewportMode } from "@/hooks/useViewportMode";
 import { buildPlayScene, mapPlayRun } from "@/lib/play/map";
 import {
   nextSpeakerPreview,
   shouldAutoStart,
   tipOptions,
 } from "@/lib/play/helpers";
+import {
+  INSPECTOR_TABS,
+  type InspectorTab,
+} from "@/lib/inspector/tabs";
+import { buildGutterMarkers, type GutterMarker } from "@/lib/branches/gutter";
+import { mapBranchRows } from "@/lib/branches/types";
 import type { PlayBeat, PlayOption } from "@/lib/play/types";
 
 function messageOf(error: unknown): string {
@@ -92,6 +101,21 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
   const lastAutoKey = useRef("");
   const startingRef = useRef(false);
   const runRef = useRef<ReturnType<typeof mapPlayRun>>(null);
+  const viewport = useViewportMode();
+  const [inspectorTab, setInspectorTab] = useQueryState(
+    "inspector",
+    parseAsStringEnum<InspectorTab>([...INSPECTOR_TABS]).withOptions({
+      history: "replace",
+    }),
+  );
+  const [selectedBeatId, setSelectedBeatId] = useQueryState(
+    "beat",
+    parseAsString.withOptions({ history: "replace" }),
+  );
+  const lastInspectorTab = useRef<InspectorTab>("memory");
+  useEffect(() => {
+    if (inspectorTab) lastInspectorTab.current = inspectorTab;
+  }, [inspectorTab]);
 
   const sceneData = useQuery(api.scenes.get, { sceneId: id });
   const roleDocs = useQuery(api.cast.listRoles, {
@@ -104,6 +128,7 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
   const noteDocs = useQuery(api.directorNotes.listActive, { sceneId: id });
   const runDoc = useQuery(api.generation.runs.active, { sceneId: id });
   const lastActions = useQuery(api.actions.list, { sceneId: id, limit: 1 });
+  const branchDocs = useQuery(api.branches.list, { sceneId: id });
   const threadId = sceneData?.scene.threadId;
 
   const { results: uiMessages } = useUIMessages(
@@ -124,6 +149,7 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
   const setStatusMutation = useMutation(api.scenes.setStatus);
   const abortMutation = useMutation(api.generation.runs.requestAbort);
   const undoMutation = useMutation(api.actions.undoLast);
+  const setActiveMutation = useMutation(api.branches.setActive);
 
   const scene = useMemo(() => {
     if (
@@ -161,6 +187,95 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
   const canUndo = Boolean(
     lastActions?.[0] && lastActions[0].undoneAt === null,
   );
+
+  const branches = useMemo(
+    () => (branchDocs ? mapBranchRows(branchDocs) : []),
+    [branchDocs],
+  );
+  const branchById = useMemo(
+    () => new Map(branches.map((branch) => [branch.id, branch])),
+    [branches],
+  );
+
+  const gutterMarkers = useMemo<GutterMarker[]>(() => {
+    if (!scene || branches.length === 0) return [];
+    return buildGutterMarkers({
+      beats: scene.beats.map((beat) => ({
+        id: beat.id,
+        branchId: beat.branchId,
+        parentBeatId: beat.parentBeatId,
+        seq: beat.seq,
+        depth: 0,
+        speakerRoleId: beat.speakerRoleId,
+        origin: beat.origin,
+        status: beat.status,
+        isArtifact: beat.isArtifact,
+        isPinned: beat.isPinned,
+        textPreview: "",
+        textChars: 0,
+        createdAt: beat.createdAt,
+      })),
+      branches,
+      candidates: scene.options.map((option) => ({
+        id: option.id,
+        parentBeatId: option.parentBeatId,
+        label: option.label,
+        optionIndex: option.optionIndex,
+        speakerRoleId: option.speakerRoleId,
+        status: "offered" as const,
+      })),
+      activeBeatIds: scene.beats.map((beat) => beat.id),
+      activeTipBeatId: scene.activeTipBeatId,
+      activeBranchId: scene.activeBranchId,
+      maxSeq: scene.seqCounter,
+    });
+  }, [branches, scene]);
+
+  const switchBranch = useCallback(
+    async (branchId: string) => {
+      const branch = branchById.get(branchId);
+      if (!branch?.tipBeatId || branch.isActive) return;
+      try {
+        await setActiveMutation({
+          sceneId: id,
+          tipBeatId: branch.tipBeatId as Id<"beats">,
+        });
+        toast.success("Context updated", {
+          description: `Memory now follows ${branch.label}. Nothing was regenerated.`,
+        });
+      } catch (error) {
+        toast.error(messageOf(error));
+      }
+    },
+    [branchById, id, setActiveMutation],
+  );
+
+  const selectBeat = useCallback(
+    (beatId: string) => {
+      void setSelectedBeatId(beatId || null);
+    },
+    [setSelectedBeatId],
+  );
+
+  const inspectBeat = useCallback(
+    (beatId: string) => {
+      void setSelectedBeatId(beatId);
+      void setInspectorTab("prompts");
+    },
+    [setInspectorTab, setSelectedBeatId],
+  );
+
+  const toggleInspector = useCallback(() => {
+    if (inspectorTab) {
+      void setInspectorTab(null);
+    } else {
+      void setInspectorTab(lastInspectorTab.current);
+    }
+  }, [inspectorTab, setInspectorTab]);
+
+  const closeInspector = useCallback(() => {
+    void setInspectorTab(null);
+  }, [setInspectorTab]);
 
   const startTurn = useCallback(
     async (speakerRoleId?: string) => {
@@ -545,6 +660,21 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
       action: "action.undoLast",
       handler: () => void undo(),
     },
+    {
+      scope: "play",
+      action: "inspector.toggle",
+      handler: toggleInspector,
+    },
+    {
+      scope: "play",
+      action: "inspector.map.open",
+      handler: () => void setInspectorTab("map"),
+    },
+    {
+      scope: "play",
+      action: "inspector.memory.open",
+      handler: () => void setInspectorTab("memory"),
+    },
   ]);
 
   if (!scene) {
@@ -589,6 +719,17 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
           <PanelLeftIcon />
           Cast
         </Button>
+        <Button
+          type="button"
+          variant={inspectorTab ? "secondary" : "outline"}
+          size="sm"
+          onClick={toggleInspector}
+          aria-pressed={Boolean(inspectorTab)}
+          aria-label="Toggle inspector"
+        >
+          <PanelRightIcon />
+          <span className="hidden sm:inline">Inspector</span>
+        </Button>
       </header>
 
       <div className="flex min-h-0 flex-1">
@@ -624,11 +765,16 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
             optimisticPick={pendingPick?.parentIsTip ? pendingPick : null}
             pendingPickId={pendingPick?.id ?? null}
             busy={busy || Boolean(run)}
+            gutterMarkers={gutterMarkers}
+            selectedBeatId={selectedBeatId ?? undefined}
+            focusBeatId={selectedBeatId ?? undefined}
             onPick={requestPick}
             onPin={(beat, pinned) => void pin(beat, pinned)}
             onEdit={(beat) => setEditBeat(beat)}
             onRegenerate={(beat) => setDialog({ kind: "regenerate", beat })}
             onRetry={() => void startTurn()}
+            onInspectBeat={(beat) => inspectBeat(beat.id)}
+            onSwitchBranch={(marker) => void switchBranch(marker.branchId)}
           />
           <DirectorBar
             scene={scene}
@@ -651,7 +797,53 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
             onResolveNote={(noteId) => void resolveNote(noteId)}
           />
         </div>
+
+        {viewport === "three" && inspectorTab ? (
+          <aside
+            aria-label="Inspector"
+            className="w-[22rem] shrink-0 border-l border-border"
+          >
+            <InspectorPane
+              scene={scene}
+              sceneId={id}
+              tab={inspectorTab}
+              beatId={selectedBeatId ?? undefined}
+              onTabChange={(next) => void setInspectorTab(next)}
+              onClose={closeInspector}
+              onSelectBeat={selectBeat}
+              onInspectBeat={inspectBeat}
+              onSwitchBranch={(branchId) => void switchBranch(branchId)}
+            />
+          </aside>
+        ) : null}
       </div>
+
+      <Sheet
+        open={Boolean(inspectorTab) && viewport !== "three"}
+        onOpenChange={(open) => {
+          if (!open) closeInspector();
+        }}
+      >
+        <SheetContent side="right" className="w-full overflow-y-auto p-0 sm:max-w-md">
+          <SheetHeader className="sr-only">
+            <SheetTitle>Inspector</SheetTitle>
+            <SheetDescription>Memory, prompts, map and usage</SheetDescription>
+          </SheetHeader>
+          {inspectorTab ? (
+            <InspectorPane
+              scene={scene}
+              sceneId={id}
+              tab={inspectorTab}
+              beatId={selectedBeatId ?? undefined}
+              onTabChange={(next) => void setInspectorTab(next)}
+              onClose={closeInspector}
+              onSelectBeat={selectBeat}
+              onInspectBeat={inspectBeat}
+              onSwitchBranch={(branchId) => void switchBranch(branchId)}
+            />
+          ) : null}
+        </SheetContent>
+      </Sheet>
 
       <Sheet open={castOpen} onOpenChange={setCastOpen}>
         <SheetContent side="left" className="w-full overflow-y-auto sm:max-w-xs">

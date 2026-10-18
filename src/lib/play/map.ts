@@ -94,5 +94,6 @@ export function buildPlayScene(args: {
     activeTipBeatId: args.scene.activeTipBeatId,
     activeBranchId: args.scene.activeBranchId,
     threadId: args.scene.threadId,
+    seqCounter: args.scene.seqCounter,
   };
 }

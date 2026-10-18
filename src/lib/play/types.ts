@@ -70,6 +70,8 @@ export type PlayScene = {
   activeTipBeatId?: string;
   activeBranchId?: string;
   threadId?: string;
+  /** Monotonic scene beat counter; positions the branch gutter. */
+  seqCounter: number;
 };
 
 export type PlayOptionPick = {

@@ -1,7 +1,8 @@
-import { internalMutation } from "../_generated/server";
+import { internalMutation, query } from "../_generated/server";
 import { v } from "convex/values";
 import { nowMs } from "../lib/time";
 import { generationModeV } from "../lib/validators";
+import { assertSceneAccess, requireScene } from "../lib/authz";
 
 /**
  * Prompt provenance (PLAN §7.5): every generation writes a snapshot with its
@@ -58,5 +59,60 @@ export const write = internalMutation({
       budget: args.budget,
       createdAt: nowMs(),
     });
+  },
+});
+
+/**
+ * Prompt inspector reads (PLAN §7.7, Phase 6.6). Snapshots store rendered
+ * block text at write time, so the inspector shows exactly what was compiled
+ * even after templates or revisions change.
+ */
+export const getForBeat = query({
+  args: { beatId: v.id("beats") },
+  handler: async (ctx, { beatId }) => {
+    const beat = await ctx.db.get(beatId);
+    if (!beat) return null;
+    const scene = await requireScene(ctx, beat.sceneId);
+    await assertSceneAccess(ctx, scene);
+    const rows = await ctx.db
+      .query("promptSnapshots")
+      .withIndex("by_beat", (q) => q.eq("beatId", beatId))
+      .collect();
+    return rows.sort((a, b) => b.createdAt - a.createdAt);
+  },
+});
+
+export const getForCandidate = query({
+  args: { candidateId: v.id("candidates") },
+  handler: async (ctx, { candidateId }) => {
+    const candidate = await ctx.db.get(candidateId);
+    if (!candidate) return null;
+    const scene = await requireScene(ctx, candidate.sceneId);
+    await assertSceneAccess(ctx, scene);
+    // Option batches link through candidates.promptSnapshotId; the
+    // by_candidate index covers any future per-candidate snapshots.
+    if (candidate.promptSnapshotId) {
+      const linked = await ctx.db.get(candidate.promptSnapshotId);
+      if (linked) return [linked];
+    }
+    const rows = await ctx.db
+      .query("promptSnapshots")
+      .withIndex("by_candidate", (q) => q.eq("candidateId", candidateId))
+      .collect();
+    return rows.sort((a, b) => b.createdAt - a.createdAt);
+  },
+});
+
+/** Recent-generation index for the inspector's fallback view. */
+export const listForScene = query({
+  args: { sceneId: v.id("scenes"), limit: v.optional(v.number()) },
+  handler: async (ctx, { sceneId, limit }) => {
+    const scene = await requireScene(ctx, sceneId);
+    await assertSceneAccess(ctx, scene);
+    return await ctx.db
+      .query("promptSnapshots")
+      .withIndex("by_scene_createdAt", (q) => q.eq("sceneId", sceneId))
+      .order("desc")
+      .take(limit ?? 8);
   },
 });

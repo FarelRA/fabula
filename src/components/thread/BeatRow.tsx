@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  FileSearchIcon,
   MoreHorizontalIcon,
   PencilIcon,
   PinIcon,
@@ -39,11 +40,13 @@ export function BeatRow({
   streamingText,
   pendingPickId,
   disabled,
+  selected,
   onPick,
   onPin,
   onEdit,
   onRegenerate,
   onRetry,
+  onInspect,
 }: {
   beat: PlayBeat;
   speaker?: CastRole;
@@ -54,11 +57,13 @@ export function BeatRow({
   streamingText?: string;
   pendingPickId?: string | null;
   disabled?: boolean;
+  selected?: boolean;
   onPick: (option: PlayOption) => void;
   onPin: (pinned: boolean) => void;
   onEdit: (beat: PlayBeat) => void;
   onRegenerate: (beat: PlayBeat) => void;
   onRetry: (beat: PlayBeat) => void;
+  onInspect?: (beat: PlayBeat) => void;
 }) {
   const streaming = beat.status === "streaming";
   const failed = beat.status === "failed";
@@ -122,6 +127,7 @@ export function BeatRow({
       className={cn(
         "rounded-xl border border-border border-l-4 bg-card p-3 shadow-sm sm:p-4",
         isTip && "ring-1 ring-primary/15",
+        selected && "ring-2 ring-primary/45",
         beat.optimistic && "animate-pulse motion-reduce:animate-none",
       )}
     >
@@ -188,6 +194,12 @@ export function BeatRow({
               <PencilIcon />
               Edit (forks)
             </DropdownMenuItem>
+            {onInspect ? (
+              <DropdownMenuItem onSelect={() => onInspect(beat)}>
+                <FileSearchIcon />
+                Inspect prompts
+              </DropdownMenuItem>
+            ) : null}
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onSelect={() => onRegenerate(beat)}

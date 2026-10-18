@@ -45,6 +45,7 @@ export function DirectorBar({
         onClick={onUndo}
         disabled={!canUndo || busy}
         title="Undo last action (Ctrl/⌘+Z)"
+        aria-label="Undo last action"
       >
         <Undo2Icon />
         Undo
@@ -56,6 +57,7 @@ export function DirectorBar({
         onClick={onOffer}
         disabled={Boolean(busy) || archived || !scene.activeTipBeatId}
         title="Offer paths (Ctrl/⌘+Shift+O)"
+        aria-label="Offer paths"
       >
         <ListTreeIcon />
         Offer paths
@@ -67,6 +69,7 @@ export function DirectorBar({
         onClick={onPauseToggle}
         disabled={busy || archived}
         title={paused ? "Resume auto-floor" : "Pause auto-floor"}
+        aria-label={paused ? "Resume auto-floor" : "Pause auto-floor"}
       >
         {paused ? <CirclePlayIcon /> : <CirclePauseIcon />}
         {paused ? "Resume" : "Pause"}

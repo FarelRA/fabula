@@ -84,6 +84,7 @@ export function makeScene(overrides: Partial<PlayScene> = {}): PlayScene {
     ...base,
     status: "playing",
     activeTipBeatId: "beat_opening",
+    seqCounter: overrides.beats?.length ?? 1,
     roles,
     beats: [opening],
     pending: [],

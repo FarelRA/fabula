@@ -24,10 +24,11 @@ jobs:
       - run: bun run build
         env:
           NEXT_PUBLIC_CONVEX_URL: http://127.0.0.1:3210
+      - run: bun run check:bundles
 
   e2e:
-    # App-shell E2E (Phase 3); grows with each phase. The fake-gateway
-    # fixtures mode + local Convex arrive with the play loop (Phase 5).
+    # Playwright against the isolated self-hosted Convex backend + fake model
+    # (test:e2e builds the live app and boots scripts/e2e-server.ts).
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

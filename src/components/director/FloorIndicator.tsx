@@ -102,6 +102,7 @@ export function FloorIndicator({
           onClick={onOffer}
           disabled={Boolean(run) || busy || archived || !scene.activeTipBeatId}
           title="Offer paths (Ctrl/⌘+Shift+O)"
+          aria-label="Offer paths"
         >
           <ListTreeIcon />
           <span className="hidden sm:inline">Offer paths</span>
@@ -114,6 +115,7 @@ export function FloorIndicator({
             onClick={onAbort}
             disabled={run.abortRequested}
             title="Abort generation (Ctrl/⌘+.)"
+            aria-label="Abort generation"
           >
             <OctagonXIcon />
             <span className="hidden sm:inline">Abort</span>
@@ -126,6 +128,7 @@ export function FloorIndicator({
           onClick={onPauseToggle}
           disabled={busy || archived}
           title={paused ? "Resume auto-floor" : "Pause auto-floor"}
+          aria-label={paused ? "Resume auto-floor" : "Pause auto-floor"}
         >
           {paused ? <CirclePlayIcon /> : <CirclePauseIcon />}
           <span className="hidden sm:inline">{paused ? "Resume" : "Pause"}</span>

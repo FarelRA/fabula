@@ -141,7 +141,7 @@ test("pause stops auto-floor; resume restarts it", async ({ page }) => {
 
   // The opener is on stage and auto-burst is armed. Pause before the first
   // response lands, then wait for any already-running generation to settle.
-  await page.getByRole("button", { name: /^Pause$/ }).first().click();
+  await page.getByRole("button", { name: /Pause auto-floor/ }).first().click();
   await expect(page.getByText(/Paused — auto-floor is off/)).toBeVisible();
   await expect(page.getByText(/speaking/)).toHaveCount(0, { timeout: 20_000 });
 
@@ -150,7 +150,7 @@ test("pause stops auto-floor; resume restarts it", async ({ page }) => {
   await page.waitForTimeout(2200);
   expect(await rows.count()).toBe(before);
 
-  await page.getByRole("button", { name: /^Resume$/ }).first().click();
+  await page.getByRole("button", { name: /Resume auto-floor/ }).first().click();
   await expect
     .poll(async () => rows.count(), { timeout: 20_000 })
     .toBeGreaterThan(before);

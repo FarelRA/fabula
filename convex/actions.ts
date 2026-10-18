@@ -24,6 +24,11 @@ export type InverseAction =
   | { kind: "patchBranch"; branchId: Id<"branches">; patch: Record<string, unknown> }
   | { kind: "patchNote"; noteId: Id<"directorNotes">; patch: Record<string, unknown> }
   | { kind: "patchCandidate"; candidateId: Id<"candidates">; patch: Record<string, unknown> }
+  | {
+      kind: "patchWarning";
+      warningId: Id<"continuityWarnings">;
+      patch: Record<string, unknown>;
+    }
   | { kind: "patchRoleOrder"; entries: Array<{ roleId: Id<"roles">; sortKey: string }> };
 
 export async function logAction(
@@ -93,6 +98,13 @@ async function applyInverse(
     }
     case "patchCandidate": {
       await ctx.db.patch(inverse.candidateId, inverse.patch as Partial<Doc<"candidates">>);
+      return;
+    }
+    case "patchWarning": {
+      await ctx.db.patch(
+        inverse.warningId,
+        inverse.patch as Partial<Doc<"continuityWarnings">>,
+      );
       return;
     }
     case "patchRoleOrder": {
