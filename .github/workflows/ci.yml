@@ -61,7 +61,7 @@ jobs:
       - name: Configure self-host env
         run: |
           cp docker/.env.example docker/.env
-          sed -i "s|^INSTANCE_SECRET=.*|INSTANCE_SECRET=$(openssl rand -base64 32)|" docker/.env
+          sed -i "s|^INSTANCE_SECRET=.*|INSTANCE_SECRET=$(openssl rand -hex 32)|" docker/.env
       - name: Log in to GHCR
         # The Convex backend and dashboard images come from ghcr.io; anonymous
         # pulls from shared runner IPs are denied or rate-limited, so the

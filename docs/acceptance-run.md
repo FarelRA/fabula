@@ -49,7 +49,7 @@ chromium-desktop (6), and Playwright cannot emulate offline mode on Firefox
 | Markdown and JSON exports open cleanly and JSON is tree-lossless | `e2e/archive.spec.ts` (downloads parsed from real files: format, version, timestamp, branches, beats and parent links; markdown structure), `tests/export/*` goldens and round-trip |
 | No "thread" or "agent" wording in the user-facing UI | `bun run terminology` green (scans `src/**`); CI runs it in the verify job |
 | Budget invariants: prompts never exceed context and contract, mode and director blocks are never shrunk | `tests/tokenBudget/*` property tests (never-exceed, never-shrink, over-budget action recorded), snapshot audit in `tests/convex/*` |
-| Self-host: a fresh VM runs the full app from `docker compose up`, with only AI provider keys external | `scripts/selfhost-drill.ts` (up, health, admin key, functions deploy, seed, smoke, data-volume backup with archive verification, optional upgrade/rollback/restore), the nightly CI `selfhost` job executing the drill, and the runbook in `docker/README.md`. Local note: this workstation's network policy blocks `ghcr.io` with HTTP 403 (while `docker.io` works), so the compose images could not be pulled here; the drill runs on CI runners and on any Docker or Podman host via `bun run selfhost:drill` |
+| Self-host: a fresh VM runs the full app from `docker compose up`, with only AI provider keys external | `scripts/selfhost-drill.ts` (up, health, admin key, functions deploy, seed, smoke, data-volume backup with archive verification, optional upgrade/rollback/restore), the nightly CI `selfhost` job executing the drill, and the runbook in `docker/README.md`. The drill was executed end to end on this workstation under Podman as well as by CI |
 
 ## Hardening log (what the hardening pass found and fixed)
 
@@ -76,6 +76,14 @@ chromium-desktop (6), and Playwright cannot emulate offline mode on Firefox
 - **Self-host.** One-command release drill, completed runbook, and a nightly CI
   job that deploys functions to the fresh backend (the previous job never
   deployed them).
+- **Self-host follow-ups (v1.0.1).** The Convex backend and dashboard images
+  moved from the `get-convex` namespace to `convex`, so the compose stack now
+  pulls `ghcr.io/convex/*:latest` (pinnable through `CONVEX_IMAGE_TAG`).
+  `INSTANCE_SECRET` must be hex (`openssl rand -hex 32`, previously documented
+  as base64, which the backend rejects at startup), the selfhost CI job pulls
+  the Convex images with an authenticated GHCR login, and the drill and smoke
+  script accept the flat-text `/version` body the self-hosted backend answers
+  with (the drill previously retried forever on a JSON parse error).
 
 ## Deviations and known gaps
 

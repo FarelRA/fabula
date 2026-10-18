@@ -10,8 +10,8 @@ and is what CI runs nightly.
 
 | Service | Image | Purpose |
 |---|---|---|
-| `backend` | `ghcr.io/get-convex/convex-backend` (pin `CONVEX_IMAGE_TAG`) | database, realtime, functions/actions, scheduler, file storage |
-| `dashboard` | `ghcr.io/get-convex/convex-dashboard` | operator console for env, logs, data and schedules; keep it on localhost or an admin network |
+| `backend` | `ghcr.io/convex/convex-backend` (pin `CONVEX_IMAGE_TAG`) | database, realtime, functions/actions, scheduler, file storage |
+| `dashboard` | `ghcr.io/convex/convex-dashboard` | operator console for env, logs, data and schedules; keep it on localhost or an admin network |
 | `app` | built from this repo (`Dockerfile`, Next standalone, non-root) | UI + server components |
 
 Data lives in the `convex-data` volume (SQLite and local files by default).
@@ -29,7 +29,7 @@ point.
 ## First run
 
 ```bash
-cp docker/.env.example docker/.env     # set INSTANCE_SECRET (openssl rand -base64 32)
+cp docker/.env.example docker/.env     # set INSTANCE_SECRET (openssl rand -hex 32)
 docker compose --env-file docker/.env up -d --build
 docker compose exec backend ./generate_admin_key.sh   # admin key for deploys
 ```
@@ -103,12 +103,15 @@ at build time). Traefik reads the pinned tag from `TRAEFIK_IMAGE_TAG`
 
 ## Upgrades & rollback
 
-1. Pin an exact `CONVEX_IMAGE_TAG` (for example `v1.47.0`); never float
-   `latest` in production.
-2. Upgrade and prove both directions with one command:
+1. Pin an exact `CONVEX_IMAGE_TAG` revision (pick one from the registry tag
+   list); never float `latest` in production. The tag must exist for both the
+   backend and the dashboard images, which version together.
+2. Upgrade and prove both directions with one command (use revision tags from
+   the registry tag list; the drill redeploys functions after each switch and
+   smokes them):
 
 ```bash
-bun run selfhost:drill --skip-up --upgrade-tag v1.48.0 --rollback-tag v1.47.0
+bun run selfhost:drill --skip-up --upgrade-tag <new-revision> --rollback-tag <current-revision>
 ```
 
 3. The app image rolls back the same way: build and deploy the previous git
@@ -132,7 +135,7 @@ Restore (destructive; also exercised by `--restore-from`):
 
 ```bash
 bun run selfhost:drill --skip-up --skip-deploy \
-  --backup-dir backups --restore-from backups/convex-data-<timestamp>.tgz
+  --restore-from backups/convex-data-<timestamp>.tgz
 ```
 
 The manual equivalent is: stop `backend`, untar the archive into the volume,
@@ -175,6 +178,7 @@ keep archives off the VM.
 | App reports origin errors | `CONVEX_CLOUD_ORIGIN` and `NEXT_PUBLIC_CONVEX_URL` must match how users reach the stack; rebuild the app image after changing them |
 | Certificate not issued | DNS for all three hosts must point at the VM before first start; check `docker compose logs traefik` |
 | `denied` while pulling images | ghcr.io throttles anonymous pulls on some networks; run `docker login ghcr.io` first (a read-only token is enough) |
+| `manifest unknown` while pulling | the pinned `CONVEX_IMAGE_TAG` is no longer published; unset it to use `latest` or pin a current revision |
 | Deploy CLI hangs | confirm `CONVEX_SELF_HOSTED_URL` and `CONVEX_SELF_HOSTED_ADMIN_KEY`; the drill falls back from `convex dev --once` to `convex deploy --yes` |
 
 ## Security notes

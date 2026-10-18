@@ -16,8 +16,16 @@ async function main(): Promise<void> {
   if (!versionRes.ok) {
     throw new Error(`Backend unhealthy at ${convexUrl}/version (${versionRes.status})`);
   }
-  const version = (await versionRes.json()) as { version?: string };
-  console.log(`Backend OK (${version.version ?? "unknown"})`);
+  // The self-hosted backend answers /version with a plain-text version string
+  // or JSON depending on the build; only the status code is the health signal.
+  let version = "unknown";
+  try {
+    const body = (await versionRes.json()) as { version?: string };
+    version = body.version ?? "unknown";
+  } catch {
+    // non-JSON body; the 200 above is the health signal
+  }
+  console.log(`Backend OK (${version})`);
 
   const client = new ConvexHttpClient(convexUrl);
   let templates = await client.query(api.prompts.seed.listActive, {});

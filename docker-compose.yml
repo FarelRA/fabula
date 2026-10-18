@@ -14,7 +14,7 @@ name: fabula
 services:
   backend:
     # Pin to a release tag via CONVEX_IMAGE_TAG (never :latest in production).
-    image: ghcr.io/get-convex/convex-backend:${CONVEX_IMAGE_TAG:-latest}
+    image: ghcr.io/convex/convex-backend:${CONVEX_IMAGE_TAG:-latest}
     stop_grace_period: 10s
     stop_signal: SIGINT
     ports:
@@ -50,7 +50,7 @@ services:
     restart: unless-stopped
 
   dashboard:
-    image: ghcr.io/get-convex/convex-dashboard:${CONVEX_IMAGE_TAG:-latest}
+    image: ghcr.io/convex/convex-dashboard:${CONVEX_IMAGE_TAG:-latest}
     stop_grace_period: 10s
     stop_signal: SIGINT
     ports:

@@ -1,6 +1,6 @@
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 import { parseArgs } from "node:util";
 
 /**
@@ -80,14 +80,24 @@ function run(
   return (result.stdout ?? "").trim();
 }
 
+// The self-hosted backend answers /version with a plain-text version string
+// or JSON depending on the build; only the status code is the health signal.
+async function readVersion(response: Response): Promise<string> {
+  try {
+    const body = (await response.json()) as { version?: string };
+    return body.version ?? "unknown";
+  } catch {
+    return "unknown";
+  }
+}
+
 async function waitForHealthy(url: string, attempts = 60): Promise<void> {
   console.log(`\n▶ Waiting for backend health at ${url}/version`);
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
     try {
       const response = await fetch(`${url}/version`);
       if (response.ok) {
-        const version = (await response.json()) as { version?: string };
-        console.log(`  healthy (${version.version ?? "unknown"})`);
+        console.log(`  healthy (${await readVersion(response)})`);
         return;
       }
     } catch {
@@ -123,19 +133,25 @@ function adminKey(): string {
 }
 
 function deployFunctions(key: string): void {
-  const env = {
-    CONVEX_SELF_HOSTED_URL: backendUrl,
-    CONVEX_SELF_HOSTED_ADMIN_KEY: key,
-  };
+  // The Convex CLI loads .env.local itself (it syncs env files by design) and
+  // refuses to target a self-hosted backend while a deployment selector is
+  // present. An empty value stops the loader from re-injecting a developer
+  // selector (for example the anonymous deployment written by `convex dev` or
+  // the e2e server) and reads as unset for the conflict check.
+  const env = { ...process.env };
+  env.CONVEX_DEPLOYMENT = "";
+  env.CONVEX_DEPLOY_KEY = "";
+  env.CONVEX_SELF_HOSTED_URL = backendUrl;
+  env.CONVEX_SELF_HOSTED_ADMIN_KEY = key;
   const dev = spawnSync("bunx", ["convex", "dev", "--once"], {
     stdio: "inherit",
-    env: { ...process.env, ...env },
+    env,
   });
   if (dev.status === 0) return;
   console.log("  `convex dev --once` failed, retrying with `convex deploy --yes`");
   const deploy = spawnSync("bunx", ["convex", "deploy", "--yes"], {
     stdio: "inherit",
-    env: { ...process.env, ...env },
+    env,
   });
   if (deploy.status !== 0) {
     throw new Error("Both `convex dev --once` and `convex deploy --yes` failed.");
@@ -184,7 +200,7 @@ function backup(dir: string): string {
     "-v",
     `${volume}:/data`,
     "-v",
-    `${join(process.cwd(), dir)}:/backup`,
+    `${resolve(process.cwd(), dir)}:/backup`,
     "alpine",
     "tar",
     "czf",
@@ -200,7 +216,7 @@ function backup(dir: string): string {
     "run",
     "--rm",
     "-v",
-    `${join(process.cwd(), dir)}:/backup`,
+    `${resolve(process.cwd(), dir)}:/backup`,
     "alpine",
     "tar",
     "tzf",
@@ -257,24 +273,32 @@ async function main(): Promise<void> {
 
   if (values["backup-dir"]) {
     const tarball = backup(values["backup-dir"] as string);
-    if (values["restore-from"]) {
-      restore(values["restore-from"] as string);
-      await waitForHealthy(backendUrl, 24);
-      smoke();
-    } else {
+    if (!values["restore-from"]) {
       console.log(`\n(restore drill skipped, pass --restore-from ${tarball} to test it)`);
     }
+  }
+
+  // Restore is independent of backup: restoring an existing archive does not
+  // need a fresh backup of the live volume first.
+  if (values["restore-from"]) {
+    restore(values["restore-from"] as string);
+    await waitForHealthy(backendUrl, 24);
+    smoke();
   }
 
   if (values["upgrade-tag"]) {
     setImageTag(values["upgrade-tag"] as string);
     composeUp();
     await waitForHealthy(backendUrl);
+    // Functions pushed by a newer backend may not load on the switched image
+    // until they are deployed against it again; the runbook documents this.
+    if (!values["skip-deploy"]) deployFunctions(adminKey());
     smoke();
     if (values["rollback-tag"]) {
       setImageTag(values["rollback-tag"] as string);
       composeUp();
       await waitForHealthy(backendUrl);
+      if (!values["skip-deploy"]) deployFunctions(adminKey());
       smoke();
     }
   }

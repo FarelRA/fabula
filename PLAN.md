@@ -1548,7 +1548,7 @@ Docker Compose self-host, `docker/.env` (copy from `docker/.env.example`):
 ```
 CONVEX_CLOUD_ORIGIN=http://localhost:3210    # backend public origin (your domain in prod)
 CONVEX_SITE_ORIGIN=http://localhost:3211     # HTTP actions origin
-CONVEX_INSTANCE_SECRET=                      # generate once (openssl rand -base64 32); keep stable
+CONVEX_INSTANCE_SECRET=                      # generate once (openssl rand -hex 32); keep stable
 POSTGRES_PASSWORD=                           # backend metadata DB
 S3_ENDPOINT_URL= S3_ACCESS_KEY= S3_SECRET_KEY= S3_BUCKET=   # MinIO or any S3-compatible store
 ALLOWED_ORIGINS=                             # CORS: app origin(s)
