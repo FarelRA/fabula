@@ -1,6 +1,6 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
-import { assertSceneAccess, requireScene } from "./lib/authz";
+import { assertSceneAccess, assertSceneMutable, requireScene } from "./lib/authz";
 import { logAction } from "./actions";
 
 /**
@@ -38,6 +38,7 @@ export const dismiss = mutation({
     if (!warning) throw new Error("Warning not found");
     const scene = await requireScene(ctx, warning.sceneId);
     const userId = await assertSceneAccess(ctx, scene, { write: true });
+    assertSceneMutable(scene);
     await ctx.db.patch(warningId, { status: "dismissed" });
     await logAction(ctx, {
       sceneId: scene._id,

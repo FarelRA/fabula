@@ -12,7 +12,15 @@ import { useUIMessages } from "@convex-dev/agent/react";
 import { useQueryState, parseAsString, parseAsStringEnum } from "nuqs";
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
-import { ArrowLeftIcon, PanelLeftIcon, PanelRightIcon } from "lucide-react";
+import {
+  ArchiveIcon,
+  ArrowLeftIcon,
+  PanelLeftIcon,
+  PanelRightIcon,
+  Share2Icon,
+  SparklesIcon,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -31,6 +39,8 @@ import { EditBeatDialog } from "@/components/director/EditBeatDialog";
 import { FloorIndicator } from "@/components/director/FloorIndicator";
 import { SteerComposer } from "@/components/director/SteerComposer";
 import { InspectorPane } from "@/components/inspector/InspectorPane";
+import { ExportDialog } from "@/components/scenes/ExportDialog";
+import { ShareDialog } from "@/components/scenes/ShareDialog";
 import { ThreadView } from "@/components/thread/ThreadView";
 import { OfflineBanner, ReconnectingBanner } from "@/components/shell/states";
 import { useKeymap } from "@/hooks/useKeymap";
@@ -48,6 +58,7 @@ import {
 import { buildGutterMarkers, type GutterMarker } from "@/lib/branches/gutter";
 import { mapBranchRows } from "@/lib/branches/types";
 import type { PlayBeat, PlayOption } from "@/lib/play/types";
+import type { ExportBundle } from "@/lib/export/types";
 
 function messageOf(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
@@ -98,9 +109,14 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
   const [pendingPick, setPendingPick] = useState<PlayOption | null>(null);
   const [dialog, setDialog] = useState<DialogState>(null);
   const [editBeat, setEditBeat] = useState<PlayBeat | null>(null);
+  const [shareOpen, setShareOpen] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
+  const [exportSnapshots, setExportSnapshots] = useState(false);
+  const [wrapDismissed, setWrapDismissed] = useState(false);
   const lastAutoKey = useRef("");
   const startingRef = useRef(false);
   const runRef = useRef<ReturnType<typeof mapPlayRun>>(null);
+  const router = useRouter();
   const viewport = useViewportMode();
   const [inspectorTab, setInspectorTab] = useQueryState(
     "inspector",
@@ -130,6 +146,10 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
   const lastActions = useQuery(api.actions.list, { sceneId: id, limit: 1 });
   const branchDocs = useQuery(api.branches.list, { sceneId: id });
   const threadId = sceneData?.scene.threadId;
+  const exportBundle = useQuery(
+    api.exportScene.getBundle,
+    exportOpen ? { sceneId: id, includeSnapshots: exportSnapshots } : "skip",
+  );
 
   const { results: uiMessages } = useUIMessages(
     api.thread.listMessages,
@@ -150,6 +170,7 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
   const abortMutation = useMutation(api.generation.runs.requestAbort);
   const undoMutation = useMutation(api.actions.undoLast);
   const setActiveMutation = useMutation(api.branches.setActive);
+  const endSceneMutation = useMutation(api.scenes.endScene);
 
   const scene = useMemo(() => {
     if (
@@ -501,16 +522,21 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
   const endScene = useCallback(async () => {
     setBusy(true);
     try {
-      await setStatusMutation({ sceneId: id, status: "archived" });
-      toast.success("Scene archived", {
-        description: "Everything stays readable; nothing is deleted.",
+      const result = await endSceneMutation({ sceneId: id });
+      toast.success(result.archived ? "Scene wrapped and archived" : "Scene already archived", {
+        description:
+          "A final summary pass runs now. Nothing is deleted — the archive keeps every branch.",
+        action: {
+          label: "Open archive",
+          onClick: () => router.push(`/s/${id}/archive`),
+        },
       });
     } catch (error) {
       toast.error(messageOf(error));
     } finally {
       setBusy(false);
     }
-  }, [id, setStatusMutation]);
+  }, [id, endSceneMutation, router]);
 
   const abort = useCallback(async () => {
     try {
@@ -684,14 +710,16 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
   const tip = scene.beats[scene.beats.length - 1];
   const nextSpeaker = nextSpeakerPreview(scene);
   const archived = scene.status === "archived";
+  const endingStreak = scene.endingStreak ?? 0;
+  const showWrapOffer = !archived && endingStreak >= 2 && !wrapDismissed;
 
   return (
     <div className="flex h-[calc(100dvh-3.5rem)] min-h-0 flex-col bg-background">
       <ConnectionNotice />
 
       <header className="flex items-center gap-2 border-b border-border px-3 py-2">
-        <Button asChild variant="ghost" size="icon-sm" aria-label="Back to the lobby">
-          <Link href="/">
+        <Button asChild variant="ghost" size="icon-sm">
+          <Link href="/" aria-label="Back to the lobby">
             <ArrowLeftIcon />
           </Link>
         </Button>
@@ -718,6 +746,26 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
         >
           <PanelLeftIcon />
           Cast
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => setShareOpen(true)}
+          aria-label="Share scene"
+        >
+          <Share2Icon />
+          <span className="hidden sm:inline">Share</span>
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => setExportOpen(true)}
+          aria-label="Export scene"
+        >
+          <ArchiveIcon />
+          <span className="hidden sm:inline">Export</span>
         </Button>
         <Button
           type="button"
@@ -748,6 +796,47 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
+          {archived ? (
+            <div
+              data-testid="archive-banner"
+              className="flex flex-wrap items-center gap-2 border-b border-border bg-muted/50 px-3 py-1.5 text-xs"
+            >
+              <ArchiveIcon className="size-3.5 text-muted-foreground" aria-hidden />
+              <span>This scene is archived — replay and exports stay available.</span>
+              <Link
+                href={`/s/${id}/archive`}
+                className="ml-auto font-medium underline underline-offset-2"
+              >
+                Open archive
+              </Link>
+            </div>
+          ) : showWrapOffer ? (
+            <div
+              data-testid="wrap-offer"
+              role="status"
+              className="flex flex-wrap items-center gap-2 border-b border-border bg-amber-500/10 px-3 py-1.5 text-xs"
+            >
+              <SparklesIcon className="size-3.5 text-amber-600 dark:text-amber-300" aria-hidden />
+              <span>The story feels resolved. Wrap the scene?</span>
+              <Button
+                type="button"
+                size="xs"
+                variant="outline"
+                className="ml-auto"
+                onClick={() => setDialog({ kind: "endScene" })}
+              >
+                Wrap scene
+              </Button>
+              <Button
+                type="button"
+                size="xs"
+                variant="ghost"
+                onClick={() => setWrapDismissed(true)}
+              >
+                Keep playing
+              </Button>
+            </div>
+          ) : null}
           <FloorIndicator
             scene={scene}
             run={run}
@@ -931,13 +1020,23 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
         onOpenChange={(open) => {
           if (!open) setDialog(null);
         }}
-        title="End this scene?"
-        description="The scene is archived and direct actions freeze. Every branch, beat, fact and note stays readable; nothing is deleted. Archive replay arrives in the next phase."
-        confirmLabel="End scene"
+        title="Wrap & archive this scene?"
+        description="Wrapping runs a final summary pass over any uncovered beats, freezes the tree and opens the archive. Nothing is deleted — you can still export, share and replay everything. Undo reopens it."
+        confirmLabel="Wrap & archive"
         onConfirm={() => {
           setDialog(null);
           void endScene();
         }}
+      />
+
+      <ShareDialog sceneId={id} open={shareOpen} onOpenChange={setShareOpen} />
+      <ExportDialog
+        open={exportOpen}
+        onOpenChange={setExportOpen}
+        bundle={(exportBundle ?? null) as unknown as ExportBundle | null}
+        sceneTitle={scene.title}
+        includeSnapshots={exportSnapshots}
+        onIncludeSnapshotsChange={setExportSnapshots}
       />
 
       {tip ? <span className="sr-only">Active tip beat {tip.seq}</span> : null}

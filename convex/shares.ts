@@ -78,6 +78,76 @@ export const getByToken = query({
       .withIndex("by_scene", (q) => q.eq("sceneId", scene._id))
       .collect();
     const projection = await projectPath(ctx, scene);
+
+    // Everything a shared screen renders (Phase 7.4): the same shape the
+    // play shell consumes, so `buildPlayScene` maps both identically.
+    const tip = scene.activeTipBeatId;
+    const pending = tip
+      ? (
+          await ctx.db
+            .query("beats")
+            .withIndex("by_parent", (q) => q.eq("parentBeatId", tip))
+            .collect()
+        )
+          .filter(
+            (beat) =>
+              !beat.isArtifact &&
+              (beat.status === "streaming" || beat.status === "failed"),
+          )
+          .sort((a, b) => a.seq - b.seq)
+      : [];
+    const optionRows = await ctx.db
+      .query("candidates")
+      .withIndex("by_scene_status", (q) =>
+        q.eq("sceneId", scene._id).eq("status", "offered"),
+      )
+      .collect();
+    const parentIds = [...new Set(optionRows.map((row) => row.parentBeatId))];
+    const parents = await Promise.all(parentIds.map((id) => ctx.db.get(id)));
+    const seqByParent = new Map(
+      parents
+        .filter((parent): parent is NonNullable<typeof parent> => parent !== null)
+        .map((parent) => [parent._id, parent.seq]),
+    );
+    const options = optionRows
+      .sort((a, b) => {
+        const seqA = seqByParent.get(a.parentBeatId) ?? 0;
+        const seqB = seqByParent.get(b.parentBeatId) ?? 0;
+        return seqA - seqB || a.optionIndex - b.optionIndex;
+      })
+      .map((row) => ({
+        ...row,
+        parentSeq: seqByParent.get(row.parentBeatId) ?? 0,
+        parentIsTip: scene.activeTipBeatId === row.parentBeatId,
+      }));
+    const runRow = await ctx.db
+      .query("generationRuns")
+      .withIndex("by_scene_status", (q) =>
+        q.eq("sceneId", scene._id).eq("status", "running"),
+      )
+      .first();
+    const runRole = runRow?.roleId ? await ctx.db.get(runRow.roleId) : null;
+    const run = runRow
+      ? {
+          _id: runRow._id,
+          mode: runRow.mode,
+          roleId: runRow.roleId ?? null,
+          roleName: runRole?.identity.name ?? null,
+          roleAccent: runRole?.identity.accentColor ?? null,
+          roleMonogram: runRole?.identity.monogram ?? null,
+          startedAt: runRow.startedAt,
+          abortRequested: runRow.abortRequested,
+        }
+      : null;
+    const notes = (
+      await ctx.db
+        .query("directorNotes")
+        .withIndex("by_scene_status", (q) =>
+          q.eq("sceneId", scene._id).eq("status", "active"),
+        )
+        .collect()
+    ).sort((a, b) => a.appliesFromSeq - b.appliesFromSeq);
+
     return {
       permission: share.permission,
       scene,
@@ -86,6 +156,10 @@ export const getByToken = query({
         .filter((role) => role.status === "active")
         .sort((a, b) => a.sortKey.localeCompare(b.sortKey)),
       beats: projection.chain,
+      pending,
+      options,
+      run,
+      notes,
       facts: projection.facts,
       summaries: projection.summaries,
     };

@@ -1,7 +1,7 @@
 import { internalMutation, mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
-import { assertSceneAccess, requireScene } from "./lib/authz";
+import { assertSceneAccess, assertSceneMutable, requireScene } from "./lib/authz";
 import { nowMs } from "./lib/time";
 import { logAction } from "./actions";
 import { projectPath } from "./lib/path";
@@ -25,6 +25,7 @@ export const add = mutation({
   handler: async (ctx, args) => {
     const scene = await requireScene(ctx, args.sceneId);
     await assertSceneAccess(ctx, scene, { write: true });
+    assertSceneMutable(scene);
     const beat = await ctx.db.get(args.nodeId);
     if (!beat || beat.sceneId !== args.sceneId) {
       throw new Error("Fact nodeId must be a beat of this scene");
@@ -53,6 +54,7 @@ export const setPinned = mutation({
     if (!fact) throw new Error("Fact not found");
     const scene = await requireScene(ctx, fact.sceneId);
     const userId = await assertSceneAccess(ctx, scene, { write: true });
+    assertSceneMutable(scene);
     await ctx.db.patch(factId, { isPinned: pinned });
     await logAction(ctx, {
       sceneId: scene._id,
@@ -71,6 +73,7 @@ export const setStatus = mutation({
     if (!fact) throw new Error("Fact not found");
     const scene = await requireScene(ctx, fact.sceneId);
     const userId = await assertSceneAccess(ctx, scene, { write: true });
+    assertSceneMutable(scene);
     await ctx.db.patch(factId, { status });
     await logAction(ctx, {
       sceneId: scene._id,

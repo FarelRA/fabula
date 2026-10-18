@@ -27,6 +27,7 @@ import type * as domain_branchPlans from "../domain/branchPlans.js";
 import type * as domain_castConstraints from "../domain/castConstraints.js";
 import type * as domain_factDedupe from "../domain/factDedupe.js";
 import type * as domain_orchestrate from "../domain/orchestrate.js";
+import type * as exportScene from "../exportScene.js";
 import type * as facts from "../facts.js";
 import type * as generation_avatar from "../generation/avatar.js";
 import type * as generation_casting from "../generation/casting.js";
@@ -64,6 +65,7 @@ import type * as lib_text from "../lib/text.js";
 import type * as lib_time from "../lib/time.js";
 import type * as lib_tokenBudget from "../lib/tokenBudget.js";
 import type * as lib_validators from "../lib/validators.js";
+import type * as presence from "../presence.js";
 import type * as prompts_load from "../prompts/load.js";
 import type * as prompts_registry from "../prompts/registry.js";
 import type * as prompts_seed from "../prompts/seed.js";
@@ -102,6 +104,7 @@ declare const fullApi: ApiFromModules<{
   "domain/castConstraints": typeof domain_castConstraints;
   "domain/factDedupe": typeof domain_factDedupe;
   "domain/orchestrate": typeof domain_orchestrate;
+  exportScene: typeof exportScene;
   facts: typeof facts;
   "generation/avatar": typeof generation_avatar;
   "generation/casting": typeof generation_casting;
@@ -139,6 +142,7 @@ declare const fullApi: ApiFromModules<{
   "lib/time": typeof lib_time;
   "lib/tokenBudget": typeof lib_tokenBudget;
   "lib/validators": typeof lib_validators;
+  presence: typeof presence;
   "prompts/load": typeof prompts_load;
   "prompts/registry": typeof prompts_registry;
   "prompts/seed": typeof prompts_seed;
@@ -180,4 +184,5 @@ export declare const internal: FilterApi<
 
 export declare const components: {
   agent: import("@convex-dev/agent/_generated/component.js").ComponentApi<"agent">;
+  presence: import("@convex-dev/presence/_generated/component.js").ComponentApi<"presence">;
 };

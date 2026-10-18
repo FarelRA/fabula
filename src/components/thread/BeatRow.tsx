@@ -41,6 +41,7 @@ export function BeatRow({
   pendingPickId,
   disabled,
   selected,
+  readOnly = false,
   onPick,
   onPin,
   onEdit,
@@ -58,6 +59,8 @@ export function BeatRow({
   pendingPickId?: string | null;
   disabled?: boolean;
   selected?: boolean;
+  /** Shared viewers: no menus, no retries, no pick buttons. */
+  readOnly?: boolean;
   onPick: (option: PlayOption) => void;
   onPin: (pinned: boolean) => void;
   onEdit: (beat: PlayBeat) => void;
@@ -110,6 +113,7 @@ export function BeatRow({
             size="sm"
             disabled={disabled}
             onClick={() => onRetry(beat)}
+            className={readOnly ? "hidden" : undefined}
           >
             <RotateCcwIcon />
             Retry
@@ -174,6 +178,7 @@ export function BeatRow({
           </p>
         </div>
 
+        {readOnly ? null : (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -210,6 +215,7 @@ export function BeatRow({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        )}
       </header>
 
       <div className="mt-2">
@@ -236,6 +242,7 @@ export function BeatRow({
           activeTipId={isTip ? beat.id : undefined}
           pendingPickId={pendingPickId}
           disabled={disabled}
+          readOnly={readOnly}
           onPick={onPick}
         />
       ) : null}

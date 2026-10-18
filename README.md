@@ -6,14 +6,29 @@ story three ways: pick one of the AI-generated paths, drop an out-of-character
 director note, or write a line yourself. Every choice can branch; nothing is
 ever destroyed.
 
-> **Status: Phases 0–6 complete** (foundation, domain core, generation engine,
+> **Status: Phases 0–7 complete** (foundation, domain core, generation engine,
 > app shell & design system, cast generation UX, play loop, branch & meta
-> surfaces). The full plan — schema, prompt architecture, orchestration spec,
-> wireflows, phases, agents and acceptance criteria — lives in
-> [PLAN.md](./PLAN.md).
+> surfaces, archive & share). The full plan — schema, prompt architecture,
+> orchestration spec, wireflows, phases, agents and acceptance criteria —
+> lives in [PLAN.md](./PLAN.md).
 
 ## What works today
 
+- **Archive & share** (Phase 7): end detection surfaces a non-modal “Wrap
+  scene?” offer after consecutive resolution signals — never an automatic
+  archive. Wrapping freezes the tree, runs a final summary pass and is one
+  ⌘Z away from reopening; archived scenes are story-immutable server-side
+  while remaining readable, shareable and exportable.
+  - **Archive** (`/s/[sceneId]/archive`): read-only replay of every branch
+    root→tip, a branch explorer, ghosts preserved as “paths not taken”, the
+    frozen facts/summaries/notes ledger, and share/export actions.
+  - **Exports**: golden-tested markdown (mainline first, then branch deltas)
+    and lossless JSON (ids, branch links, candidates, facts; prompt snapshots
+    optional) generated in the browser — JSON opens cleanly in `jq`.
+  - **Share links** (`/share/[token]`): viewer links stream the scene live
+    read-only; director links can pick path options; both show a “N watching”
+    presence badge (`@convex-dev/presence`), and revocation closes the door
+    immediately (E2E-07, cross-context with no session).
 - **Branch & meta surfaces** (Phase 6): the inspector (Memory · Prompts · Map ·
   Usage) is URL state (`?inspector=…&beat=…`), inline as a third desktop pane
   and a sheet on tablet/mobile.
@@ -56,8 +71,9 @@ ever destroyed.
     messages are never rendered twice.
   - Live E2E: E2E-01≤3 screens, E2E-02 two-context pick sync, E2E-03
     reload-mid-stream token-exact resume, E2E-04 edit-fork + memory leak +
-    branch switch, keyboard picks, mention override, pause blocking
-    auto-floor, and the 200-beat perf probe.
+    branch switch, E2E-07 viewer read-only + director pick + revoke, wrap →
+    archive → markdown/JSON export, keyboard picks, mention override, pause
+    blocking auto-floor, and the 200-beat perf probe.
 - **Cast generation UX** (Phase 4): `/` onboarding, the three doors
   (`/new/quick`, `/new/wizard`, `/new/templates` with six Appendix-A presets),
   the validated four-step wizard (nuqs step state), and one audition surface:
@@ -124,7 +140,7 @@ the audition on deterministic local fixtures for UI-first development. E2E does
 Run everything:
 
 ```bash
-bun run check          # typecheck + lint + tests (396 unit/integration tests)
+bun run check          # typecheck + lint + tests (424 unit/integration tests)
 bun run test:e2e       # builds live, boots local Convex + fake model, Playwright
 bun run e2e:server     # the backend+app server Playwright starts (manual runs)
 bun run build          # production build

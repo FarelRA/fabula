@@ -33,6 +33,7 @@ export function OptionCards({
   activeTipId,
   pendingPickId,
   disabled,
+  readOnly = false,
   onPick,
 }: {
   options: PlayOption[];
@@ -40,6 +41,8 @@ export function OptionCards({
   activeTipId?: string;
   pendingPickId?: string | null;
   disabled?: boolean;
+  /** Shared viewers see the paths but never a pick affordance. */
+  readOnly?: boolean;
   onPick: (option: PlayOption) => void;
 }) {
   const platform = usePlatform();
@@ -81,7 +84,7 @@ export function OptionCards({
           {ghostMode ? "Ghost paths" : "Path options"}
         </h4>
         <div className="flex items-center gap-2">
-          {ghostMode ? null : (
+          {ghostMode || readOnly ? null : (
             <span className="text-[11px] text-muted-foreground">
               {platform === "mac" ? "⌥" : "Alt+"}1–{Math.min(4, options.length)} picks
             </span>
@@ -130,7 +133,7 @@ export function OptionCards({
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-semibold">
                       {option.label}
-                      {!fork && shortcut >= 0 && shortcut < 4 ? (
+                      {!fork && !readOnly && shortcut >= 0 && shortcut < 4 ? (
                         <kbd className="ml-2 rounded border border-border px-1 py-0.5 font-sans text-[10px] font-normal text-muted-foreground">
                           {platform === "mac" ? "⌥" : "Alt+"}
                           {shortcut + 1}
@@ -165,23 +168,29 @@ export function OptionCards({
                 ) : null}
 
                 <div className="mt-auto flex items-center justify-between gap-2 pt-1">
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant={fork ? "outline" : "default"}
-                    disabled={disabled || Boolean(pendingPickId)}
-                    onClick={() => onPick(option)}
-                    className="min-w-0"
-                  >
-                    {pending ? (
-                      <LoaderCircleIcon className="animate-spin motion-reduce:animate-none" />
-                    ) : fork ? (
-                      <GitForkIcon />
-                    ) : (
-                      <CheckIcon />
-                    )}
-                    {pending ? "Taking…" : fork ? "Fork from here" : "Take this path"}
-                  </Button>
+                  {readOnly ? (
+                    <Badge variant="secondary" className="font-normal">
+                      Shared view · read-only
+                    </Badge>
+                  ) : (
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={fork ? "outline" : "default"}
+                      disabled={disabled || Boolean(pendingPickId)}
+                      onClick={() => onPick(option)}
+                      className="min-w-0"
+                    >
+                      {pending ? (
+                        <LoaderCircleIcon className="animate-spin motion-reduce:animate-none" />
+                      ) : fork ? (
+                        <GitForkIcon />
+                      ) : (
+                        <CheckIcon />
+                      )}
+                      {pending ? "Taking…" : fork ? "Fork from here" : "Take this path"}
+                    </Button>
+                  )}
                   <details className="text-[11px] text-muted-foreground">
                     <summary className="cursor-pointer">Full text</summary>
                     <p className="mt-1 max-w-prose leading-relaxed">{option.text}</p>

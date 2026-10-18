@@ -2,7 +2,7 @@ import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
 import type { MutationCtx } from "./_generated/server";
-import { assertSceneAccess, requireScene } from "./lib/authz";
+import { assertSceneAccess, assertSceneMutable, requireScene } from "./lib/authz";
 import { sortKeyFor } from "./lib/ids";
 import { nowMs } from "./lib/time";
 import { roleCardV, tierV, roleStatusV } from "./lib/validators";
@@ -97,6 +97,7 @@ export const upsertDraftRole = mutation({
   handler: async (ctx, args) => {
     const scene = await requireScene(ctx, args.sceneId);
     await assertSceneAccess(ctx, scene, { write: true });
+    assertSceneMutable(scene);
     const existing = await ctx.db
       .query("roles")
       .withIndex("by_scene", (q) => q.eq("sceneId", args.sceneId))
@@ -144,6 +145,7 @@ export const updateDraft = mutation({
     const role = await requireRole(ctx, roleId);
     const scene = await requireScene(ctx, role.sceneId);
     await assertSceneAccess(ctx, scene, { write: true });
+    assertSceneMutable(scene);
     if (scene.activeTipBeatId !== undefined) {
       throw new Error("Scene is already playing; use reviseRole for versioned changes");
     }
@@ -172,6 +174,7 @@ export const reviseRole = mutation({
     const role = await requireRole(ctx, args.roleId);
     const scene = await requireScene(ctx, role.sceneId);
     await assertSceneAccess(ctx, scene, { write: true });
+    assertSceneMutable(scene);
     const beat = await ctx.db.get(args.effectiveFromBeatId);
     if (!beat || beat.sceneId !== scene._id) {
       throw new Error("effectiveFromBeatId must be a beat of this scene");
@@ -218,6 +221,7 @@ export const setStatus = mutation({
     const role = await requireRole(ctx, roleId);
     const scene = await requireScene(ctx, role.sceneId);
     const userId = await assertSceneAccess(ctx, scene, { write: true });
+    assertSceneMutable(scene);
     await ctx.db.patch(roleId, { status, statusChangedAtSeq: scene.seqCounter });
     await logAction(ctx, {
       sceneId: scene._id,
@@ -235,6 +239,7 @@ export const setTier = mutation({
     const role = await requireRole(ctx, roleId);
     const scene = await requireScene(ctx, role.sceneId);
     const userId = await assertSceneAccess(ctx, scene, { write: true });
+    assertSceneMutable(scene);
     const previousMeta = role.meta;
     await ctx.db.patch(roleId, { meta: { ...role.meta, tier } });
     await logAction(ctx, {
@@ -252,6 +257,7 @@ export const reorder = mutation({
   handler: async (ctx, { sceneId, roleIds }) => {
     const scene = await requireScene(ctx, sceneId);
     const userId = await assertSceneAccess(ctx, scene, { write: true });
+    assertSceneMutable(scene);
     const previous: Array<{ roleId: Id<"roles">; sortKey: string }> = [];
     for (let i = 0; i < roleIds.length; i += 1) {
       const roleId = roleIds[i];
@@ -277,6 +283,7 @@ export const setLocks = mutation({
     const role = await requireRole(ctx, roleId);
     const scene = await requireScene(ctx, role.sceneId);
     await assertSceneAccess(ctx, scene, { write: true });
+    assertSceneMutable(scene);
     await ctx.db.patch(roleId, { draftLocks: locks });
   },
 });

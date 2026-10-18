@@ -326,10 +326,14 @@ async function buildContext(
 }
 
 export const loadTurnContext = internalQuery({
-  args: { sceneId: v.id("scenes") },
-  handler: async (ctx, { sceneId }) => {
+  args: { sceneId: v.id("scenes"), trusted: v.optional(v.boolean()) },
+  handler: async (ctx, { sceneId, trusted }) => {
     const scene = await requireScene(ctx, sceneId);
-    await assertSceneAccess(ctx, scene, { write: true });
+    // `trusted` is only for scheduled internal passes (wrap summary) whose
+    // caller already passed an access gate before scheduling.
+    if (trusted !== true) {
+      await assertSceneAccess(ctx, scene, { write: true });
+    }
     return await buildContext(ctx, scene);
   },
 });

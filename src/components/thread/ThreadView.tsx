@@ -58,6 +58,7 @@ export function ThreadView({
   gutterMarkers = [],
   selectedBeatId,
   focusBeatId,
+  readOnly = false,
   onPick,
   onPin,
   onEdit,
@@ -75,6 +76,8 @@ export function ThreadView({
   gutterMarkers?: GutterMarker[];
   selectedBeatId?: string;
   focusBeatId?: string;
+  /** Shared viewers: strips every mutate affordance from rows. */
+  readOnly?: boolean;
   onPick: (option: PlayOption) => void;
   onPin: (beat: PlayBeat, pinned: boolean) => void;
   onEdit: (beat: PlayBeat) => void;
@@ -316,13 +319,14 @@ export function ThreadView({
                       }
                       pendingPickId={pendingPickId}
                       disabled={busy}
+                      readOnly={readOnly}
                       selected={selectedBeatId === row.beat.id}
                       onPick={onPick}
                       onPin={(pinned) => onPin(row.beat, pinned)}
                       onEdit={onEdit}
                       onRegenerate={onRegenerate}
                       onRetry={onRetry}
-                      onInspect={onInspectBeat}
+                      onInspect={readOnly ? undefined : onInspectBeat}
                     />
                   )}
                 </div>

@@ -43,7 +43,12 @@ export const decide = internalAction({
       const compiled = compileDirectorPrompt({
         templates: view.templates,
         model: { provider: resolved.provider, modelId: resolved.modelId, ref: resolved.raw },
-        lastBeat: view.lastBeat ? renderBeatLine(view.lastBeat) : "",
+        // Recent beats (latest last) — ending detection needs the run-up, not
+        // just the final line.
+        lastBeat: view.chain
+          .slice(-3)
+          .map(renderBeatLine)
+          .join("\n"),
         rolesLines,
         tensionsLine,
         turnMode: view.settings.turnRules.mode,

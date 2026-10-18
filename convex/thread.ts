@@ -7,7 +7,7 @@ import {
   vStreamArgs,
 } from "@convex-dev/agent";
 import { components } from "./_generated/api";
-import { assertSceneAccess, requireScene } from "./lib/authz";
+import { assertSceneAccess, assertShareLink, requireScene } from "./lib/authz";
 
 /**
  * Streaming transport read (PLAN §2, §13.4): one Agent thread per scene.
@@ -16,6 +16,9 @@ import { assertSceneAccess, requireScene } from "./lib/authz";
  * materialize in-flight deltas (`useUIMessages(..., {stream:true})`) and resume
  * a generation after reload. Finished text always comes from the beat row, so
  * transport messages are never rendered twice.
+ *
+ * Share visitors pass `shareToken` instead of an identity (Phase 7.4); the
+ * token is validated for this scene and reads stay open to viewers.
  */
 export const listMessages = query({
   args: {
@@ -23,10 +26,15 @@ export const listMessages = query({
     threadId: v.string(),
     paginationOpts: paginationOptsValidator,
     streamArgs: vStreamArgs,
+    shareToken: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const scene = await requireScene(ctx, args.sceneId);
-    await assertSceneAccess(ctx, scene);
+    if (args.shareToken !== undefined) {
+      await assertShareLink(ctx, args.shareToken, scene);
+    } else {
+      await assertSceneAccess(ctx, scene);
+    }
 
     if (!scene.threadId || scene.threadId !== args.threadId) {
       return {

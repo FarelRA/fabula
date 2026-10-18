@@ -1,7 +1,13 @@
 import { mutation, query, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
-import { assertSceneAccess, requireScene } from "./lib/authz";
+import {
+  assertSceneAccess,
+  assertSceneMutable,
+  assertShareLink,
+  currentUserId,
+  requireScene,
+} from "./lib/authz";
 import { nowMs } from "./lib/time";
 import { createBeatRow } from "./beats";
 import { logAction } from "./actions";
@@ -32,6 +38,7 @@ export const createBatch = mutation({
   handler: async (ctx, args) => {
     const scene = await requireScene(ctx, args.sceneId);
     await assertSceneAccess(ctx, scene, { write: true });
+    assertSceneMutable(scene);
     if (args.options.length < 1 || args.options.length > 4) {
       throw new Error("A decision point carries 1–4 options");
     }
@@ -63,18 +70,35 @@ export const createBatch = mutation({
 });
 
 export const pick = mutation({
-  args: { candidateId: v.id("candidates") },
+  args: {
+    candidateId: v.id("candidates"),
+    /**
+     * Director share links may pick (PLAN Phase 7.4 / E2E-07). Viewer tokens
+     * are rejected by `assertShareLink`; without a token the owner identity
+     * must hold write access.
+     */
+    shareToken: v.optional(v.string()),
+  },
   returns: v.object({
     beatId: v.id("beats"),
     branchId: v.id("branches"),
     forked: v.boolean(),
   }),
-  handler: async (ctx, { candidateId }) => {
+  handler: async (ctx, { candidateId, shareToken }) => {
     const candidate = await ctx.db.get(candidateId);
     if (!candidate) throw new Error("Candidate not found");
     if (candidate.status !== "offered") throw new Error("Candidate already resolved");
     const scene = await requireScene(ctx, candidate.sceneId);
-    const userId = await assertSceneAccess(ctx, scene, { write: true });
+    let userId: Id<"users">;
+    if (shareToken !== undefined) {
+      const share = await assertShareLink(ctx, shareToken, scene, {
+        permission: "director",
+      });
+      userId = (await currentUserId(ctx)) ?? share.createdByUserId;
+    } else {
+      userId = await assertSceneAccess(ctx, scene, { write: true });
+    }
+    assertSceneMutable(scene);
 
     const plan = planPick({
       activeBranchId: scene.activeBranchId ?? undefined,
@@ -142,6 +166,7 @@ export const dismiss = mutation({
     if (candidate.status !== "offered") throw new Error("Candidate already resolved");
     const scene = await requireScene(ctx, candidate.sceneId);
     const userId = await assertSceneAccess(ctx, scene, { write: true });
+    assertSceneMutable(scene);
     await ctx.db.patch(candidateId, { status: "dismissed" });
     await logAction(ctx, {
       sceneId: scene._id,

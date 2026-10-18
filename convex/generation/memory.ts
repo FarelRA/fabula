@@ -35,6 +35,9 @@ export const runPass = internalAction({
   }> => {
     const view = await ctx.runQuery(internal.generation.context.loadTurnContext, {
       sceneId: args.sceneId,
+      // Internal pass: wrap-summary scheduling has no identity, and callers
+      // of this action already gated access (turn action / endScene).
+      trusted: true,
     });
 
     const lastSummarySeq = view.summaries.reduce(

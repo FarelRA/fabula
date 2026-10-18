@@ -95,5 +95,6 @@ export function buildPlayScene(args: {
     activeBranchId: args.scene.activeBranchId,
     threadId: args.scene.threadId,
     seqCounter: args.scene.seqCounter,
+    endingStreak: args.scene.endingStreak,
   };
 }

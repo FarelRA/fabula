@@ -1,5 +1,6 @@
 import { convexTest } from "convex-test";
 import { register as registerAgent } from "@convex-dev/agent/test";
+import { register as registerPresence } from "@convex-dev/presence/test";
 import { api } from "../../convex/_generated/api";
 import schema from "../../convex/schema";
 
@@ -27,6 +28,7 @@ const modules: Record<string, () => Promise<unknown>> = Object.fromEntries(
 export function makeT() {
   const t = convexTest(schema, modules);
   registerAgent(t);
+  registerPresence(t);
   return t;
 }
 

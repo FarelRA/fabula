@@ -76,6 +76,9 @@ export const offer = action({
       sceneId: args.sceneId,
       tipBeatId: args.parentBeatId,
     });
+    if (view.scene.status === "archived") {
+      throw new Error("This scene is archived — the story is frozen. Undo the wrap to keep playing.");
+    }
     const activeRoles = view.roles.filter((role) => role.status === "active");
     if (activeRoles.length === 0) throw new Error("No active roles to offer paths for");
     const activeIds = new Set(activeRoles.map((role) => role.id as string));

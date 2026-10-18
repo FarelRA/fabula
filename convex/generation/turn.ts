@@ -66,6 +66,10 @@ export const start = action({
     );
     const opening = args.opening === true;
 
+    if (view.scene.status === "archived") {
+      throw new Error("This scene is archived — the story is frozen. Undo the wrap to keep playing.");
+    }
+
     if (opening) {
       if (view.scene.activeTipBeatId !== undefined) {
         throw new Error("Opening already exists for this scene");
@@ -110,6 +114,14 @@ export const start = action({
         .runAction(internal.generation.directorMeta.decide, { sceneId: args.sceneId })
         .catch(() => ({ meta: null as unknown }));
       meta = (metaResult.meta ?? null) as DirectorMeta | null;
+      if (meta) {
+        // End detection (PLAN §8.6, Phase 7): the streak only *surfaces* a
+        // wrap offer in the UI — the scene never auto-archives.
+        await ctx.runMutation(internal.scenes.recordEndingSignal, {
+          sceneId: args.sceneId,
+          suggested: meta.endingSuggested,
+        });
+      }
       if (mode === "reactive" && meta) {
         const responderId = meta.responders.find((id) =>
           activeRoles.some((role) => role.id === id),

@@ -63,6 +63,8 @@ export default defineSchema({
     threadId: v.optional(v.string()), // Agent component thread (implementation detail)
     seqCounter: v.number(), // monotonic scene-wide seq source
     endedAt: v.optional(v.number()),
+    /** Consecutive director-meta "endingSuggested" results (Phase 7, ADR-008). */
+    endingStreak: v.optional(v.number()),
   }).index("by_owner_updated", ["ownerId"]),
 
   sceneSettings: defineTable({

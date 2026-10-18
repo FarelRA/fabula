@@ -29,6 +29,13 @@ export type InverseAction =
       warningId: Id<"continuityWarnings">;
       patch: Record<string, unknown>;
     }
+  | {
+      kind: "patchScene";
+      sceneId: Id<"scenes">;
+      patch: Record<string, unknown>;
+      /** `patch` can't carry `undefined` through the log — this clears it. */
+      clearEndedAt?: boolean;
+    }
   | { kind: "patchRoleOrder"; entries: Array<{ roleId: Id<"roles">; sortKey: string }> };
 
 export async function logAction(
@@ -104,6 +111,15 @@ async function applyInverse(
       await ctx.db.patch(
         inverse.warningId,
         inverse.patch as Partial<Doc<"continuityWarnings">>,
+      );
+      return;
+    }
+    case "patchScene": {
+      const patch: Record<string, unknown> = { ...inverse.patch };
+      if (inverse.clearEndedAt) patch.endedAt = undefined;
+      await ctx.db.patch(
+        inverse.sceneId,
+        patch as Partial<Doc<"scenes">>,
       );
       return;
     }

@@ -64,3 +64,44 @@ export async function requireScene(
   if (!scene) throw new Error("Scene not found");
   return scene;
 }
+
+/**
+ * Story immutability (PLAN §8.4, Phase 7.1): once a scene is archived its
+ * tree, cast, memory and notes are frozen. Scene-level operations (sharing,
+ * export, the undo log) stay available; `actions.undoLast` remains the
+ * explicit reversibility path for a wrap.
+ */
+export function assertSceneMutable(scene: Doc<"scenes">): void {
+  if (scene.status === "archived") {
+    throw new Error("This scene is archived — the story is frozen. Undo the wrap to keep playing.");
+  }
+}
+
+/**
+ * Share-link credential check (PLAN §8.7, Phase 7.4). A valid token is the
+ * only credential a viewer/director needs — no identity required. Director
+ * links additionally authorize the pick mutation; everything else with a
+ * token is read-only by construction.
+ */
+export async function assertShareLink(
+  ctx: Ctx,
+  token: string,
+  scene: Doc<"scenes">,
+  options: { permission?: "viewer" | "director" } = {},
+): Promise<Doc<"shareLinks">> {
+  const share = await ctx.db
+    .query("shareLinks")
+    .withIndex("by_token", (q) => q.eq("token", token))
+    .first();
+  if (!share || share.sceneId !== scene._id) {
+    throw new Error("This share link is not valid for this scene");
+  }
+  if (share.revokedAt !== undefined) throw new Error("This share link was revoked");
+  if (share.expiresAt !== undefined && share.expiresAt < Date.now()) {
+    throw new Error("This share link expired");
+  }
+  if (options.permission === "director" && share.permission !== "director") {
+    throw new Error("This share link is view-only");
+  }
+  return share;
+}

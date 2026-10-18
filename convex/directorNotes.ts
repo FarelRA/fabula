@@ -1,6 +1,6 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
-import { assertSceneAccess, requireScene } from "./lib/authz";
+import { assertSceneAccess, assertSceneMutable, requireScene } from "./lib/authz";
 import { nowMs } from "./lib/time";
 import { logAction } from "./actions";
 
@@ -19,6 +19,7 @@ export const add = mutation({
   handler: async (ctx, args) => {
     const scene = await requireScene(ctx, args.sceneId);
     const userId = await assertSceneAccess(ctx, scene, { write: true });
+    assertSceneMutable(scene);
     const noteId = await ctx.db.insert("directorNotes", {
       sceneId: scene._id,
       kind: args.kind,
@@ -46,6 +47,7 @@ export const resolve = mutation({
     if (!note) throw new Error("Note not found");
     const scene = await requireScene(ctx, note.sceneId);
     const userId = await assertSceneAccess(ctx, scene, { write: true });
+    assertSceneMutable(scene);
     await ctx.db.patch(noteId, { status: "resolved" });
     await logAction(ctx, {
       sceneId: scene._id,

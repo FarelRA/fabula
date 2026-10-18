@@ -2,7 +2,7 @@ import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
 import type { MutationCtx } from "./_generated/server";
-import { assertSceneAccess, requireScene } from "./lib/authz";
+import { assertSceneAccess, assertSceneMutable, requireScene } from "./lib/authz";
 import { nowMs } from "./lib/time";
 import { ensureInitialRevisions } from "./cast";
 import { logAction } from "./actions";
@@ -88,6 +88,7 @@ export const appendOpening = mutation({
   handler: async (ctx, args) => {
     const scene = await requireScene(ctx, args.sceneId);
     await assertSceneAccess(ctx, scene, { write: true });
+    assertSceneMutable(scene);
     if (scene.activeTipBeatId !== undefined) {
       throw new Error("Opening beat already exists");
     }
@@ -119,6 +120,7 @@ export const appendUserBeat = mutation({
   handler: async (ctx, args) => {
     const scene = await requireScene(ctx, args.sceneId);
     await assertSceneAccess(ctx, scene, { write: true });
+    assertSceneMutable(scene);
     const branchId = scene.activeBranchId;
     if (!branchId) throw new Error("Scene has no mainline branch");
     const { beatId, seq } = await createBeatRow(ctx, {
@@ -142,6 +144,7 @@ export const editFork = mutation({
     if (!beat) throw new Error("Beat not found");
     const scene = await requireScene(ctx, beat.sceneId);
     const userId = await assertSceneAccess(ctx, scene, { write: true });
+    assertSceneMutable(scene);
 
     const plan = planEditFork({
       id: beat._id,
@@ -253,6 +256,7 @@ export const regenerateFork = mutation({
     if (!beat) throw new Error("Beat not found");
     const scene = await requireScene(ctx, beat.sceneId);
     const userId = await assertSceneAccess(ctx, scene, { write: true });
+    assertSceneMutable(scene);
     return await createRegenerateFork(ctx, { beat, scene, userId, text });
   },
 });
@@ -264,6 +268,7 @@ export const pin = mutation({
     if (!beat) throw new Error("Beat not found");
     const scene = await requireScene(ctx, beat.sceneId);
     const userId = await assertSceneAccess(ctx, scene, { write: true });
+    assertSceneMutable(scene);
     await ctx.db.patch(beatId, { isPinned: pinned });
     await logAction(ctx, {
       sceneId: scene._id,
@@ -283,6 +288,7 @@ export const keepArtifact = mutation({
     if (!beat) throw new Error("Beat not found");
     const scene = await requireScene(ctx, beat.sceneId);
     const userId = await assertSceneAccess(ctx, scene, { write: true });
+    assertSceneMutable(scene);
     await ctx.db.patch(beatId, { isArtifact: false, status: "finished" });
     await logAction(ctx, {
       sceneId: scene._id,

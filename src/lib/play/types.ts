@@ -72,6 +72,8 @@ export type PlayScene = {
   threadId?: string;
   /** Monotonic scene beat counter; positions the branch gutter. */
   seqCounter: number;
+  /** Consecutive director-meta ending signals (Phase 7 wrap offer). */
+  endingStreak?: number;
 };
 
 export type PlayOptionPick = {
