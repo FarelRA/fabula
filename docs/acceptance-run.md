@@ -104,3 +104,14 @@ chromium-desktop (6), and Playwright cannot emulate offline mode on Firefox
 
 **Result: the checklist above is fully satisfied with the deviations recorded,
 so the release is tagged `v1.0.0`.**
+
+## Production deployment (v1.0.2)
+
+Deployed on the `nodus` host through the `nodus-infra` service stack:
+`fabula.farel.at.eu.org` (app), `fabula-api.farel.at.eu.org` (Cloud API),
+`fabula-site.farel.at.eu.org` (HTTP actions), and the dashboard behind basic
+auth, with the Convex backend pinned to the same build as the dashboard. The
+release workflow publishes the app image for `linux/amd64` and `linux/arm64`
+because the production host is ARM while the GitHub runners are amd64. The
+deployment env points the model gateway at an OpenAI-compatible endpoint;
+provider keys live on the deployment only.
