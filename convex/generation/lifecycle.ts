@@ -53,6 +53,14 @@ export const beginBeat = internalMutation({
   },
 });
 
+/** Bind a pre-created (regeneration) streaming beat to its run row. */
+export const bindRun = internalMutation({
+  args: { beatId: v.id("beats"), runId: v.id("generationRuns") },
+  handler: async (ctx, { beatId, runId }) => {
+    await ctx.db.patch(beatId, { runId });
+  },
+});
+
 export const completeRun = internalMutation({
   args: {
     sceneId: v.id("scenes"),

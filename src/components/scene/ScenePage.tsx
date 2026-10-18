@@ -2,16 +2,20 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useQuery } from "convex/react";
-import { api } from "@convex/_generated/api";
-import type { Id } from "@convex/_generated/dataModel";
+import dynamic from "next/dynamic";
 import { CastProgress } from "@/components/cast/CastProgress";
 import { SceneReading } from "@/components/scene/SceneReading";
 import { EmptyState } from "@/components/shell/states";
 import { loadFixtureScene } from "@/lib/cast/fixtures";
-import { castSceneFromLive } from "@/lib/cast/liveMapping";
-import { isFixturesMode } from "@/lib/cast/mode";
 import type { CastScene } from "@/lib/cast/types";
+
+const PlayShell = dynamic(
+  () => import("@/components/scene/PlayShell").then((module) => module.PlayShell),
+  {
+    ssr: false,
+    loading: () => <CastProgress label="Opening the scene…" />,
+  },
+);
 
 function MissingScene({ sceneId }: { sceneId: string }) {
   return (
@@ -47,37 +51,15 @@ function FixturesScene({ sceneId }: { sceneId: string }) {
   return <SceneReading scene={scene} />;
 }
 
-function LiveScene({ sceneId }: { sceneId: string }) {
-  const id = sceneId as Id<"scenes">;
-  const sceneData = useQuery(api.scenes.get, { sceneId: id });
-  const roles = useQuery(api.cast.listRoles, { sceneId: id });
-  const path = useQuery(api.beats.listPath, { sceneId: id });
-
-  if (sceneData === undefined || roles === undefined || path === undefined) {
-    return <CastProgress label="Opening the scene…" />;
-  }
-  if (!sceneData?.scene || !sceneData.settings) {
-    return <MissingScene sceneId={sceneId} />;
-  }
-
-  const scene = castSceneFromLive({
-    scene: sceneData.scene,
-    settings: sceneData.settings,
-    roles,
-    beats: path.beats,
-  });
-  return <SceneReading scene={scene} />;
-}
-
 /**
- * Scene page entry (Phase 4): fixtures read from the session, live reads from
- * Convex. Phase 5 replaces the reading surface with the full play shell; the
- * data mapping and route stay.
+ * Scene route (Phase 5): fixtures-built scenes keep the deterministic Phase-4
+ * handoff reading surface; live Convex scenes get the full play shell. The
+ * scene id prefix is the discriminator, so one build can serve both demos and
+ * real deployments.
  */
 export function ScenePage({ sceneId }: { sceneId: string }) {
-  return isFixturesMode() ? (
-    <FixturesScene sceneId={sceneId} />
-  ) : (
-    <LiveScene sceneId={sceneId} />
-  );
+  if (sceneId.startsWith("fixture_scene_")) {
+    return <FixturesScene sceneId={sceneId} />;
+  }
+  return <PlayShell sceneId={sceneId} />;
 }

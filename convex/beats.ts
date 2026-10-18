@@ -186,6 +186,65 @@ export const editFork = mutation({
   },
 });
 
+/**
+ * Shared fork primitive for regenerate (PLAN §6.1 / law L4). Used by the
+ * public `regenerateFork` mutation and by the streaming regeneration action
+ * (which fills the new beat with model output).
+ */
+export async function createRegenerateFork(
+  ctx: MutationCtx,
+  args: {
+    beat: Doc<"beats">;
+    scene: Doc<"scenes">;
+    userId: Id<"users">;
+    /** Undefined = create a streaming beat for generation to fill. */
+    text?: string;
+  },
+): Promise<{ newBeatId: Id<"beats">; branchId: Id<"branches"> }> {
+  const { beat, scene, userId, text } = args;
+  const plan = planRegenerate({
+    id: beat._id,
+    parentBeatId: beat.parentBeatId ?? undefined,
+    branchId: beat.branchId,
+  });
+
+  const branchId = await ctx.db.insert("branches", {
+    sceneId: scene._id,
+    label: `Alternate · beat ${beat.seq}`,
+    forkedFromBeatId: plan.forkedFromBeatId as Id<"beats"> | undefined,
+    forkedFromBranchId: beat.branchId,
+    forkReason: plan.forkReason,
+    createdByUserId: userId,
+    colorIndex: await nextColorIndex(ctx, scene._id),
+    createdAt: nowMs(),
+  });
+
+  const { beatId: newBeatId } = await createBeatRow(ctx, {
+    scene,
+    branchId,
+    parentBeatId: beat.parentBeatId,
+    origin: "regenerate",
+    speakerRoleId: beat.speakerRoleId,
+    text: text ?? "",
+    status: text === undefined ? "streaming" : "finished",
+    regenerateOfBeatId: beat._id,
+  });
+
+  await ctx.db.patch(scene._id, { activeBranchId: branchId, activeTipBeatId: newBeatId });
+  await logAction(ctx, {
+    sceneId: scene._id,
+    type: "beat.regenerateFork",
+    payload: { beatId: beat._id, newBeatId, branchId },
+    inverse: {
+      kind: "restoreActive",
+      branchId: scene.activeBranchId,
+      tipBeatId: scene.activeTipBeatId,
+    },
+    userId,
+  });
+  return { newBeatId, branchId };
+}
+
 export const regenerateFork = mutation({
   args: { beatId: v.id("beats"), text: v.optional(v.string()) },
   returns: v.object({ newBeatId: v.id("beats"), branchId: v.id("branches") }),
@@ -194,48 +253,7 @@ export const regenerateFork = mutation({
     if (!beat) throw new Error("Beat not found");
     const scene = await requireScene(ctx, beat.sceneId);
     const userId = await assertSceneAccess(ctx, scene, { write: true });
-
-    const plan = planRegenerate({
-      id: beat._id,
-      parentBeatId: beat.parentBeatId ?? undefined,
-      branchId: beat.branchId,
-    });
-
-    const branchId = await ctx.db.insert("branches", {
-      sceneId: scene._id,
-      label: `Alternate · beat ${beat.seq}`,
-      forkedFromBeatId: plan.forkedFromBeatId as Id<"beats"> | undefined,
-      forkedFromBranchId: beat.branchId,
-      forkReason: plan.forkReason,
-      createdByUserId: userId,
-      colorIndex: await nextColorIndex(ctx, scene._id),
-      createdAt: nowMs(),
-    });
-
-    const { beatId: newBeatId } = await createBeatRow(ctx, {
-      scene,
-      branchId,
-      parentBeatId: beat.parentBeatId,
-      origin: "regenerate",
-      speakerRoleId: beat.speakerRoleId,
-      text: text ?? "",
-      status: text === undefined ? "streaming" : "finished",
-      regenerateOfBeatId: beat._id,
-    });
-
-    await ctx.db.patch(scene._id, { activeBranchId: branchId, activeTipBeatId: newBeatId });
-    await logAction(ctx, {
-      sceneId: scene._id,
-      type: "beat.regenerateFork",
-      payload: { beatId, newBeatId, branchId },
-      inverse: {
-        kind: "restoreActive",
-        branchId: scene.activeBranchId,
-        tipBeatId: scene.activeTipBeatId,
-      },
-      userId,
-    });
-    return { newBeatId, branchId };
+    return await createRegenerateFork(ctx, { beat, scene, userId, text });
   },
 });
 
@@ -303,5 +321,32 @@ export const getWithOptions = query({
       .withIndex("by_parent_status", (q) => q.eq("parentBeatId", beatId).eq("status", "offered"))
       .collect();
     return { beat, options: options.sort((a, b) => a.optionIndex - b.optionIndex) };
+  },
+});
+
+/**
+ * In-flight / failed children of the active tip (Phase 5.2). A streamed turn
+ * beat is created on the first delta but only moves the tip when it finishes;
+ * the play UI surfaces it as a live row. Failed children stay visible with a
+ * retry affordance and never enter the active path (the tree stays intact).
+ */
+export const listPending = query({
+  args: { sceneId: v.id("scenes") },
+  handler: async (ctx, { sceneId }) => {
+    const scene = await requireScene(ctx, sceneId);
+    await assertSceneAccess(ctx, scene);
+    const tip = scene.activeTipBeatId;
+    if (!tip) return [];
+    const rows = await ctx.db
+      .query("beats")
+      .withIndex("by_parent", (q) => q.eq("parentBeatId", tip))
+      .collect();
+    return rows
+      .filter(
+        (beat) =>
+          !beat.isArtifact &&
+          (beat.status === "streaming" || beat.status === "failed"),
+      )
+      .sort((a, b) => a.seq - b.seq);
   },
 });

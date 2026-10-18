@@ -1,4 +1,4 @@
-import { internalMutation, internalQuery, mutation } from "../_generated/server";
+import { internalMutation, internalQuery, mutation, query } from "../_generated/server";
 import { v } from "convex/values";
 import type { Id } from "../_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "../_generated/server";
@@ -92,5 +92,42 @@ export const statusForScene = internalQuery({
       .query("generationRuns")
       .withIndex("by_scene_status", (q) => q.eq("sceneId", sceneId).eq("status", "running"))
       .first();
+  },
+});
+
+/** Close a run when a later setup step (e.g. fork creation) fails. */
+export const fail = internalMutation({
+  args: { runId: v.id("generationRuns"), error: v.string() },
+  handler: async (ctx, { runId, error }) => {
+    await ctx.db.patch(runId, {
+      status: "failed",
+      error,
+      finishedAt: nowMs(),
+    });
+  },
+});
+
+/** Public floor state for the play UI (Phase 5.3). */
+export const active = query({
+  args: { sceneId: v.id("scenes") },
+  handler: async (ctx, { sceneId }) => {
+    const scene = await requireScene(ctx, sceneId);
+    await assertSceneAccess(ctx, scene);
+    const run = await ctx.db
+      .query("generationRuns")
+      .withIndex("by_scene_status", (q) => q.eq("sceneId", sceneId).eq("status", "running"))
+      .first();
+    if (!run) return null;
+    const role = run.roleId ? await ctx.db.get(run.roleId) : null;
+    return {
+      _id: run._id,
+      mode: run.mode,
+      roleId: run.roleId ?? null,
+      roleName: role?.identity.name ?? null,
+      roleAccent: role?.identity.accentColor ?? null,
+      roleMonogram: role?.identity.monogram ?? null,
+      startedAt: run.startedAt,
+      abortRequested: run.abortRequested,
+    };
   },
 });

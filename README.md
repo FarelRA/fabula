@@ -6,13 +6,35 @@ story three ways: pick one of the AI-generated paths, drop an out-of-character
 director note, or write a line yourself. Every choice can branch; nothing is
 ever destroyed.
 
-> **Status: Phases 0–4 complete** (foundation, domain core, generation engine,
-> app shell & design system, cast generation UX). The full plan — schema, prompt
-> architecture, orchestration spec, wireflows, phases, agents and acceptance
-> criteria — lives in [PLAN.md](./PLAN.md).
+> **Status: Phases 0–5 complete** (foundation, domain core, generation engine,
+> app shell & design system, cast generation UX, play loop). The full plan —
+> schema, prompt architecture, orchestration spec, wireflows, phases, agents and
+> acceptance criteria — lives in [PLAN.md](./PLAN.md).
 
 ## What works today
 
+- **Play loop** (Phase 5): the `/s/[sceneId]` director console with a
+  TanStack-Virtual thread (200-beat evidence: 8 rendered rows, 60.4 fps),
+  chat/script/novel renderers with per-role accent borders, pin and
+  failed-beat retry rows, smart autoscroll + Jump-to-latest (⌘J), and
+  persisted streaming deltas through `useUIMessages(..., {stream:true})` so a
+  reload mid-generation resumes without lost or duplicated tokens.
+  - Floor indicator with speaker, deterministic next-speaker preview, burst
+    counter, pause/resume, abort, and "Offer paths"; @mention forces a speaker,
+    queue-next and steal-floor abort-and-handoff are wired.
+  - Inline path options under their parent beat, ghost candidates collapsed by
+    default with later-pick fork warnings, optimistic picks, Alt/⌥1–4 picking,
+    and offer-paths at the tip.
+  - Three-mode composer: steer (with quick chips + active note chips),
+    in-character writing as any role, and steer-and-regenerate (forks a new
+    take). cmdk powers mention autocomplete.
+  - Director bar: undo, offer paths, pause/resume, edit-fork with explicit
+    branch copy, regenerate (server-streamed fork, pointer restore on failure),
+    pin beats, and wrap/end scene. Beat text is the source of truth; transport
+    messages are never rendered twice.
+  - Live E2E: E2E-01≤3 screens, E2E-02 two-context pick sync, E2E-03
+    reload-mid-stream token-exact resume, keyboard picks, mention override,
+    pause blocking auto-floor, and the 200-beat perf probe.
 - **Cast generation UX** (Phase 4): `/` onboarding, the three doors
   (`/new/quick`, `/new/wizard`, `/new/templates` with six Appendix-A presets),
   the validated four-step wizard (nuqs step state), and one audition surface:
@@ -44,7 +66,8 @@ ever destroyed.
   generation, failure isolation (no beat before the first delta; aborted
   partials become artifacts that never move the tip).
 - **Path options** with validation → repair pass → deterministic fallback,
-  persisted atomically with their snapshot (inline cards render in Phase 5).
+  persisted atomically with their snapshot; the play thread renders them inline
+  and keeps unpicked candidates as ghosts.
 - **Casting agent**: full cast with programmatic constraint checks
   (connected graph, alliance + friction, distinct voices/hooks, tier policy),
   up to 2 repair passes, human-role generation, cast/field regen that
@@ -72,18 +95,24 @@ bun run dev           # Next.js on :3000
 ```
 
 No backend handy? `NEXT_PUBLIC_FIXTURES=1 bun run dev` runs the three doors and
-the audition on deterministic local fixtures (the same mode E2E uses).
+the audition on deterministic local fixtures for UI-first development. E2E does
+**not** use fixtures: it boots the open-source Convex backend + fake model.
 
 Run everything:
 
 ```bash
-bun run check          # typecheck + lint + tests (322 unit/integration tests)
-bun run test:e2e       # builds fixtures, then Playwright (shell + E2E-01 + keyboard)
-bun run build:e2e      # fixtures-only production build (used by test:e2e)
+bun run check          # typecheck + lint + tests (368 unit/integration tests)
+bun run test:e2e       # builds live, boots local Convex + fake model, Playwright
+bun run e2e:server     # the backend+app server Playwright starts (manual runs)
 bun run seed           # seed prompt templates (needs a running backend)
 bun run fixtures       # regenerate UI fixtures
 bun run terminology    # guard: no internal jargon in user-facing strings
 ```
+
+`test:e2e` expects ports 3100 (app) and 3210/3211 (Convex backend) to be free;
+it creates an anonymous local deployment in `.env.local` on a clean checkout and
+generates auth keys. Set `FABULA_E2E_NO_SERVER=1` to run Playwright against an
+already-running e2e server.
 
 ## Self-host (Docker)
 

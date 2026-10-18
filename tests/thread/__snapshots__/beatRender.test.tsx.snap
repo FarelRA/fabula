@@ -1,0 +1,25 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`BeatContent — presentation styles > chat golden 1`] = `
+"<div data-style="chat" class="min-w-0 break-words text-foreground/90 text-[0.95rem] leading-[1.7] [&amp;_a]:text-primary [&amp;_a]:underline [&amp;_a]:underline-offset-2 [&amp;_blockquote]:border-l-2 [&amp;_blockquote]:border-border [&amp;_blockquote]:pl-3 [&amp;_blockquote]:text-muted-foreground [&amp;_code]:rounded [&amp;_code]:bg-muted [&amp;_code]:px-1 [&amp;_code]:py-0.5 [&amp;_code]:font-mono [&amp;_code]:text-[0.85em] [&amp;_em]:text-foreground/75 [&amp;_h1]:font-heading [&amp;_h1]:text-lg [&amp;_h1]:font-semibold [&amp;_h2]:font-heading [&amp;_h2]:text-base [&amp;_h2]:font-semibold [&amp;_hr]:my-3 [&amp;_hr]:border-border [&amp;_li]:ml-4 [&amp;_li]:list-disc [&amp;_li]:marker:text-muted-foreground [&amp;_ol>li]:list-decimal [&amp;_p]:mb-2 [&amp;_p:last-child]:mb-0 [&amp;_strong]:font-semibold [&amp;_strong]:text-foreground"><p>The rain <strong>kept</strong> falling.</p>
+<ul>
+<li>one</li>
+<li>two</li>
+</ul></div>"
+`;
+
+exports[`BeatContent — presentation styles > novel golden 1`] = `
+"<div data-style="novel" class="min-w-0 break-words text-foreground/90 font-serif text-[1.05rem] leading-[1.75] sm:text-lg [&amp;_a]:text-primary [&amp;_a]:underline [&amp;_a]:underline-offset-2 [&amp;_blockquote]:border-l-2 [&amp;_blockquote]:border-border [&amp;_blockquote]:pl-3 [&amp;_blockquote]:text-muted-foreground [&amp;_code]:rounded [&amp;_code]:bg-muted [&amp;_code]:px-1 [&amp;_code]:py-0.5 [&amp;_code]:font-mono [&amp;_code]:text-[0.85em] [&amp;_em]:text-foreground/75 [&amp;_h1]:font-heading [&amp;_h1]:text-lg [&amp;_h1]:font-semibold [&amp;_h2]:font-heading [&amp;_h2]:text-base [&amp;_h2]:font-semibold [&amp;_hr]:my-3 [&amp;_hr]:border-border [&amp;_li]:ml-4 [&amp;_li]:list-disc [&amp;_li]:marker:text-muted-foreground [&amp;_ol>li]:list-decimal [&amp;_p]:mb-2 [&amp;_p:last-child]:mb-0 [&amp;_strong]:font-semibold [&amp;_strong]:text-foreground"><p>The rain <strong>kept</strong> falling.</p>
+<ul>
+<li>one</li>
+<li>two</li>
+</ul></div>"
+`;
+
+exports[`BeatContent — presentation styles > script golden 1`] = `
+"<div data-style="script" class="min-w-0 break-words text-foreground/90 font-mono text-[0.82rem] leading-[1.7] [&amp;_a]:text-primary [&amp;_a]:underline [&amp;_a]:underline-offset-2 [&amp;_blockquote]:border-l-2 [&amp;_blockquote]:border-border [&amp;_blockquote]:pl-3 [&amp;_blockquote]:text-muted-foreground [&amp;_code]:rounded [&amp;_code]:bg-muted [&amp;_code]:px-1 [&amp;_code]:py-0.5 [&amp;_code]:font-mono [&amp;_code]:text-[0.85em] [&amp;_em]:text-foreground/75 [&amp;_h1]:font-heading [&amp;_h1]:text-lg [&amp;_h1]:font-semibold [&amp;_h2]:font-heading [&amp;_h2]:text-base [&amp;_h2]:font-semibold [&amp;_hr]:my-3 [&amp;_hr]:border-border [&amp;_li]:ml-4 [&amp;_li]:list-disc [&amp;_li]:marker:text-muted-foreground [&amp;_ol>li]:list-decimal [&amp;_p]:mb-2 [&amp;_p:last-child]:mb-0 [&amp;_strong]:font-semibold [&amp;_strong]:text-foreground"><p>The rain <strong>kept</strong> falling.</p>
+<ul>
+<li>one</li>
+<li>two</li>
+</ul></div>"
+`;

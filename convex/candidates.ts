@@ -169,6 +169,56 @@ export const listForBeat = query({
 });
 
 /**
+ * All offered paths for a scene, decorated with their parent's seq (Phase 5.4).
+ * The play thread renders tip options inline and older candidates as ghost
+ * forks under their parent beat. Picked/dismissed rows are history, not UI.
+ */
+export const listForScene = query({
+  args: {
+    sceneId: v.id("scenes"),
+    includeResolved: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    const scene = await requireScene(ctx, args.sceneId);
+    await assertSceneAccess(ctx, scene);
+
+    const statuses = args.includeResolved
+      ? (["offered", "picked", "dismissed"] as const)
+      : (["offered"] as const);
+    const groups = await Promise.all(
+      statuses.map((status) =>
+        ctx.db
+          .query("candidates")
+          .withIndex("by_scene_status", (q) =>
+            q.eq("sceneId", args.sceneId).eq("status", status),
+          )
+          .collect(),
+      ),
+    );
+    const rows = groups.flat();
+    const parentIds = [...new Set(rows.map((row) => row.parentBeatId))];
+    const parents = await Promise.all(parentIds.map((id) => ctx.db.get(id)));
+    const seqByParent = new Map(
+      parents
+        .filter((parent): parent is NonNullable<typeof parent> => parent !== null)
+        .map((parent) => [parent._id, parent.seq]),
+    );
+
+    return rows
+      .sort((a, b) => {
+        const seqA = seqByParent.get(a.parentBeatId) ?? 0;
+        const seqB = seqByParent.get(b.parentBeatId) ?? 0;
+        return seqA - seqB || a.optionIndex - b.optionIndex;
+      })
+      .map((row) => ({
+        ...row,
+        parentSeq: seqByParent.get(row.parentBeatId) ?? 0,
+        parentIsTip: scene.activeTipBeatId === row.parentBeatId,
+      }));
+  },
+});
+
+/**
  * Options generation write path (PLAN §2.4): candidates + their prompt
  * snapshot are persisted atomically.
  */

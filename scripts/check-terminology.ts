@@ -38,6 +38,15 @@ function walk(dir: string): void {
       if (trimmed.startsWith("//") || trimmed.startsWith("*") || trimmed.startsWith("/*")) {
         return;
       }
+      // Module specifiers are code, not UX copy (e.g. components/thread/...).
+      if (
+        /^\s*(?:import|export)\s/.test(line) ||
+        /\bfrom\s+["']/.test(line) ||
+        /\brequire\s*\(/.test(line) ||
+        /\bimport\s*\(/.test(line)
+      ) {
+        return;
+      }
       if (ALLOWED_IDENTIFIERS.some((pattern) => pattern.test(line))) {
         return;
       }

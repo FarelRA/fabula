@@ -38,6 +38,7 @@ import type * as generation_memory from "../generation/memory.js";
 import type * as generation_opening from "../generation/opening.js";
 import type * as generation_options from "../generation/options.js";
 import type * as generation_record from "../generation/record.js";
+import type * as generation_regenerate from "../generation/regenerate.js";
 import type * as generation_runs from "../generation/runs.js";
 import type * as generation_sampleLine from "../generation/sampleLine.js";
 import type * as generation_snapshots from "../generation/snapshots.js";
@@ -71,6 +72,7 @@ import type * as scenes from "../scenes.js";
 import type * as shared_contracts from "../shared/contracts.js";
 import type * as shares from "../shares.js";
 import type * as summaries from "../summaries.js";
+import type * as thread from "../thread.js";
 import type * as usage from "../usage.js";
 
 import type {
@@ -110,6 +112,7 @@ declare const fullApi: ApiFromModules<{
   "generation/opening": typeof generation_opening;
   "generation/options": typeof generation_options;
   "generation/record": typeof generation_record;
+  "generation/regenerate": typeof generation_regenerate;
   "generation/runs": typeof generation_runs;
   "generation/sampleLine": typeof generation_sampleLine;
   "generation/snapshots": typeof generation_snapshots;
@@ -143,6 +146,7 @@ declare const fullApi: ApiFromModules<{
   "shared/contracts": typeof shared_contracts;
   shares: typeof shares;
   summaries: typeof summaries;
+  thread: typeof thread;
   usage: typeof usage;
 }>;
 

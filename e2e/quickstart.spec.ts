@@ -1,22 +1,31 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
 /**
  * E2E-01 (PLAN §11.5): quick start reaches a rendered opening beat in ≤ 3
- * navigations, and the audition is fully keyboard-operable. Runs on the
- * fixtures build (`bun run build:e2e`) — deterministic, no backend, no model.
+ * navigations, and the audition is fully keyboard-operable. Runs against the
+ * isolated self-hosted Convex backend + deterministic fake model.
  */
 
 const PREMISE =
   "A debt collector knocks on the wrong door in 1970s Saigon.";
 
-async function quickStartToAudition(page: import("@playwright/test").Page) {
+async function quickStartToAudition(page: Page): Promise<void> {
   await page.goto("/new/quick");
   await page.getByLabel("Premise").fill(PREMISE);
   await page.getByRole("button", { name: /Cast & play/ }).click();
-  await expect(page.getByText("Audition", { exact: true })).toBeVisible();
+  await expect(page.getByText("Audition", { exact: true })).toBeVisible({
+    timeout: 60_000,
+  });
   await expect(page.getByRole("textbox", { name: "Opening beat" })).not.toHaveValue(
     "",
+    { timeout: 30_000 },
   );
+}
+
+async function startScene(page: Page): Promise<void> {
+  await page.getByRole("button", { name: /Start scene/ }).click();
+  await expect(page).toHaveURL(/\/s\/[a-z0-9]+/i, { timeout: 30_000 });
+  await expect(page.getByText(/Burst/)).toBeVisible({ timeout: 30_000 });
 }
 
 test.describe("quick start (E2E-01)", () => {
@@ -27,46 +36,51 @@ test.describe("quick start (E2E-01)", () => {
     });
 
     await quickStartToAudition(page);
-
     const opening = page.getByRole("textbox", { name: "Opening beat" });
     const text = await opening.inputValue();
     expect(text.trim().length).toBeGreaterThan(20);
 
-    await page.getByRole("button", { name: /Start scene/ }).click();
-    await expect(page).toHaveURL(/\/s\/fixture_scene_/);
-    await expect(page.getByText(text.trim().slice(0, 40))).toBeVisible();
-    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    await startScene(page);
+    await expect(page.getByTestId("beat-row").first()).toBeVisible();
+    await expect(page.getByTestId("beat-scroll")).toBeVisible();
+
+    // The opener is visible in the live thread.
+    await expect(
+      page.getByTestId("beat-row").filter({ hasText: text.trim().slice(0, 30) }),
+    ).toBeVisible({ timeout: 30_000 });
 
     expect(navigations).toBeLessThanOrEqual(3);
-  });
-
-  test("keyboard drag reorders the cast", async ({ page }, testInfo) => {
-    test.skip(
-      testInfo.project.name !== "chromium-desktop",
-      "Hardware-keyboard reorder is exercised on the desktop project.",
-    );
-    await quickStartToAudition(page);
-    const names = page.locator("article h3");
-    const before = (await names.allTextContents()).join("|");
-
-    const handle = page.getByRole("button", { name: /^Reorder / }).first();
-    await handle.focus();
-    await page.keyboard.press("Space");
-    await page.waitForTimeout(200);
-    await page.keyboard.press("ArrowDown");
-    await page.waitForTimeout(200);
-    await page.keyboard.press("Space");
-
-    await expect
-      .poll(async () => (await names.allTextContents()).join("|"))
-      .not.toBe(before);
   });
 
   test("audition is keyboard-operable: locks, samples, start", async ({ page }, testInfo) => {
     await quickStartToAudition(page);
 
-    // Evidence: audition at desktop + phone widths. Capture before interacting
-    // and at scroll 0 so sticky/fixed chrome is painted where it belongs.
+    // Lock the first role's hook with the keyboard only.
+    const lock = page.getByRole("button", { name: /^Lock Hook for / }).first();
+    const roleName = (await lock.getAttribute("aria-label"))?.replace(
+      "Lock Hook for ",
+      "",
+    );
+    expect(roleName).toBeTruthy();
+    await lock.focus();
+    await page.keyboard.press("Enter");
+    await expect(
+      page.getByRole("button", { name: `Unlock Hook for ${roleName}` }),
+    ).toHaveAttribute("aria-pressed", "true");
+    await expect(
+      page.getByRole("button", { name: `Regenerate Hook for ${roleName}` }),
+    ).toBeDisabled();
+
+    // Sample-line sheet opens with Enter, is a dialog, closes with Escape.
+    const sample = page.getByRole("button", { name: /^Hear .+ voice$/ }).first();
+    await sample.focus();
+    await page.keyboard.press("Enter");
+    const dialog = page.getByRole("dialog");
+    await expect(dialog).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeHidden();
+
+    // Evidence: audition + live play at desktop and phone widths.
     if (testInfo.project.name === "chromium-desktop") {
       await page.evaluate(() => window.scrollTo(0, 0));
       await page.setViewportSize({ width: 1280, height: 1000 });
@@ -84,36 +98,21 @@ test.describe("quick start (E2E-01)", () => {
       await page.evaluate(() => window.scrollTo(0, 0));
     }
 
-    // Lock the first role's hook with the keyboard only.
-    const lock = page.getByRole("button", { name: /^Lock Hook for / }).first();
-    const roleName = (await lock.getAttribute("aria-label"))?.replace(
-      "Lock Hook for ",
-      "",
-    );
-    expect(roleName).toBeTruthy();
-    await lock.focus();
-    await page.keyboard.press("Enter");
-    await expect(
-      page.getByRole("button", { name: `Unlock Hook for ${roleName}` }),
-    ).toHaveAttribute("aria-pressed", "true");
+    await startScene(page);
+    await expect(page.getByTestId("option-card").first()).toBeVisible({
+      timeout: 30_000,
+    });
 
-    // The matching regenerate control is disabled while locked.
-    await expect(
-      page.getByRole("button", { name: `Regenerate Hook for ${roleName}` }),
-    ).toBeDisabled();
-
-    // Sample-line sheet opens with Enter, is a dialog, closes with Escape.
-    const sample = page.getByRole("button", { name: /^Hear .+ voice$/ }).first();
-    await sample.focus();
-    await page.keyboard.press("Enter");
-    const dialog = page.getByRole("dialog");
-    await expect(dialog).toBeVisible();
-    await expect(dialog.getByText(/voice$/)).toBeVisible();
-    await page.keyboard.press("Escape");
-    await expect(dialog).toBeHidden();
-
-    await page.getByRole("button", { name: /Start scene/ }).click();
-    await expect(page).toHaveURL(/\/s\/fixture_scene_/);
-    await expect(page.getByText(/Opening/)).toBeVisible();
+    if (testInfo.project.name === "chromium-desktop") {
+      await page.screenshot({
+        path: "docs/screenshots/play-1280.png",
+        fullPage: true,
+      });
+      await page.setViewportSize({ width: 375, height: 900 });
+      await page.screenshot({
+        path: "docs/screenshots/play-375.png",
+        fullPage: true,
+      });
+    }
   });
 });

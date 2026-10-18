@@ -367,6 +367,18 @@ export const loadRoleContext = internalQuery({
   },
 });
 
+/** Resolve a beat + scene for the regeneration action (write access). */
+export const loadBeatForRegen = internalQuery({
+  args: { beatId: v.id("beats") },
+  handler: async (ctx, { beatId }) => {
+    const beat = await ctx.db.get(beatId);
+    if (!beat) throw new Error("Beat not found");
+    const scene = await requireScene(ctx, beat.sceneId);
+    await assertSceneAccess(ctx, scene, { write: true });
+    return { beat, sceneId: beat.sceneId };
+  },
+});
+
 export const setSceneThread = internalMutation({
   args: { sceneId: v.id("scenes"), threadId: v.string() },
   handler: async (ctx, { sceneId, threadId }) => {
