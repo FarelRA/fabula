@@ -1448,7 +1448,7 @@ Dependency DAG (hard edges): G0 → everything; P1.3 → P1.4/1.5; 2.1 → 2.3+;
 
 **Mutations:** `scenes.create/update/archive/pause/endScene` [A1] · `cast.upsertDraftRole/updateDraft/reviseRole(effectiveFrom)/retire/restore/reorder/setTier/setLocks` [A1] · `candidates.pick/dismiss` [A1] · `beats.editFork/regenerateFork/pin/keepArtifact` [A1] · `directorNotes.add/resolve` [A1] · `facts.pin/mute/unmute/addUserFact` [A1] · `actions.undoLast` [A1] · `shares.create/revoke` [A1] · `claim.claimScene` [A1] · `director.queueRole/forceMention/stealFloor` [A3].
 
-**Actions:** `generation.startTurn/abort/retry` [A2] · `generation.offerOptions` [A2] · `generation.castDraft/regenField/regenRole/regenCast` [A2] · `generation.sampleLine/avatar` [A2] · `generation.openingBeat` [A2] · internal scheduled: `generation.memoryPass` [A3], `generation.directorDecide` [A3] · crons: `crons.watchdog/rollups` [A2].
+**Actions:** `generation.startTurn/abort/retry` [A2] · `generation.offerOptions` [A2] · `generation.castDraft/regenField/regenRole/regenCast` [A2] · `generation.opening.draft` [A2] (Phase 4 audition preview, ADR-004) · `generation.sampleLine/avatar` [A2] · `generation.openingBeat` [A2] · internal scheduled: `generation.memoryPass` [A3], `generation.directorDecide` [A3] · crons: `crons.watchdog/rollups` [A2].
 
 ### 13.5 Handoff protocol (every agent, every task)
 

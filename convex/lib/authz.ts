@@ -14,8 +14,12 @@ export type AnyCtx = QueryCtx | MutationCtx | ActionCtx;
 export async function currentUserId(ctx: AnyCtx): Promise<Id<"users"> | null> {
   const identity = await ctx.auth.getUserIdentity();
   if (!identity) return null;
-  const fromToken = identity.tokenIdentifier.split("|").pop();
-  const raw = fromToken && fromToken.length > 0 ? fromToken : identity.subject;
+  // Convex Auth issues `sub = <userId>|<sessionId>`; Convex prefixes that with
+  // the issuer in `tokenIdentifier`. Prefer the first subject segment so we
+  // land on `users`, not `authSessions` (test identities use a bare subject).
+  const subject = identity.subject;
+  const raw = (subject.includes("|") ? subject.split("|")[0] : subject)
+    ?? identity.tokenIdentifier.split("|").pop();
   if (!raw || raw.length === 0) return null;
   return raw as Id<"users">;
 }

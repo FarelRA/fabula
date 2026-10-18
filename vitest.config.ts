@@ -8,6 +8,7 @@ export default defineConfig({
   oxc: { jsx: { runtime: "automatic", importSource: "react" } },
   resolve: {
     alias: {
+      "@convex": fileURLToPath(new URL("./convex", import.meta.url)),
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },

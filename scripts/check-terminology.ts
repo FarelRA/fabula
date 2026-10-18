@@ -18,6 +18,10 @@ const STRING_PATTERNS = [
   />[^<>{}\n]*\b(thread|agent)s?\b[^<>{}\n]*</i,
 ];
 
+// Frozen keymap action IDs (Appendix B) are internal identifiers, never
+// rendered. The user-facing label for this action is "Jump to latest".
+const ALLOWED_IDENTIFIERS = [/\bthread\.jumpToLatest\b/];
+
 const findings: string[] = [];
 
 function walk(dir: string): void {
@@ -32,6 +36,9 @@ function walk(dir: string): void {
     lines.forEach((line, index) => {
       const trimmed = line.trim();
       if (trimmed.startsWith("//") || trimmed.startsWith("*") || trimmed.startsWith("/*")) {
+        return;
+      }
+      if (ALLOWED_IDENTIFIERS.some((pattern) => pattern.test(line))) {
         return;
       }
       if (STRING_PATTERNS.some((pattern) => pattern.test(line))) {

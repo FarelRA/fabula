@@ -1,10 +1,10 @@
 import { defineConfig, devices } from "@playwright/test";
 
 /**
- * E2E harness (PLAN §11.5). Phase 3 covers the app shell: keyboard-only
- * walkthrough and the 320px → 2560px responsive screenshots archive.
- * The fake-gateway fixtures mode arrives with the play loop (Phase 5); the
- * shell is static, so a production server is enough today.
+ * E2E harness (PLAN §11.5). Phase 3 covers the shell; Phase 4 adds the quick
+ * start (E2E-01) and the audition keyboard pass. Build with
+ * `bun run build:e2e` so NEXT_PUBLIC_FIXTURES is inlined — E2E never touches
+ * a backend or a model provider.
  */
 
 const PORT = process.env.FABULA_E2E_PORT ?? "3100";
@@ -25,7 +25,7 @@ export default defineConfig({
     ? undefined
     : {
         command: "bun run start",
-        env: { PORT },
+        env: { PORT, NEXT_PUBLIC_FIXTURES: "1" },
         url: baseURL,
         reuseExistingServer: !process.env.CI,
         timeout: 120_000,

@@ -36,12 +36,8 @@ jobs:
           bun-version: latest
       - run: bun install --frozen-lockfile
       - run: bunx playwright install --with-deps chromium
-      - run: bun run build
-        env:
-          NEXT_PUBLIC_CONVEX_URL: http://127.0.0.1:3210
       - run: bun run test:e2e
         env:
-          NEXT_PUBLIC_CONVEX_URL: http://127.0.0.1:3210
           FABULA_E2E_PORT: "3100"
 
   selfhost:

@@ -46,6 +46,20 @@ export function buildShellCommands(io: ShellCommandIO): ShellCommand[] {
       run: () => io.navigate("/"),
     },
     {
+      id: "nav.guided-setup",
+      title: "Guided scene setup",
+      group: "Navigate",
+      keywords: ["wizard", "tone", "world", "cast size"],
+      run: () => io.navigate("/new/wizard"),
+    },
+    {
+      id: "nav.templates",
+      title: "Browse templates",
+      group: "Navigate",
+      keywords: ["preset", "noir", "court", "space", "tavern"],
+      run: () => io.navigate("/new/templates"),
+    },
+    {
       id: "theme.dark",
       title: "Dark theme",
       group: "Appearance",

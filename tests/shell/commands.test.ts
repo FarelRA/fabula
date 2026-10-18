@@ -22,6 +22,8 @@ describe("buildShellCommands", () => {
     expect(ids).toEqual([
       "nav.new-scene",
       "nav.home",
+      "nav.guided-setup",
+      "nav.templates",
       "theme.dark",
       "theme.light",
       "theme.system",

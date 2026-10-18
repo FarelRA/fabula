@@ -35,6 +35,7 @@ import type * as generation_directorMeta from "../generation/directorMeta.js";
 import type * as generation_helpers from "../generation/helpers.js";
 import type * as generation_lifecycle from "../generation/lifecycle.js";
 import type * as generation_memory from "../generation/memory.js";
+import type * as generation_opening from "../generation/opening.js";
 import type * as generation_options from "../generation/options.js";
 import type * as generation_record from "../generation/record.js";
 import type * as generation_runs from "../generation/runs.js";
@@ -106,6 +107,7 @@ declare const fullApi: ApiFromModules<{
   "generation/helpers": typeof generation_helpers;
   "generation/lifecycle": typeof generation_lifecycle;
   "generation/memory": typeof generation_memory;
+  "generation/opening": typeof generation_opening;
   "generation/options": typeof generation_options;
   "generation/record": typeof generation_record;
   "generation/runs": typeof generation_runs;

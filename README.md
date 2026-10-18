@@ -6,13 +6,26 @@ story three ways: pick one of the AI-generated paths, drop an out-of-character
 director note, or write a line yourself. Every choice can branch; nothing is
 ever destroyed.
 
-> **Status: Phases 0–3 complete** (foundation, domain core, generation engine,
-> app shell & design system). The full plan — schema, prompt architecture,
-> orchestration spec, wireflows, phases, agents and acceptance criteria — lives
-> in [PLAN.md](./PLAN.md).
+> **Status: Phases 0–4 complete** (foundation, domain core, generation engine,
+> app shell & design system, cast generation UX). The full plan — schema, prompt
+> architecture, orchestration spec, wireflows, phases, agents and acceptance
+> criteria — lives in [PLAN.md](./PLAN.md).
 
 ## What works today
 
+- **Cast generation UX** (Phase 4): `/` onboarding, the three doors
+  (`/new/quick`, `/new/wizard`, `/new/templates` with six Appendix-A presets),
+  the validated four-step wizard (nuqs step state), and one audition surface:
+  role cards with the shared RHF+zod editor, whole-field locks, per-field /
+  per-role / whole-cast regeneration, vibe steers with diff badges, duplicate /
+  add blank / off-stage / restore, @dnd-kit reorder (pointer + keyboard),
+  cached sample-line sheet, deterministic gradient+monogram avatars, cast-size
+  stepper with the tier policy, and an opening-beat preview (generate / reroll /
+  write-your-own) committed atomically at Start. Quick start reaches a rendered
+  opening in ≤3 navigations (E2E-01). The same interface runs against **live
+  Convex**: anonymous sign-in, scene creation, casting, opening preview and
+  commit were smoke-tested against the self-hosted backend with the
+  deterministic fake gateway.
 - **App shell & design system** (Phase 3): dark-first theme with a WCAG-AA
   tested token system (light mode included; `tests/theme/contrast.test.ts`),
   8-slot identity palette, responsive three/two/single-pane shell with
@@ -58,11 +71,15 @@ bun run dev:backend   # starts local Convex (codegen) on :3210
 bun run dev           # Next.js on :3000
 ```
 
+No backend handy? `NEXT_PUBLIC_FIXTURES=1 bun run dev` runs the three doors and
+the audition on deterministic local fixtures (the same mode E2E uses).
+
 Run everything:
 
 ```bash
-bun run check          # typecheck + lint + tests (227 unit/integration tests)
-bun run test:e2e       # Playwright: shell keyboard walkthrough + screenshots
+bun run check          # typecheck + lint + tests (322 unit/integration tests)
+bun run test:e2e       # builds fixtures, then Playwright (shell + E2E-01 + keyboard)
+bun run build:e2e      # fixtures-only production build (used by test:e2e)
 bun run seed           # seed prompt templates (needs a running backend)
 bun run fixtures       # regenerate UI fixtures
 bun run terminology    # guard: no internal jargon in user-facing strings
