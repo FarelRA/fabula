@@ -40,6 +40,28 @@ test.describe("quick start (E2E-01)", () => {
     expect(navigations).toBeLessThanOrEqual(3);
   });
 
+  test("keyboard drag reorders the cast", async ({ page }, testInfo) => {
+    test.skip(
+      testInfo.project.name !== "chromium-desktop",
+      "Hardware-keyboard reorder is exercised on the desktop project.",
+    );
+    await quickStartToAudition(page);
+    const names = page.locator("article h3");
+    const before = (await names.allTextContents()).join("|");
+
+    const handle = page.getByRole("button", { name: /^Reorder / }).first();
+    await handle.focus();
+    await page.keyboard.press("Space");
+    await page.waitForTimeout(200);
+    await page.keyboard.press("ArrowDown");
+    await page.waitForTimeout(200);
+    await page.keyboard.press("Space");
+
+    await expect
+      .poll(async () => (await names.allTextContents()).join("|"))
+      .not.toBe(before);
+  });
+
   test("audition is keyboard-operable: locks, samples, start", async ({ page }, testInfo) => {
     await quickStartToAudition(page);
 
