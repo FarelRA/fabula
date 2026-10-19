@@ -10,6 +10,7 @@ import { compileRolePrompt } from "../compiler/compileRolePrompt";
 import { outputReserveFor } from "../compiler/types";
 import { contextWindowFor, resolveLanguageModel } from "../lib/modelRegistry";
 import { resolveModel } from "../lib/models";
+import { ensurePromptMessages } from "../lib/gateway";
 import { resolveFloor, detectStall } from "../domain/orchestrate";
 import {
   relationsForRole,
@@ -290,7 +291,12 @@ export const start = action({
         { threadId },
         {
           system: compiled.system,
-          messages: compiled.messages,
+          // An opening turn has no beats yet, so the message list gets a cue;
+          // regular turns already carry the chain.
+          messages: ensurePromptMessages(
+            compiled.messages,
+            `Begin the scene. Write ${speaker.name}'s opening beat.`,
+          ),
           maxOutputTokens: outputReserve,
           abortSignal: abortController.signal,
         },

@@ -84,8 +84,12 @@ before anything is persisted. The gateway rewrites each schema for strict
 structured outputs (every object lists all of its keys as required, optional
 keys become nullable) and turns those nulls back into absence before zod
 validation; free-form records fall back to non-strict JSON
-(`convex/lib/strictJsonSchema.ts`). `PathOption.label` is refined post-parse to
-2 to 4 words; `Summary` must satisfy `coveredFromSeq ≤ coveredThroughSeq`.
+(`convex/lib/strictJsonSchema.ts`). Prompts compiled without beat context
+(opening draft, sample lines) carry a short instruction message through
+`ensurePromptMessages`, and the gateways refuse empty message lists, so a
+missing cue fails in tests instead of streaming nothing from a real provider.
+`PathOption.label` is refined post-parse to 2 to 4 words; `Summary` must
+satisfy `coveredFromSeq ≤ coveredThroughSeq`.
 
 | Mode | Entry point | Contract | Transport | Model tier |
 |---|---|---|---|---|

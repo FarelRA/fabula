@@ -5,6 +5,7 @@ import type { Id } from "../_generated/dataModel";
 import { compileRolePrompt } from "../compiler/compileRolePrompt";
 import { outputReserveFor } from "../compiler/types";
 import { getGateway } from "../lib/gatewayFactory";
+import { ensurePromptMessages } from "../lib/gateway";
 import { contextWindowFor } from "../lib/modelRegistry";
 import { resolveModel } from "../lib/models";
 import { relationsForRole, scenePromptData, type TurnContextView } from "./context";
@@ -71,11 +72,17 @@ export const draft = action({
     });
 
     const gateway = getGateway();
+    // A fresh scene has no beats, so the compiled message list is empty. The
+    // provider rejects prompts without messages; the cue is the request.
+    const messages = ensurePromptMessages(
+      compiled.messages,
+      `Begin the scene. Write ${speaker.name}'s opening beat.`,
+    );
     let text = "";
     for await (const delta of gateway.stream({
       model: resolved.raw,
       system: compiled.system,
-      messages: compiled.messages,
+      messages,
       maxTokens: outputReserve,
     })) {
       text += delta;
@@ -102,7 +109,7 @@ export const draft = action({
       provider: resolved.provider,
       modelId: resolved.modelId,
       system: compiled.system,
-      messages: compiled.messages,
+      messages,
       output: text,
     });
 

@@ -1,4 +1,4 @@
-import { DEFAULT_CONTEXT_WINDOW, type GenerationRequest, type ModelGateway, type ObjectRequest } from "./gateway";
+import { assertPromptMessages, DEFAULT_CONTEXT_WINDOW, type GenerationRequest, type ModelGateway, type ObjectRequest } from "./gateway";
 import { FAKE_ENDING, FAKE_NO_DECISION, FAKE_NO_FACTS, FAKE_OPTIONS_BAD } from "./fakeMarkers";
 
 /**
@@ -244,6 +244,7 @@ export class FakeGateway implements ModelGateway {
   }
 
   async *stream(req: GenerationRequest): AsyncIterable<string> {
+    assertPromptMessages(req.messages);
     const key = modeMarker(req);
     const chunks = this.script.streamChunks?.[key];
     if (!chunks) {
@@ -256,6 +257,7 @@ export class FakeGateway implements ModelGateway {
   }
 
   async object<T>(req: ObjectRequest<T>): Promise<T> {
+    assertPromptMessages(req.messages);
     const scripted = this.script.objects?.[req.schemaName];
     const combinedSource = [req.system, ...req.messages.map((message) => message.content)].join(
       "\n",

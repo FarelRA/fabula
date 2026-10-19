@@ -28,6 +28,25 @@ export type ObjectRequest<T> = GenerationRequest & {
   schemaName: string;
 };
 
+/** Real providers reject prompts that carry no messages at all. */
+export const EMPTY_PROMPT_ERROR =
+  "Model prompts need at least one message; the provider rejects empty message lists.";
+
+/** Fails loudly before a request can go out with an empty message list. */
+export function assertPromptMessages(messages: ChatMessage[]): void {
+  if (messages.length === 0) throw new Error(EMPTY_PROMPT_ERROR);
+}
+
+/**
+ * The compiled beat chain doubles as the message list, so context-free
+ * prompts (a fresh scene has no beats yet: the opening draft, sample lines)
+ * would go out empty and the AI SDK rejects those with InvalidPromptError
+ * while streaming nothing. Hand the model a short cue instead.
+ */
+export function ensurePromptMessages(messages: ChatMessage[], cue: string): ChatMessage[] {
+  return messages.length > 0 ? messages : [{ role: "user", content: cue }];
+}
+
 export interface ModelGateway {
   /** Yields text deltas in order (streaming turn output). */
   stream(req: GenerationRequest): AsyncIterable<string>;

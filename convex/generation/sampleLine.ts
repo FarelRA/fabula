@@ -7,6 +7,7 @@ import { stableHash } from "../prompts/registry";
 import { contextWindowFor } from "../lib/modelRegistry";
 import { resolveModel } from "../lib/models";
 import { getGateway } from "../lib/gatewayFactory";
+import { ensurePromptMessages } from "../lib/gateway";
 import { scenePromptData } from "./context";
 import { recordEstimatedUsage } from "./record";
 
@@ -53,10 +54,12 @@ export const generate = action({
     });
 
     const gateway = getGateway();
+    // Sample lines draft before any beat exists; the message list needs a cue.
+    const messages = ensurePromptMessages(compiled.messages, "Produce the sample lines now.");
     const out = await gateway.object({
       model: resolved.raw,
       system: compiled.system,
-      messages: compiled.messages,
+      messages,
       schema: SampleLinesSchema,
       schemaName: "sampleLine",
       maxTokens: outputReserve,
@@ -83,7 +86,7 @@ export const generate = action({
       provider: resolved.provider,
       modelId: resolved.modelId,
       system: compiled.system,
-      messages: compiled.messages,
+      messages,
       output: JSON.stringify(out),
     });
 

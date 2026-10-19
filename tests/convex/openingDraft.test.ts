@@ -7,6 +7,10 @@ import { asUser, makeCard, makeT, makeUser, seedScene } from "./helpers";
  * opening before canonizing it, but previews write no beats. Start commits the
  * chosen text through `beats.appendOpening`, which freezes initial role
  * revisions exactly like the streamed opening path.
+ *
+ * The scene has no beats yet, so these tests also cross the gateway message
+ * guard: the draft prompt must include its cue, and an empty message list
+ * fails loudly here instead of streaming nothing in production.
  */
 
 describe("generation.opening.draft", () => {

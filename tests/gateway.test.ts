@@ -1,13 +1,18 @@
 import { describe, expect, test } from "vitest";
 import { DEFAULT_FAKE_SCRIPT, FakeGateway, modeMarker } from "../convex/lib/fakeGateway";
-import type { GenerationRequest, ModelGateway } from "../convex/lib/gateway";
+import {
+  EMPTY_PROMPT_ERROR,
+  ensurePromptMessages,
+  type GenerationRequest,
+  type ModelGateway,
+} from "../convex/lib/gateway";
 import { PathOptionsSchema } from "../convex/shared/contracts";
 import { makeOption } from "./factories";
 
 const requestBase: GenerationRequest = {
   model: "openai/gpt-4.1",
   system: "",
-  messages: [],
+  messages: [{ role: "user", content: "Continue the scene." }],
 };
 
 describe("FakeGateway", () => {
@@ -113,5 +118,37 @@ describe("FakeGateway", () => {
     expect(standard.contextWindow("openai/gpt-4.1")).toBe(128_000);
     const tiny: ModelGateway = new FakeGateway({ contextWindow: 4096 });
     expect(tiny.contextWindow("x/y")).toBe(4096);
+  });
+});
+
+describe("prompt message guard", () => {
+  test("gateways refuse prompts with no messages", async () => {
+    const gateway = new FakeGateway();
+    const consumeStream = async () => {
+      for await (const delta of gateway.stream({
+        ...requestBase,
+        messages: [],
+        system: "MODE: turn",
+      })) {
+        void delta;
+      }
+    };
+    await expect(consumeStream()).rejects.toThrow(EMPTY_PROMPT_ERROR);
+    await expect(
+      gateway.object({
+        ...requestBase,
+        messages: [],
+        schema: PathOptionsSchema,
+        schemaName: "options",
+      }),
+    ).rejects.toThrow(EMPTY_PROMPT_ERROR);
+  });
+
+  test("ensurePromptMessages substitutes a cue only for empty lists", () => {
+    expect(ensurePromptMessages([], "Begin the scene.")).toEqual([
+      { role: "user", content: "Begin the scene." },
+    ]);
+    const context = [{ role: "user" as const, content: "A beat." }];
+    expect(ensurePromptMessages(context, "unused")).toEqual(context);
   });
 });

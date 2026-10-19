@@ -9,6 +9,7 @@ import { createRegenerateFork } from "../beats";
 import { compileRolePrompt } from "../compiler/compileRolePrompt";
 import { outputReserveFor } from "../compiler/types";
 import { currentUserId } from "../lib/authz";
+import { ensurePromptMessages } from "../lib/gateway";
 import { contextWindowFor, resolveLanguageModel } from "../lib/modelRegistry";
 import { resolveModel } from "../lib/models";
 import type { TurnContextView } from "./context";
@@ -163,7 +164,7 @@ export const beat = action({
             content: `Rewrite the last beat with this direction: ${instruction}`,
           },
         ]
-      : compiled.messages;
+      : ensurePromptMessages(compiled.messages, "Rewrite the last beat now.");
 
     const previousBranchId = view.scene.activeBranchId;
     const previousTipBeatId = view.scene.activeTipBeatId;

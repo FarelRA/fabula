@@ -1,5 +1,6 @@
 import { generateObject, jsonSchema as aiJsonSchema, streamText } from "ai";
 import { z } from "zod";
+import { assertPromptMessages } from "./gateway";
 import type { GenerationRequest, ModelGateway, ObjectRequest } from "./gateway";
 import { contextWindowFor, resolveLanguageModel } from "./modelRegistry";
 import { isStrictCompatible, stripOptionalNulls, toStrictJsonSchema } from "./strictJsonSchema";
@@ -15,6 +16,7 @@ import { isStrictCompatible, stripOptionalNulls, toStrictJsonSchema } from "./st
 
 export class AiSdkGateway implements ModelGateway {
   async *stream(req: GenerationRequest): AsyncIterable<string> {
+    assertPromptMessages(req.messages);
     const result = streamText({
       model: resolveLanguageModel(req.model),
       system: req.system,
@@ -28,6 +30,7 @@ export class AiSdkGateway implements ModelGateway {
   }
 
   async object<T>(req: ObjectRequest<T>): Promise<T> {
+    assertPromptMessages(req.messages);
     const jsonSchema = toStrictJsonSchema(
       z.toJSONSchema(req.schema, { io: "output" }),
     ) as Record<string, unknown>;
