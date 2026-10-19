@@ -83,6 +83,10 @@ test.describe("a11y sweep (WCAG 2.2 AA)", () => {
     await page.getByRole("button", { name: "Change theme" }).click();
     await page.getByRole("menuitem", { name: "Light" }).click();
     await expect(page.locator("html")).not.toHaveClass(/dark/);
+    // The dropdown stays mounted through its close animation; scan only once
+    // it is gone so the menu's own labels and the aria-hidden page cannot leak
+    // into the audit.
+    await expect(page.getByRole("menu")).toBeHidden();
     await expectNoBlockingViolations(page, "landing-light", testInfo);
   });
 
