@@ -138,3 +138,15 @@ free-form records (field regen patch objects) fall back to non-strict JSON
 output. Verified against the production gateway with the full casting schema
 and a live `castDraft` call, then rolled out by deploying functions to the
 production backend and swapping the app image for release parity.
+
+### v1.0.5: message cue for context-free prompts
+
+The opening draft and sample lines compile before any beat exists, so their
+message list arrived empty. The AI SDK rejects empty message lists with
+`InvalidPromptError` without sending a request and streams nothing, which
+surfaced as "The opening came back empty. Try again." in the audition. The
+gateway now hands those prompts a short cue, `turn.start` and `regenerate`
+got the same safety net, and both gateways refuse empty message lists so a
+missing cue fails tests instead of streaming nothing. Verified against
+production: cast, sample line, opening draft, opening commit and the first
+turn all completed on the deployed backend.
