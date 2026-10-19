@@ -115,3 +115,13 @@ release workflow publishes the app image for `linux/amd64` and `linux/arm64`
 because the production host is ARM while the GitHub runners are amd64. The
 deployment env points the model gateway at an OpenAI-compatible endpoint;
 provider keys live on the deployment only.
+
+### v1.0.3: auto-floor pause gate
+
+Slow-runner CI surfaced a repeatable WebKit failure in the pause spec: a burst
+request dispatched just before the pause mutation committed could still land a
+beat while the scene was paused. Auto steps now pass `auto: true` through
+`turn.start`, which refuses them unless the scene is `playing`, checked again
+when the run row is created. Rolled out by pushing functions to the production
+backend first, then swapping the app image to the multi-arch `v1.0.3` build;
+smoke and all four routes verified after the swap.
