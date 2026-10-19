@@ -125,3 +125,16 @@ beat while the scene was paused. Auto steps now pass `auto: true` through
 when the run row is created. Rolled out by pushing functions to the production
 backend first, then swapping the app image to the multi-arch `v1.0.3` build;
 smoke and all four routes verified after the swap.
+
+### v1.0.4: strict structured outputs
+
+Production casting failed with `Invalid schema for response_format 'response'`
+(missing `temperature` from `required`): the provider enforces strict
+structured outputs, where every key of an object must appear in `required`,
+and zod omits `.optional()` keys. The gateway now rewrites provider schemas
+(all keys required, optional keys nullable) and strips those nulls back to
+absence before zod validation, so optional keys stay optional end to end;
+free-form records (field regen patch objects) fall back to non-strict JSON
+output. Verified against the production gateway with the full casting schema
+and a live `castDraft` call, then rolled out by deploying functions to the
+production backend and swapping the app image for release parity.

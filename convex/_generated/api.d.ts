@@ -61,6 +61,7 @@ import type * as lib_patch from "../lib/patch.js";
 import type * as lib_path from "../lib/path.js";
 import type * as lib_pricing from "../lib/pricing.js";
 import type * as lib_retry from "../lib/retry.js";
+import type * as lib_strictJsonSchema from "../lib/strictJsonSchema.js";
 import type * as lib_text from "../lib/text.js";
 import type * as lib_time from "../lib/time.js";
 import type * as lib_tokenBudget from "../lib/tokenBudget.js";
@@ -138,6 +139,7 @@ declare const fullApi: ApiFromModules<{
   "lib/path": typeof lib_path;
   "lib/pricing": typeof lib_pricing;
   "lib/retry": typeof lib_retry;
+  "lib/strictJsonSchema": typeof lib_strictJsonSchema;
   "lib/text": typeof lib_text;
   "lib/time": typeof lib_time;
   "lib/tokenBudget": typeof lib_tokenBudget;
