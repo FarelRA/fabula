@@ -80,8 +80,12 @@ Rendering helpers live in `convex/compiler/blocks.ts`: `renderBeatLine`
 ## 3. Output contracts by mode
 
 All structured outputs parse against zod schemas in `convex/shared/contracts.ts`
-before anything is persisted. `PathOption.label` is refined post-parse to 2 to 4
-words; `Summary` must satisfy `coveredFromSeq ≤ coveredThroughSeq`.
+before anything is persisted. The gateway rewrites each schema for strict
+structured outputs (every object lists all of its keys as required, optional
+keys become nullable) and turns those nulls back into absence before zod
+validation; free-form records fall back to non-strict JSON
+(`convex/lib/strictJsonSchema.ts`). `PathOption.label` is refined post-parse to
+2 to 4 words; `Summary` must satisfy `coveredFromSeq ≤ coveredThroughSeq`.
 
 | Mode | Entry point | Contract | Transport | Model tier |
 |---|---|---|---|---|
