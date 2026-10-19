@@ -102,7 +102,10 @@ after the director acts.
   beat is streaming or failed, `autoBurst` is on, the last beat is `finished`,
   and `trailingAiBeats(beats) < burstMax`. It fires after a 900 ms pause; a
   queued role pops first after 350 ms. Pause and pick/edit/write/steer reset
-  or block the chain.
+  or block the chain. Auto steps (the floor step and the queue pop) are marked
+  `auto: true`; the server refuses them unless the scene is `playing`, checked
+  when the action loads its context and again when the run row is created, so
+  a request dispatched just before a pause cannot land a beat after it.
 - Counter: `trailingAiBeats()` counts trailing beats with `origin` `turn` or
   `regenerate`; `burstLabel()` renders `n/burstMax` and the floor indicator
   shows “Burst 2/3” (`FloorIndicator.tsx`, clamped `burstMax ≥ 1`).
@@ -131,7 +134,7 @@ Candidates persist with their batch snapshot atomically
 
 | Control | Backend | Notes |
 |---|---|---|
-| Pause / resume | `scenes.setStatus("paused" \| "playing")` | The client auto-floor driver only runs while `playing`; direct actions still apply. UI: “Paused, auto-floor is off · direct actions still apply”. |
+| Pause / resume | `scenes.setStatus("paused" \| "playing")` | The client auto-floor driver only runs while `playing`, and the server refuses `auto` starts in the same window (`runs.begin` re-checks the status); direct actions still apply. UI: “Paused, auto-floor is off · direct actions still apply”. |
 | Steal floor | abort + `turn.start(speakerRoleId)` | `PlayShell.mention`: if a run is active it requests abort, then starts with the requested role once idle. |
 | Queue role | client-side FIFO in `PlayShell` | Pops into `speakerRoleId` after ~350 ms; shown as “· N queued”. Not persisted server-side in v1. |
 | @mention force | same path, priority 1 | Explicit `speakerRoleId` always outranks the resolver. |

@@ -9,7 +9,8 @@ import { generationModeV } from "../lib/validators";
 /**
  * Generation-run lifecycle: one active run per scene
  * (invariant #1), abort requests checked by the streaming loop, watchdog
- * cron fails stale runs.
+ * cron fails stale runs. Auto-floor starts are gated here on the scene
+ * status, so a burst request that raced a pause cannot land a beat after it.
  */
 
 export async function beginRunRow(
@@ -21,8 +22,14 @@ export async function beginRunRow(
     mode: "turn" | "options" | "casting" | "summary" | "facts" | "directorMeta" | "sampleLine" | "castRegen" | "fieldRegen" | "continuity";
     roleId?: Id<"roles">;
     candidateId?: Id<"candidates">;
+    /** Auto-floor starts only begin while the scene is `playing`. */
+    auto?: boolean;
   },
-): Promise<Id<"generationRuns">> {
+): Promise<Id<"generationRuns"> | null> {
+  if (args.auto === true) {
+    const scene = await ctx.db.get(args.sceneId);
+    if (!scene || scene.status !== "playing") return null;
+  }
   const running = await ctx.db
     .query("generationRuns")
     .withIndex("by_scene_status", (q) => q.eq("sceneId", args.sceneId).eq("status", "running"))
@@ -52,8 +59,9 @@ export const begin = internalMutation({
     mode: generationModeV,
     roleId: v.optional(v.id("roles")),
     candidateId: v.optional(v.id("candidates")),
+    auto: v.optional(v.boolean()),
   },
-  returns: v.id("generationRuns"),
+  returns: v.union(v.id("generationRuns"), v.null()),
   handler: async (ctx, args) => beginRunRow(ctx, args),
 });
 

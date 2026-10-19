@@ -115,6 +115,7 @@ test("runs.active exposes the speaking role while a run is open", async () => {
     mode: "turn",
     roleId: roleId as never,
   });
+  if (!runId) throw new Error("run did not begin");
   const active = await client.query(api.generation.runs.active, { sceneId });
   expect(active?.roleId).toBe(roleId);
   expect(active?.roleName).toBe("Linh");

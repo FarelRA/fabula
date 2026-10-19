@@ -38,6 +38,8 @@ export const start = action({
     speakerRoleId: v.optional(v.id("roles")),
     parentBeatId: v.optional(v.id("beats")),
     opening: v.optional(v.boolean()),
+    /** Marks the auto-floor driver's starts; refused while not `playing`. */
+    auto: v.optional(v.boolean()),
   },
   returns: v.object({
     status: v.union(v.literal("done"), v.literal("skipped"), v.literal("failed")),
@@ -68,6 +70,18 @@ export const start = action({
 
     if (view.scene.status === "archived") {
       throw new Error("This scene is archived. The story is frozen, but undoing the wrap reopens it.");
+    }
+
+    // Pause is authoritative server-side: it disarms auto-floor, while
+    // direct starts still apply. The begin mutation re-checks so the gate
+    // holds even when the context read happened a moment before the pause
+    // committed.
+    if (args.auto === true && view.scene.status !== "playing") {
+      return {
+        status: "skipped",
+        decisionPoint: false,
+        skippedReason: "Auto-floor is off",
+      };
     }
 
     if (opening) {
@@ -218,7 +232,15 @@ export const start = action({
       parentBeatId,
       mode: "turn",
       roleId: speaker.id,
+      auto: args.auto === true,
     });
+    if (!runId) {
+      return {
+        status: "skipped",
+        decisionPoint: meta?.decisionPoint ?? false,
+        skippedReason: "Auto-floor is off",
+      };
+    }
 
     // TS2590 guard: instantiating Agent through the raw constructor blows up
     // TS's union complexity against our generated component api. The runtime

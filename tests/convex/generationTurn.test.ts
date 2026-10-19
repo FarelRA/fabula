@@ -185,6 +185,7 @@ test("abort semantics: discarded partials become artifacts; kept partials canoni
     mode: "turn",
     roleId,
   });
+  if (!runA) throw new Error("run did not begin");
   const beatA = await t.mutation(internal.generation.lifecycle.beginBeat, {
     sceneId,
     runId: runA,
@@ -219,6 +220,7 @@ test("abort semantics: discarded partials become artifacts; kept partials canoni
     mode: "turn",
     roleId,
   });
+  if (!runB) throw new Error("run did not begin");
   const beatB = await t.mutation(internal.generation.lifecycle.beginBeat, {
     sceneId,
     runId: runB,
@@ -245,4 +247,24 @@ test("abort semantics: discarded partials become artifacts; kept partials canoni
   expect(afterKeep.scene.activeTipBeatId).toBe(beatB.beatId);
   const path = await client.query(api.beats.listPath, { sceneId });
   expect(path.beats.map((b) => b._id)).toEqual([openerBeatId, beatB.beatId]);
+});
+
+test("an auto-floor start that raced a pause is skipped; direct starts still apply", async () => {
+  const t = makeT();
+  const owner = await makeUser(t);
+  const { sceneId, openerBeatId, client } = await seedCastAndOpener(t, owner, ["Linh", "Duc"]);
+
+  await client.mutation(api.scenes.setStatus, { sceneId, status: "paused" });
+
+  // The auto driver's request lands after the pause: refused, no run, no beat.
+  const auto = await client.action(api.generation.turn.start, { sceneId, auto: true });
+  expect(auto.status).toBe("skipped");
+  expect(auto.skippedReason).toBe("Auto-floor is off");
+  expect(await client.query(api.generation.runs.active, { sceneId })).toBeNull();
+  const pausedPath = await client.query(api.beats.listPath, { sceneId });
+  expect(pausedPath.beats.map((b) => b._id)).toEqual([openerBeatId]);
+
+  // Pause disarms auto-floor only: a direct start still applies.
+  const direct = await client.action(api.generation.turn.start, { sceneId });
+  expect(direct.status).toBe("done");
 });

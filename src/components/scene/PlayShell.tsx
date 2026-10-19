@@ -278,7 +278,7 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
   }, [setInspectorTab]);
 
   const startTurn = useCallback(
-    async (speakerRoleId?: string) => {
+    async (speakerRoleId?: string, opts?: { auto?: boolean }) => {
       if (startingRef.current || runRef.current) return;
       startingRef.current = true;
       try {
@@ -287,6 +287,7 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
           ...(speakerRoleId
             ? { speakerRoleId: speakerRoleId as Id<"roles"> }
             : {}),
+          ...(opts?.auto ? { auto: true } : {}),
         });
         if (result.status === "failed") {
           toast.error(result.error ?? "The cast could not take the beat.");
@@ -608,7 +609,7 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
         lastAutoKey.current = key;
         const [next, ...rest] = queuedRoleIds;
         setQueuedRoleIds(rest);
-        if (next) void startTurn(next);
+        if (next) void startTurn(next, { auto: true });
       }, 350);
       return () => clearTimeout(timer);
     }
@@ -619,7 +620,7 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
 
     const timer = setTimeout(() => {
       lastAutoKey.current = key;
-      void startTurn();
+      void startTurn(undefined, { auto: true });
     }, 900);
     return () => clearTimeout(timer);
   }, [scene, run, queuedRoleIds, startTurn]);

@@ -175,6 +175,7 @@ export const beat = action({
       mode: "turn",
       roleId: speaker.id,
     });
+    if (!runId) throw new Error("Could not begin the regeneration run");
 
     let fork: { newBeatId: Id<"beats">; branchId: Id<"branches"> };
     try {
