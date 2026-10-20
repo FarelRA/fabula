@@ -21,7 +21,6 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -33,7 +32,6 @@ import {
 import { CastProgress } from "@/components/cast/CastProgress";
 import { CastRail } from "@/components/director/CastRail";
 import { ConfirmDialog } from "@/components/director/ConfirmDialog";
-import { DirectorBar } from "@/components/director/DirectorBar";
 import { EditBeatDialog } from "@/components/director/EditBeatDialog";
 import { FloorIndicator } from "@/components/director/FloorIndicator";
 import { SteerComposer } from "@/components/director/SteerComposer";
@@ -701,74 +699,108 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
   const showWrapOffer = !archived && endingStreak >= 2 && !wrapDismissed;
 
   return (
-    <div className="flex h-[calc(100dvh-3.5rem)] min-h-0 flex-col bg-background">
-      <header className="flex items-center gap-2 border-b border-border px-3 py-2">
-        <Button asChild variant="ghost" size="icon-sm">
-          <Link href="/" aria-label="Back to the lobby">
-            <ArrowLeftIcon />
-          </Link>
-        </Button>
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <h1 className="truncate font-serif text-lg leading-tight">
+    <div className="flex min-h-0 flex-1 flex-col bg-background">
+      <header className="border-b border-border/70 bg-card/25">
+        <div className="flex items-center gap-2 px-3 py-2 sm:px-4">
+          <Button asChild variant="ghost" size="icon-sm">
+            <Link href="/library" aria-label="Back to the library">
+              <ArrowLeftIcon />
+            </Link>
+          </Button>
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+              <span className="font-mono text-[9px] tracking-[0.1em] text-primary uppercase">
+                Live rehearsal
+              </span>
+              <span className="hidden font-mono text-[9px] text-muted-foreground/50 sm:inline" aria-hidden>
+                /
+              </span>
+              <span className="hidden font-mono text-[9px] tracking-[0.06em] text-muted-foreground uppercase sm:inline">
+                {scene.settings.genre || "scene"} · {scene.settings.presentationStyle}
+                {tip ? ` · beat ${tip.seq}` : ""}
+              </span>
+              {tip ? (
+                <span className="font-mono text-[9px] tracking-[0.06em] text-muted-foreground uppercase sm:hidden">
+                  Beat {tip.seq}
+                </span>
+              ) : null}
+            </div>
+            <h1 className="line-clamp-2 font-serif text-lg leading-[1.1] sm:truncate sm:text-2xl">
               {scene.title}
             </h1>
-            <Badge variant="outline" className="font-normal">
-              {scene.status}
-            </Badge>
           </div>
-          <p className="truncate text-[11px] text-muted-foreground">
-            {scene.premise}
-          </p>
+          <div className="flex shrink-0 items-center gap-1">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="lg:hidden"
+              onClick={() => setCastOpen(true)}
+              aria-label="Open cast"
+            >
+              <PanelLeftIcon />
+              <span className="hidden sm:inline">Cast</span>
+            </Button>
+            <Button asChild variant="ghost" size="sm" className="hidden lg:inline-flex">
+              <Link href={`/s/${id}/archive`} aria-label="Open the archive">
+                <ArchiveIcon />
+                <span className="hidden sm:inline">Archive</span>
+              </Link>
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => setShareOpen(true)}
+              aria-label="Share scene"
+            >
+              <Share2Icon />
+              <span className="hidden sm:inline">Share</span>
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => setExportOpen(true)}
+              aria-label="Export scene"
+              className="hidden sm:inline-flex"
+            >
+              <ArchiveIcon />
+              <span className="hidden sm:inline">Export</span>
+            </Button>
+            <Button
+              type="button"
+              variant={inspectorTab ? "secondary" : "outline"}
+              size="sm"
+              onClick={toggleInspector}
+              aria-pressed={Boolean(inspectorTab)}
+              aria-label="Toggle inspector"
+            >
+              <PanelRightIcon />
+              <span className="hidden sm:inline">Inspector</span>
+            </Button>
+          </div>
         </div>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className="lg:hidden"
-          onClick={() => setCastOpen(true)}
-          aria-label="Open cast"
-        >
-          <PanelLeftIcon />
-          Cast
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => setShareOpen(true)}
-          aria-label="Share scene"
-        >
-          <Share2Icon />
-          <span className="hidden sm:inline">Share</span>
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => setExportOpen(true)}
-          aria-label="Export scene"
-        >
-          <ArchiveIcon />
-          <span className="hidden sm:inline">Export</span>
-        </Button>
-        <Button
-          type="button"
-          variant={inspectorTab ? "secondary" : "outline"}
-          size="sm"
-          onClick={toggleInspector}
-          aria-pressed={Boolean(inspectorTab)}
-          aria-label="Toggle inspector"
-        >
-          <PanelRightIcon />
-          <span className="hidden sm:inline">Inspector</span>
-        </Button>
+        <FloorIndicator
+          scene={scene}
+          run={run}
+          nextSpeaker={nextSpeaker}
+          queuedCount={queuedRoleIds.length}
+          busy={interactionBusy}
+          onPauseToggle={() => void togglePause()}
+          onAbort={() => void abort()}
+          onOffer={() => void offerPaths()}
+          canUndo={canUndo}
+          onUndo={() => void undo()}
+          onEndScene={() => setDialog({ kind: "endScene" })}
+          variant="flush"
+        />
       </header>
 
       <div className="flex min-h-0 flex-1">
         <aside
           aria-label="Cast"
-          className="hidden w-60 shrink-0 border-r border-border lg:block"
+          className="hidden w-[17.5rem] shrink-0 border-r border-border/70 lg:block"
         >
           <CastRail
             scene={scene}
@@ -780,7 +812,7 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
           />
         </aside>
 
-        <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex min-w-0 flex-1 flex-col bg-[radial-gradient(60rem_28rem_at_50%_-12%,color-mix(in_oklab,var(--primary)_7%,transparent),transparent_62%)]">
           {archived ? (
             <div
               data-testid="archive-banner"
@@ -822,16 +854,6 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
               </Button>
             </div>
           ) : null}
-          <FloorIndicator
-            scene={scene}
-            run={run}
-            nextSpeaker={nextSpeaker}
-            queuedCount={queuedRoleIds.length}
-            busy={interactionBusy}
-            onPauseToggle={() => void togglePause()}
-            onAbort={() => void abort()}
-            onOffer={() => void offerPaths()}
-          />
           <ThreadView
             scene={scene}
             run={run}
@@ -850,15 +872,6 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
             onInspectBeat={(beat) => inspectBeat(beat.id)}
             onSwitchBranch={(marker) => void switchBranch(marker.branchId)}
           />
-          <DirectorBar
-            scene={scene}
-            canUndo={canUndo}
-            busy={interactionBusy}
-            onUndo={() => void undo()}
-            onOffer={() => void offerPaths()}
-            onPauseToggle={() => void togglePause()}
-            onEndScene={() => setDialog({ kind: "endScene" })}
-          />
           <SteerComposer
             scene={scene}
             roles={scene.roles}
@@ -875,7 +888,7 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
         {viewport === "three" && inspectorTab ? (
           <aside
             aria-label="Inspector"
-            className="w-[22rem] shrink-0 border-l border-border"
+            className="w-[24rem] shrink-0 border-l border-border/70"
           >
             <InspectorPane
               scene={scene}
@@ -898,7 +911,11 @@ export function PlayShell({ sceneId }: { sceneId: string }) {
           if (!open) closeInspector();
         }}
       >
-        <SheetContent side="right" className="w-full overflow-y-auto p-0 sm:max-w-md">
+        <SheetContent
+          side="right"
+          showCloseButton={false}
+          className="w-full overflow-y-auto p-0 data-[side=right]:w-full sm:max-w-md"
+        >
           <SheetHeader className="sr-only">
             <SheetTitle>Inspector</SheetTitle>
             <SheetDescription>Memory, prompts, map and usage</SheetDescription>

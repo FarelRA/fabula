@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { SharePageClient } from "./SharePageClient";
 
 export const metadata: Metadata = {
-  title: "Shared scene · Fabula",
+  title: "Shared scene",
 };
 
 export default async function Page({

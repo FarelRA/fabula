@@ -4,7 +4,7 @@ import { CastProgress } from "@/components/cast/CastProgress";
 import { QuickStartPage } from "@/components/cast/QuickStartPage";
 
 export const metadata: Metadata = {
-  title: "Quick start · Fabula",
+  title: "Quick start",
 };
 
 export default async function Page({

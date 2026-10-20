@@ -10,6 +10,7 @@ import {
   RotateCcwIcon,
   UnlockIcon,
   UserMinusIcon,
+  MoreVerticalIcon,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -24,8 +25,8 @@ import { RoleAvatar } from "@/components/cast/RoleAvatar";
 import { ChangedBadge, StoryRoleBadge, TierBadge } from "@/components/cast/CastMeta";
 import type { CastRole } from "@/lib/cast/types";
 import { isLocked } from "@/lib/cast/fields";
+import { roleAccent } from "@/lib/cast/avatar";
 import { cn } from "cn";
-import { MoreVerticalIcon } from "lucide-react";
 
 type RoleCardViewProps = {
   role: CastRole;
@@ -79,17 +80,22 @@ function FieldSection({
     <section
       aria-label={`${label}, ${name}`}
       className={cn(
-        "rounded-lg border border-border/60 px-2.5 py-2",
-        changed && "border-primary/50 bg-primary/5",
+        "border-t border-border/55 pt-2.5 first:border-t-0 first:pt-0",
+        changed && "border-primary/35",
       )}
     >
       <header className="mb-1 flex min-h-6 items-center gap-1">
-        <h4 className="text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
+        <h4
+          className={cn(
+            "cue text-[0.55rem]",
+            changed ? "text-primary" : "text-muted-foreground/80",
+          )}
+        >
           {label}
         </h4>
         {changed ? <ChangedBadge fields={[field]} /> : null}
         {hideControls ? null : (
-          <div className="ml-auto flex items-center">
+          <div className="ml-auto flex items-center opacity-80 transition-opacity group-hover/card:opacity-100">
             <Button
               type="button"
               variant="ghost"
@@ -124,15 +130,15 @@ function FieldSection({
           </div>
         )}
       </header>
-      <div className="text-sm leading-relaxed text-muted-foreground">{children}</div>
+      <div className="text-[13px] leading-relaxed text-muted-foreground">{children}</div>
     </section>
   );
 }
 
 /**
- * One auditioner card. Every field group has edit, lock and
- * regenerate affordances; changed groups from the last regeneration carry a
- * diff badge. Off-stage roles collapse but are never deleted.
+ * One auditioner card. Every field group has edit, lock and regenerate
+ * affordances; changed groups from the last regeneration carry a diff badge.
+ * Off-stage roles collapse but are never deleted.
  */
 export function RoleCardView({
   role,
@@ -158,12 +164,13 @@ export function RoleCardView({
   const isHuman = role.kind === "human";
   const offstage = role.status !== "active";
   const changedSet = new Set(changed);
+  const accent = roleAccent(card.identity.accentColor);
 
   if (offstage) {
     return (
       <article
         aria-label={`${name}, off-stage`}
-        className="flex items-center gap-3 rounded-xl border border-dashed border-border bg-muted/40 p-3"
+        className="flex items-center gap-3 rounded-lg border border-dashed border-border/80 bg-card/35 p-3"
       >
         <RoleAvatar
           name={name}
@@ -172,7 +179,7 @@ export function RoleCardView({
           size="sm"
         />
         <div className="min-w-0 flex-1">
-          <p className="truncate font-heading text-sm font-medium">{name}</p>
+          <p className="truncate font-serif text-lg">{name}</p>
           <p className="text-xs text-muted-foreground">
             Off-stage, existing beats are untouched.
           </p>
@@ -188,7 +195,8 @@ export function RoleCardView({
   return (
     <article
       aria-label={`${name}${isHuman ? ", your role" : ""}`}
-      className="flex flex-col gap-2.5 rounded-xl border border-border bg-card p-3 shadow-sm"
+      className="group/card flex flex-col gap-3 overflow-hidden rounded-lg border border-border/80 bg-card p-4 shadow-[var(--panel-shadow)] border-t-2"
+      style={{ borderTopColor: `var(--role-${accent})` }}
     >
       <header className="flex items-start gap-3">
         <RoleAvatar
@@ -200,16 +208,16 @@ export function RoleCardView({
         />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-1.5">
-            <h3 className="truncate font-heading text-base font-semibold">{name}</h3>
-            {isHuman ? <Badge variant="outline">You</Badge> : null}
+            <h3 className="truncate font-serif text-xl leading-tight">{name}</h3>
+            {isHuman ? <Badge variant="outline" className="border-primary/30 text-primary">You</Badge> : null}
+            {changed.length > 0 ? <ChangedBadge fields={changed} /> : null}
           </div>
-          <p className="truncate text-xs text-muted-foreground">
+          <p className="mt-0.5 truncate text-xs text-muted-foreground">
             {card.identity.occupation} · {card.identity.pronouns}
           </p>
           <div className="mt-1.5 flex flex-wrap gap-1">
             <StoryRoleBadge storyRole={card.meta.storyRole} />
             <TierBadge tier={card.meta.tier} />
-            {changed.length > 0 ? <ChangedBadge fields={changed} /> : null}
           </div>
         </div>
         <div className="flex items-center gap-0.5">
@@ -233,11 +241,7 @@ export function RoleCardView({
           {dragHandle}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                aria-label={`More actions for ${name}`}
-              >
+              <Button variant="ghost" size="icon-sm" aria-label={`More actions for ${name}`}>
                 <MoreVerticalIcon />
               </Button>
             </DropdownMenuTrigger>
@@ -269,81 +273,85 @@ export function RoleCardView({
         </div>
       </header>
 
-      <FieldSection
-        role={role}
-        field="hook"
-        label="Hook"
-        busy={busyField === `${role.id}:hook`}
-        locked={isLocked(role, "hook")}
-        changed={changedSet.has("hook")}
-        disabled={disabled}
-        hideControls={isHuman}
-        onEdit={onEdit}
-        onToggleLock={onToggleLock}
-        onRegen={onRegenField}
-      >
-        {card.hook}
-      </FieldSection>
+      <div className="space-y-2.5">
+        <FieldSection
+          role={role}
+          field="hook"
+          label="Hook"
+          busy={busyField === `${role.id}:hook`}
+          locked={isLocked(role, "hook")}
+          changed={changedSet.has("hook")}
+          disabled={disabled}
+          hideControls={isHuman}
+          onEdit={onEdit}
+          onToggleLock={onToggleLock}
+          onRegen={onRegenField}
+        >
+          <p className="text-foreground/85">{card.hook}</p>
+        </FieldSection>
 
-      <FieldSection
-        role={role}
-        field="psychology"
-        label="Personality"
-        busy={busyField === `${role.id}:psychology`}
-        locked={isLocked(role, "psychology")}
-        changed={changedSet.has("psychology")}
-        disabled={disabled}
-        hideControls={isHuman}
-        onEdit={onEdit}
-        onToggleLock={onToggleLock}
-        onRegen={onRegenField}
-      >
-        <p>{card.psychology.traits.join(" · ")}</p>
-        <p className="mt-1 text-xs italic">Secret: {card.psychology.secret}</p>
-      </FieldSection>
+        <FieldSection
+          role={role}
+          field="psychology"
+          label="Personality"
+          busy={busyField === `${role.id}:psychology`}
+          locked={isLocked(role, "psychology")}
+          changed={changedSet.has("psychology")}
+          disabled={disabled}
+          hideControls={isHuman}
+          onEdit={onEdit}
+          onToggleLock={onToggleLock}
+          onRegen={onRegenField}
+        >
+          <p>{card.psychology.traits.join(" · ")}</p>
+          <p className="mt-1 text-xs italic text-muted-foreground/85">
+            Secret: {card.psychology.secret}
+          </p>
+        </FieldSection>
 
-      {compact ? null : (
-        <>
-          <FieldSection
-            role={role}
-            field="voice"
-            label="Voice"
-            busy={busyField === `${role.id}:voice`}
-            locked={isLocked(role, "voice")}
-            changed={changedSet.has("voice")}
-            disabled={disabled}
-            hideControls={isHuman}
-            onEdit={onEdit}
-            onToggleLock={onToggleLock}
-            onRegen={onRegenField}
-          >
-            {card.voice.register}, {card.voice.rhythm}
-          </FieldSection>
+        {compact ? null : (
+          <>
+            <FieldSection
+              role={role}
+              field="voice"
+              label="Voice"
+              busy={busyField === `${role.id}:voice`}
+              locked={isLocked(role, "voice")}
+              changed={changedSet.has("voice")}
+              disabled={disabled}
+              hideControls={isHuman}
+              onEdit={onEdit}
+              onToggleLock={onToggleLock}
+              onRegen={onRegenField}
+            >
+              {card.voice.register}, {card.voice.rhythm}
+            </FieldSection>
 
-          <FieldSection
-            role={role}
-            field="drives"
-            label="Goals"
-            busy={busyField === `${role.id}:drives`}
-            locked={isLocked(role, "drives")}
-            changed={changedSet.has("drives")}
-            disabled={disabled}
-            hideControls={isHuman}
-            onEdit={onEdit}
-            onToggleLock={onToggleLock}
-            onRegen={onRegenField}
-          >
-            Wants {card.drives.publicGoal.toLowerCase()}
-          </FieldSection>
-        </>
-      )}
+            <FieldSection
+              role={role}
+              field="drives"
+              label="Goals"
+              busy={busyField === `${role.id}:drives`}
+              locked={isLocked(role, "drives")}
+              changed={changedSet.has("drives")}
+              disabled={disabled}
+              hideControls={isHuman}
+              onEdit={onEdit}
+              onToggleLock={onToggleLock}
+              onRegen={onRegenField}
+            >
+              Wants {card.drives.publicGoal.toLowerCase()}
+            </FieldSection>
+          </>
+        )}
+      </div>
 
       {card.relations.length > 0 ? (
-        <details className="rounded-lg border border-border/60 px-2.5 py-1.5">
-          <summary className="cursor-pointer text-xs text-muted-foreground">
+        <details className="border-t border-border/55 pt-2">
+          <summary className="cursor-pointer text-[11px] text-muted-foreground transition-colors hover:text-foreground">
             Relationships ({card.relations.length})
           </summary>
-          <ul className="mt-1.5 space-y-1 text-xs text-muted-foreground">
+          <ul className="mt-1.5 space-y-1 text-[11px] text-muted-foreground">
             {card.relations.map((relation) => (
               <li key={`${role.id}:${relation.toRoleId}`}>
                 <span className="text-foreground">
@@ -356,7 +364,7 @@ export function RoleCardView({
         </details>
       ) : null}
 
-      <div className="flex items-center gap-1.5 pt-0.5">
+      <div className="flex items-center gap-1.5 border-t border-border/55 pt-3">
         <Button
           type="button"
           variant="outline"
@@ -368,17 +376,12 @@ export function RoleCardView({
           <PlayIcon className={cn(busySample && "animate-pulse")} />
           Sample line
         </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={() => onEdit()}
-        >
+        <Button type="button" variant="ghost" size="sm" onClick={() => onEdit()}>
           <PencilIcon />
           Edit
         </Button>
-        <span className="ml-auto text-[11px] text-muted-foreground">
-          {isHuman ? "Human · you" : `${card.meta.modelTier} model`}
+        <span className="ml-auto font-mono text-[9px] text-muted-foreground">
+          {isHuman ? "human · you" : "AI · editable"}
         </span>
       </div>
     </article>

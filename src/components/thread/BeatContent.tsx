@@ -24,10 +24,10 @@ export function BeatContent({
 }) {
   const typography =
     style === "novel"
-      ? "font-serif text-[1.05rem] leading-[1.75] sm:text-lg"
+      ? "font-serif text-[1.12rem] leading-[1.8] sm:text-[1.18rem]"
       : style === "script"
-        ? "font-mono text-[0.82rem] leading-[1.7]"
-        : "text-[0.95rem] leading-[1.7]";
+        ? "font-mono text-[0.82rem] leading-[1.75] text-foreground/85"
+        : "font-serif text-[1.05rem] leading-[1.78] sm:text-[1.1rem]";
 
   return (
     <div

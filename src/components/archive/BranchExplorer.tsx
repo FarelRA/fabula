@@ -22,33 +22,46 @@ export function BranchExplorer({
 }) {
   return (
     <nav aria-label="Branches" data-testid="branch-explorer">
-      <ul className="flex flex-wrap gap-1.5">
+      <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
         {branches.map((branch) => {
           const selected = branch._id === selectedId;
+          const empty = !branch.tipBeatId;
           return (
             <li key={branch._id}>
               <button
                 type="button"
                 aria-pressed={selected}
-                disabled={!branch.tipBeatId}
+                disabled={empty}
                 onClick={() => onSelect(branch._id)}
+                style={selected ? { borderTopColor: branchColor(branch.colorIndex ?? 0) } : undefined}
                 className={cn(
-                  "flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs transition-colors",
+                  "group flex w-full flex-col gap-1.5 rounded-md border border-t-2 px-3 py-2.5 text-left transition-colors",
                   selected
-                    ? "border-primary/50 bg-primary/10 text-primary"
-                    : "border-border text-muted-foreground hover:bg-muted hover:text-foreground",
-                  !branch.tipBeatId && "opacity-50",
+                    ? "border-primary/35 bg-primary/[0.06]"
+                    : "border-border/70 bg-card/30 hover:border-primary/30 hover:bg-muted/40",
+                  empty && "opacity-50",
                 )}
               >
-                <span
-                  aria-hidden
-                  className="size-2 rounded-full"
-                  style={{ backgroundColor: branchColor(branch.colorIndex ?? 0) }}
-                />
-                <span className="max-w-52 truncate">{branch.label}</span>
-                <Badge variant="outline" className="font-normal">
-                  {beatCounts[branch._id] ?? 0}
-                </Badge>
+                <span className="flex items-center gap-2">
+                  <span
+                    aria-hidden
+                    className="size-2 shrink-0 rounded-full"
+                    style={{ backgroundColor: branchColor(branch.colorIndex ?? 0) }}
+                  />
+                  <span className="truncate font-serif text-lg leading-tight">
+                    {branch.label}
+                  </span>
+                  {selected ? (
+                    <Badge variant="outline" className="ml-auto shrink-0 border-primary/30 font-normal text-primary">
+                      Viewing
+                    </Badge>
+                  ) : null}
+                </span>
+                <span className="font-mono text-[10px] text-muted-foreground">
+                  {beatCounts[branch._id] ?? 0} beat
+                  {(beatCounts[branch._id] ?? 0) === 1 ? "" : "s"}
+                  {empty ? " · empty" : ""}
+                </span>
               </button>
             </li>
           );

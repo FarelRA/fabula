@@ -28,9 +28,9 @@ export function ArchiveLedger({
     <div data-testid="archive-ledger" className="grid gap-3 lg:grid-cols-2">
       <section
         aria-label="Facts"
-        className="rounded-xl border border-border bg-card/60 p-3"
+        className="rounded-md border border-border/70 bg-card/30 p-4"
       >
-        <h3 className="text-[11px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
+        <h3 className="cue text-[0.55rem] text-muted-foreground">
           Facts · {facts.length}
         </h3>
         {facts.length === 0 ? (
@@ -62,9 +62,9 @@ export function ArchiveLedger({
 
       <section
         aria-label="Summaries"
-        className="rounded-xl border border-border bg-card/60 p-3"
+        className="rounded-md border border-border/70 bg-card/30 p-4"
       >
-        <h3 className="text-[11px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
+        <h3 className="cue text-[0.55rem] text-muted-foreground">
           Summaries · {summaries.length}
         </h3>
         {summaries.length === 0 ? (
@@ -90,9 +90,9 @@ export function ArchiveLedger({
       {notes.length > 0 ? (
         <section
           aria-label="Director notes"
-          className="rounded-xl border border-border bg-card/60 p-3"
+          className="rounded-md border border-border/70 bg-card/30 p-4"
         >
-          <h3 className="text-[11px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
+          <h3 className="cue text-[0.55rem] text-muted-foreground">
             Director notes · {notes.length}
           </h3>
           <ul className="mt-2 space-y-1.5">
@@ -112,9 +112,9 @@ export function ArchiveLedger({
       {warnings.length > 0 ? (
         <section
           aria-label="Continuity notes"
-          className="rounded-xl border border-border bg-card/60 p-3"
+          className="rounded-md border border-border/70 bg-card/30 p-4"
         >
-          <h3 className="text-[11px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
+          <h3 className="cue text-[0.55rem] text-muted-foreground">
             Continuity notes · {warnings.length}
           </h3>
           <ul className="mt-2 space-y-1.5">

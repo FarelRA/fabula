@@ -36,7 +36,7 @@ export function DirectorBar({
     <div
       role="toolbar"
       aria-label="Director controls"
-      className="flex flex-wrap items-center gap-1 border-t border-border bg-background/80 px-2 py-1.5 backdrop-blur"
+      className="flex flex-wrap items-center gap-1 border-t border-border/60 bg-background/70 px-2 py-1.5 backdrop-blur"
     >
       <Button
         type="button"
@@ -74,24 +74,26 @@ export function DirectorBar({
         {paused ? <CirclePlayIcon /> : <CirclePauseIcon />}
         {paused ? "Resume" : "Pause"}
       </Button>
-      {archived ? (
-        <Badge variant="outline" className="ml-1 font-normal">
-          Archived
-        </Badge>
-      ) : (
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className="ml-auto text-muted-foreground hover:text-foreground"
-          onClick={onEndScene}
-          disabled={busy}
-          title="Wrap and archive this scene"
-        >
-          <XCircleIcon />
-          End scene
-        </Button>
-      )}
+      <span className="ml-auto flex items-center gap-1.5">
+        {archived ? (
+          <Badge variant="outline" className="font-normal">
+            Archived
+          </Badge>
+        ) : (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="text-muted-foreground hover:text-foreground"
+            onClick={onEndScene}
+            disabled={busy}
+            title="Wrap and archive this scene"
+          >
+            <XCircleIcon />
+            End scene
+          </Button>
+        )}
+      </span>
     </div>
   );
 }

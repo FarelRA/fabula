@@ -51,7 +51,7 @@ export function PromptInspector({
     <div data-testid="prompt-inspector" className="space-y-3">
       <div className="flex items-center gap-1.5">
         <FileSearchIcon className="size-3.5 text-muted-foreground" aria-hidden />
-        <h3 className="text-[11px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
+        <h3 className="cue text-[0.55rem] text-muted-foreground">
           {contextLabel ? `Prompts · ${contextLabel}` : "Recent generations"}
         </h3>
       </div>
@@ -64,7 +64,7 @@ export function PromptInspector({
                 type="button"
                 onClick={() => setSelectedId(snapshot.id)}
                 aria-pressed={snapshot.id === selected?.id}
-                className={`rounded-full border px-2 py-0.5 text-[10px] ${
+                className={`rounded-sm border px-2 py-0.5 font-mono text-[10px] ${
                   snapshot.id === selected?.id
                     ? "border-primary/50 bg-primary/10 text-primary"
                     : "border-border text-muted-foreground hover:text-foreground"
@@ -79,7 +79,7 @@ export function PromptInspector({
 
       {selected ? (
         <div className="space-y-2">
-          <dl className="grid grid-cols-2 gap-x-3 gap-y-1 rounded-lg border border-border bg-card/60 p-2.5 text-[11px]">
+          <dl className="grid grid-cols-2 gap-x-3 gap-y-1 rounded-md border border-border/70 bg-card/40 p-2.5 text-[11px]">
             <div>
               <dt className="text-muted-foreground">Mode</dt>
               <dd className="font-medium">{selected.mode}</dd>
@@ -119,7 +119,7 @@ export function PromptInspector({
                 <details
                   data-testid="prompt-block"
                   data-block-key={block.key}
-                  className="group rounded-lg border border-border bg-background/60"
+                  className="group rounded-md border border-border/70 bg-background/35"
                 >
                   <summary className="flex cursor-pointer list-none items-center gap-1.5 px-2.5 py-2 text-xs">
                     <ChevronRightIcon

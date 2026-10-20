@@ -14,7 +14,11 @@ const manifest = JSON.parse(
 ) as { pages: Record<string, string[]> };
 
 const routeKey = "/s/[sceneId]/page";
-const routeChunks = manifest.pages[routeKey] ?? [];
+const normalizeRoute = (key: string) => key.replace(/\/\([^/]+\)/g, "");
+const manifestKey = Object.keys(manifest.pages).find(
+  (key) => normalizeRoute(key) === routeKey,
+);
+const routeChunks = manifestKey ? manifest.pages[manifestKey] ?? [] : [];
 if (routeChunks.length === 0) {
   console.error(`No initial chunks found for ${routeKey}, did the build run?`);
   process.exit(1);

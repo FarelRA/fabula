@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { RouteError } from "@/components/shell/RouteError";
 
 export const metadata: Metadata = {
-  title: "Page not found · Fabula",
+  title: "Page not found",
 };
 
 /** 404 surface: calm copy, one clear way forward. */

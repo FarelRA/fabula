@@ -3,16 +3,18 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { SparklesIcon } from "lucide-react";
+import { ArrowLeftIcon, SparklesIcon, UsersIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { AuditionGrid } from "@/components/cast/AuditionGrid";
 import { CastProgress } from "@/components/cast/CastProgress";
 import { OpeningStep } from "@/components/cast/OpeningStep";
 import { RoleEditorSheet } from "@/components/cast/RoleEditorSheet";
+import { Wordmark } from "@/components/brand/Wordmark";
 import { SampleLineSheet } from "@/components/cast/SampleLineSheet";
 import { EmptyState } from "@/components/shell/states";
 import { useCastSession } from "@/lib/cast/sessionContext";
 import { isRoleField, toggleLock, type RoleField } from "@/lib/cast/fields";
+import { toneSummary } from "@/lib/cast/presets";
 import type { RoleCardPatch } from "@/lib/cast/types";
 
 function messageOf(error: unknown): string {
@@ -114,81 +116,129 @@ export function AuditionScreen({ compact = false }: { compact?: boolean }) {
   }
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6">
-      <header className="mb-5 flex flex-wrap items-end justify-between gap-3">
-        <div className="space-y-1">
-          <p className="flex items-center gap-1.5 text-xs font-medium tracking-[0.2em] text-primary uppercase">
-            <SparklesIcon className="size-3.5" aria-hidden />
-            Audition
+    <div className="stage-haze min-h-dvh">
+      <div className="studio-shell py-8 sm:py-10">
+        <div className="flex items-center justify-between gap-3">
+          <Link
+            href="/new"
+            className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+          >
+            <ArrowLeftIcon className="size-3.5" aria-hidden />
+            Back to the three doors
+          </Link>
+          <Wordmark className="shrink-0" />
+        </div>
+
+        <header className="mt-5 flex flex-col gap-5 border-b border-border/70 pb-6 lg:flex-row lg:items-end lg:justify-between">
+          <div className="min-w-0 max-w-3xl">
+            <p className="cue flex items-center gap-2 text-primary">
+              <SparklesIcon className="size-3.5" aria-hidden />
+              <span>Audition</span>
+              <span className="text-muted-foreground/70">· Green room</span>
+            </p>
+            <h1 className="mt-2 font-serif text-4xl leading-[1.04] tracking-[-0.025em] text-balance sm:text-5xl">
+              {scene.title}
+            </h1>
+            <p className="mt-3 max-w-2xl font-serif text-base leading-relaxed text-muted-foreground sm:text-lg">
+              {scene.premise}
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-1.5">
+            <Badge variant="outline" className="gap-1">
+              <UsersIcon className="size-3" aria-hidden />
+              {activeAi} AI roles
+            </Badge>
+            {you ? (
+              <Badge variant="outline" className="border-primary/30 text-primary">
+                You: {you.card.identity.name}
+              </Badge>
+            ) : (
+              <Badge variant="outline">Director from the wings</Badge>
+            )}
+            <Badge variant="secondary">Draft</Badge>
+          </div>
+        </header>
+
+        <div className="mt-4 grid gap-2 border-b border-border/60 pb-4 text-[11px] text-muted-foreground sm:grid-cols-4">
+          <p>
+            <span className="cue mr-2 text-[0.55rem] text-muted-foreground/80">Tone</span>
+            {toneSummary(scene.settings.tone)}
           </p>
-          <h1 className="font-serif text-2xl leading-tight sm:text-3xl">{scene.title}</h1>
-          <p className="max-w-2xl text-sm text-muted-foreground">{scene.premise}</p>
+          <p>
+            <span className="cue mr-2 text-[0.55rem] text-muted-foreground/80">Style</span>
+            {scene.settings.presentationStyle}
+          </p>
+          <p>
+            <span className="cue mr-2 text-[0.55rem] text-muted-foreground/80">World</span>
+            {scene.settings.settingEra || scene.settings.genre}
+          </p>
+          <p>
+            <span className="cue mr-2 text-[0.55rem] text-muted-foreground/80">Opening</span>
+            {draft ? "drafted" : "not yet written"}
+          </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-          <Badge variant="outline">{activeAi} AI roles</Badge>
-          {you ? <Badge variant="secondary">You: {you.card.identity.name}</Badge> : null}
-          <Badge variant="outline">Draft</Badge>
+
+        <div className="mt-6">
+          <AuditionGrid
+            scene={scene}
+            busy={session.busy}
+            changedFields={session.changedFields}
+            warnings={session.warnings}
+            error={session.error}
+            compact={compact}
+            onDismissError={session.clearError}
+            onEdit={openEditor}
+            onToggleLock={toggleFieldLock}
+            onRegenField={session.regenerateField}
+            onRegenRole={session.regenerateRole}
+            onSample={(roleId) => void openSample(roleId)}
+            onDuplicate={session.duplicateRole}
+            onStatus={session.setRoleStatus}
+            onReorder={session.reorder}
+            onAddRole={session.addRole}
+            onRegenCast={session.regenerateCast}
+            onCastSize={session.setCastSize}
+          />
         </div>
-      </header>
 
-      <AuditionGrid
-        scene={scene}
-        busy={session.busy}
-        changedFields={session.changedFields}
-        warnings={session.warnings}
-        error={session.error}
-        compact={compact}
-        onDismissError={session.clearError}
-        onEdit={openEditor}
-        onToggleLock={toggleFieldLock}
-        onRegenField={session.regenerateField}
-        onRegenRole={session.regenerateRole}
-        onSample={(roleId) => void openSample(roleId)}
-        onDuplicate={session.duplicateRole}
-        onStatus={session.setRoleStatus}
-        onReorder={session.reorder}
-        onAddRole={session.addRole}
-        onRegenCast={session.regenerateCast}
-        onCastSize={session.setCastSize}
-      />
+        <div className="mt-6">
+          <OpeningStep
+            draft={draft}
+            drafting={session.busy.opening}
+            starting={starting}
+            error={startError}
+            onGenerate={() => void session.draftOpening()}
+            onStart={(text) => void start(text)}
+          />
+        </div>
 
-      <div className="mt-6">
-        <OpeningStep
-          draft={draft}
-          drafting={session.busy.opening}
-          starting={starting}
-          error={startError}
-          onGenerate={() => void session.draftOpening()}
-          onStart={(text) => void start(text)}
+        <RoleEditorSheet
+          role={editorRole}
+          open={editorRole !== null}
+          initialField={editorField}
+          onOpenChange={(open) => {
+            if (!open) {
+              setEditorRoleId(null);
+              setEditorField(undefined);
+            }
+          }}
+          onSave={saveRole}
+        />
+
+        <SampleLineSheet
+          role={sampleRole}
+          open={sampleRole !== null}
+          onOpenChange={(open) => {
+            if (!open) setSampleRoleId(null);
+          }}
+          lines={sampleLines ?? sampleRole?.card.voice.sampleLines ?? []}
+          cached={sampleCached}
+          loading={sampleLoading}
+          onRegenerate={() => {
+            if (sampleRoleId) void openSample(sampleRoleId, true);
+          }}
         />
       </div>
-
-      <RoleEditorSheet
-        role={editorRole}
-        open={editorRole !== null}
-        initialField={editorField}
-        onOpenChange={(open) => {
-          if (!open) {
-            setEditorRoleId(null);
-            setEditorField(undefined);
-          }
-        }}
-        onSave={saveRole}
-      />
-
-      <SampleLineSheet
-        role={sampleRole}
-        open={sampleRole !== null}
-        onOpenChange={(open) => {
-          if (!open) setSampleRoleId(null);
-        }}
-        lines={sampleLines ?? sampleRole?.card.voice.sampleLines ?? []}
-        cached={sampleCached}
-        loading={sampleLoading}
-        onRegenerate={() => {
-          if (sampleRoleId) void openSample(sampleRoleId, true);
-        }}
-      />
     </div>
   );
 }

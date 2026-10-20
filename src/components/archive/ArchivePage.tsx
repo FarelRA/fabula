@@ -4,7 +4,13 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useQuery } from "convex/react";
 import { formatDistanceToNow } from "date-fns";
-import { ArrowLeftIcon, DownloadIcon, Share2Icon } from "lucide-react";
+import {
+  ArrowLeftIcon,
+  DownloadIcon,
+  GitBranchIcon,
+  ScrollTextIcon,
+  Share2Icon,
+} from "lucide-react";
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { CastProgress } from "@/components/cast/CastProgress";
@@ -107,107 +113,124 @@ export function ArchivePage({ sceneId }: { sceneId: Id<"scenes"> }) {
     : (bundle as unknown as ExportBundle);
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-3 py-5 sm:px-5">
-      <header className="flex flex-wrap items-start gap-2">
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-1.5">
-            <Button
-              asChild
-              variant="ghost"
-              size="icon-sm"
-            >
-              <Link href={`/s/${sceneId}`} aria-label="Back to the scene">
-                <ArrowLeftIcon />
-              </Link>
+    <div className="stage-haze min-h-dvh">
+      <div className="studio-shell py-8 sm:py-10">
+        <header className="flex flex-col gap-5 border-b border-border/70 pb-6 lg:flex-row lg:items-end lg:justify-between">
+          <div className="min-w-0 max-w-3xl">
+            <div className="flex items-center gap-1.5">
+              <Button asChild variant="ghost" size="icon-sm">
+                <Link href={`/s/${sceneId}`} aria-label="Back to the scene">
+                  <ArrowLeftIcon />
+                </Link>
+              </Button>
+              <p className="cue text-primary">The archive · nothing destroyed</p>
+            </div>
+            <h1 className="mt-2 font-serif text-3xl leading-[1.05] tracking-[-0.025em] text-balance sm:text-5xl">
+              {scene.title}
+            </h1>
+            <p className="mt-3 max-w-2xl font-serif text-base leading-relaxed text-muted-foreground sm:text-lg">
+              {scene.premise}
+            </p>
+            <p className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[10px] text-muted-foreground">
+              <Badge variant="outline" className="font-normal capitalize">
+                {scene.status}
+              </Badge>
+              {settings ? (
+                <span>
+                  {settings.genre} · {settings.settingEra} · {settings.presentationStyle}
+                </span>
+              ) : null}
+              <span>
+                {scene.endedAt !== undefined
+                  ? `ended ${formatDistanceToNow(scene.endedAt, { addSuffix: true })}`
+                  : "still playing · live read-only snapshot"}
+              </span>
+              {usage ? (
+                <span>
+                  est. {formatUsd(usage.costEstimateUsd)} ·{" "}
+                  {formatTokens(usage.tokensIn + usage.tokensOut)} tokens
+                </span>
+              ) : null}
+            </p>
+          </div>
+          <div className="flex shrink-0 items-center gap-1.5">
+            <Button type="button" variant="outline" size="sm" onClick={() => setShareOpen(true)}>
+              <Share2Icon />
+              Share
             </Button>
-            <h1 className="truncate font-serif text-2xl">{scene.title}</h1>
+            <Button type="button" variant="outline" size="sm" onClick={() => setExportOpen(true)}>
+              <DownloadIcon />
+              Export
+            </Button>
+          </div>
+        </header>
+
+        {scene.status === "archived" ? (
+          <p className="mt-5 rounded-md border border-primary/25 bg-primary/[0.06] px-3 py-2.5 text-xs leading-relaxed text-muted-foreground">
+            This scene is archived. Every branch, beat, ghost path and fact is
+            preserved below. Replay is read-only; nothing was deleted.
+          </p>
+        ) : null}
+
+        <section className="mt-7 space-y-2">
+          <div className="flex items-end justify-between gap-3">
+            <div>
+              <p className="cue flex items-center gap-1.5 text-primary">
+                <GitBranchIcon className="size-3.5" aria-hidden />
+                The family tree
+              </p>
+              <h2 className="mt-1 font-serif text-2xl leading-tight">Branches</h2>
+            </div>
+            <span className="font-mono text-[10px] text-muted-foreground">
+              {branches.length} branch{branches.length === 1 ? "" : "es"} ·{" "}
+              {bundle.beats.length} beats
+            </span>
+          </div>
+          <BranchExplorer
+            branches={branches}
+            selectedId={branchId}
+            beatCounts={beatCounts}
+            onSelect={setSelectedBranchId}
+          />
+        </section>
+
+        <section className="mt-8 space-y-3">
+          <div className="flex flex-wrap items-end justify-between gap-2 border-b border-border/60 pb-3">
+            <div>
+              <p className="cue flex items-center gap-1.5 text-primary">
+                <ScrollTextIcon className="size-3.5" aria-hidden />
+                Sealed script
+              </p>
+              <h2 className="mt-1 font-serif text-2xl leading-tight">
+                Replay · {selectedBranch?.label ?? "Main"}
+              </h2>
+            </div>
             <Badge variant="outline" className="font-normal">
-              {scene.status}
+              {chain.length} beat{chain.length === 1 ? "" : "s"}
             </Badge>
           </div>
-          <p className="mt-1 text-sm text-muted-foreground">{scene.premise}</p>
-          <p className="mt-1 text-[11px] text-muted-foreground">
-            {settings
-              ? `${settings.genre} · ${settings.settingEra} · ${settings.presentationStyle} · `
-              : ""}
-            {scene.endedAt !== undefined
-              ? `ended ${formatDistanceToNow(scene.endedAt, { addSuffix: true })}`
-              : "still playing, and this replay is a live read-only snapshot"}
-            {usage
-              ? ` · est. ${formatUsd(usage.costEstimateUsd)} · ${formatTokens(
-                  usage.tokensIn + usage.tokensOut,
-                )} tokens`
-              : ""}
-          </p>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => setShareOpen(true)}
-          >
-            <Share2Icon />
-            Share
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => setExportOpen(true)}
-          >
-            <DownloadIcon />
-            Export
-          </Button>
-        </div>
-      </header>
+          <ArchiveReplay
+            chain={chain}
+            roles={roleList}
+            candidatesByParent={candidatesByParent}
+          />
+        </section>
 
-      {scene.status === "archived" ? (
-        <p className="mt-3 rounded-lg border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
-          This scene is archived. Every branch, beat, ghost path and fact is
-          preserved below, replay is read-only, and nothing was deleted.
-        </p>
-      ) : null}
-
-      <section className="mt-4 space-y-1.5">
-        <h2 className="text-[11px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
-          Branches
-        </h2>
-        <BranchExplorer
-          branches={branches}
-          selectedId={branchId}
-          beatCounts={beatCounts}
-          onSelect={setSelectedBranchId}
-        />
-      </section>
-
-      <section className="mt-5 space-y-3">
-        <h2 className="flex items-center gap-1.5 text-sm font-medium">
-          Replay
-          <span className="text-muted-foreground">·</span>
-          <span className="truncate text-muted-foreground">
-            {selectedBranch?.label ?? "Main"}
-          </span>
-          <Badge variant="outline" className="font-normal">
-            {chain.length} beat{chain.length === 1 ? "" : "s"}
-          </Badge>
-        </h2>
-        <ArchiveReplay
-          chain={chain}
-          roles={roleList}
-          candidatesByParent={candidatesByParent}
-        />
-      </section>
-
-      <section className="mt-6 space-y-3">
-        <h2 className="text-sm font-medium">Ledger</h2>
-        <ArchiveLedger
-          facts={bundle.facts}
-          summaries={bundle.summaries}
-          notes={bundle.notes}
-          warnings={bundle.warnings}
-        />
-      </section>
+        <section className="mt-8 space-y-3">
+          <div className="border-b border-border/60 pb-3">
+            <p className="cue text-primary">The ledger</p>
+            <h2 className="mt-1 font-serif text-2xl leading-tight">
+              Facts, summaries and director notes
+            </h2>
+          </div>
+          <ArchiveLedger
+            facts={bundle.facts}
+            summaries={bundle.summaries}
+            notes={bundle.notes}
+            warnings={bundle.warnings}
+          />
+        </section>
+      </div>
 
       <ShareDialog sceneId={sceneId} open={shareOpen} onOpenChange={setShareOpen} />
       <ExportDialog

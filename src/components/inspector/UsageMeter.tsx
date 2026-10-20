@@ -27,7 +27,7 @@ export function UsageMeter({
     <div data-testid="usage-meter" className="space-y-3">
       <div className="flex items-center gap-1.5">
         <CoinsIcon className="size-3.5 text-muted-foreground" aria-hidden />
-        <h3 className="text-[11px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
+        <h3 className="cue text-[0.55rem] text-muted-foreground">
           Usage · estimated
         </h3>
         <Badge variant="outline" className="ml-auto font-normal">
@@ -49,7 +49,7 @@ export function UsageMeter({
         <div
           data-testid="budget-bar"
           data-level={budget.level}
-          className={`rounded-lg border p-2.5 ${
+          className={`rounded-md border p-2.5 ${
             budget.level === "over"
               ? "border-destructive/40 bg-destructive/5"
               : budget.level === "warn"
@@ -128,7 +128,7 @@ export function UsageMeter({
       )}
 
       {budget.level === "warn" || budget.level === "over" ? (
-        <p className="flex items-start gap-1.5 rounded-lg border border-amber-500/30 bg-amber-500/10 p-2 text-[11px] text-amber-700 dark:text-amber-300">
+        <p className="flex items-start gap-1.5 rounded-md border border-primary/30 bg-primary/[0.06] p-2 text-[11px] text-primary">
           <TriangleAlertIcon className="mt-0.5 size-3.5 shrink-0" aria-hidden />
           {budget.level === "over"
             ? `Estimated cost ${formatUsd(usage.costEstimateUsd)} is over the soft cap. Generation still works, raise the cap or wrap the scene.`
@@ -149,7 +149,7 @@ function Stat({
   icon?: React.ReactNode;
 }) {
   return (
-    <div className="rounded-lg border border-border bg-card/60 p-2">
+    <div className="rounded-md border border-border/70 bg-card/40 p-2">
       <p className="flex items-center gap-1 text-[10px] text-muted-foreground">
         {icon}
         {label}

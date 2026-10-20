@@ -71,7 +71,7 @@ export function ShareLinksPanel({
       </div>
 
       <section aria-label="Share links" className="space-y-1.5">
-        <h3 className="text-[11px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
+        <h3 className="cue text-[0.55rem] text-muted-foreground">
           Active links
           <Badge variant="outline" className="ml-2 font-normal">
             {active.length}
@@ -87,7 +87,7 @@ export function ShareLinksPanel({
               <li
                 key={row.id}
                 data-testid="share-link-row"
-                className="flex items-center gap-2 rounded-lg border border-border bg-card/60 p-2"
+                className="flex items-center gap-2 rounded-md border border-border/70 bg-card/40 p-2"
               >
                 <div className="min-w-0 flex-1">
                   <p className="flex items-center gap-1.5 text-xs font-medium">
@@ -131,7 +131,7 @@ export function ShareLinksPanel({
 
       {rows.length > active.length ? (
         <section aria-label="Inactive links" className="space-y-1.5">
-          <h3 className="text-[11px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
+          <h3 className="cue text-[0.55rem] text-muted-foreground">
             Inactive
           </h3>
           <ul className="space-y-1">

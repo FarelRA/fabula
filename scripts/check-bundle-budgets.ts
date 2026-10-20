@@ -17,6 +17,8 @@ const BUDGETS: Array<{ route: string; maxKb: number }> = [
   { route: "/new/quick/page", maxKb: 340 },
   { route: "/new/wizard/page", maxKb: 340 },
   { route: "/new/templates/page", maxKb: 250 },
+  { route: "/library/page", maxKb: 250 },
+  { route: "/help/page", maxKb: 250 },
   { route: "/s/[sceneId]/page", maxKb: 250 },
   { route: "/s/[sceneId]/archive/page", maxKb: 250 },
   { route: "/share/[token]/page", maxKb: 250 },
@@ -27,10 +29,16 @@ const manifest = JSON.parse(
   readFileSync(join(nextDir, "app-build-manifest.json"), "utf8"),
 ) as { pages: Record<string, string[]> };
 
+/** Route groups are build-time details; budgets are written as public URLs. */
+const normalizeRoute = (key: string) => key.replace(/\/\([^/]+\)/g, "");
+
 // Next's own "First Load JS" is the gzip sum of each route's manifest entry, // the chunk set every visitor downloads before first paint.
 let failures = 0;
 for (const { route, maxKb } of BUDGETS) {
-  const routeChunks = manifest.pages[route];
+  const manifestKey = Object.keys(manifest.pages).find(
+    (key) => normalizeRoute(key) === route,
+  );
+  const routeChunks = manifestKey ? manifest.pages[manifestKey] : undefined;
   if (!routeChunks) {
     console.error(`OVER ${route}: missing from app-build-manifest.json`);
     failures += 1;

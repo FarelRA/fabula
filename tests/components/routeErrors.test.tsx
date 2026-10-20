@@ -3,9 +3,9 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import RootRouteError from "@/app/error";
-import NewSceneError from "@/app/new/error";
-import ShareError from "@/app/share/[token]/error";
-import SceneError from "@/app/s/[sceneId]/error";
+import NewSceneError from "@/app/(studio)/new/error";
+import ShareError from "@/app/(stage)/share/[token]/error";
+import SceneError from "@/app/(stage)/s/[sceneId]/error";
 import NotFound from "@/app/not-found";
 import { installDomShims } from "./testUtils";
 

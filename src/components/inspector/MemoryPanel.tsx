@@ -61,7 +61,7 @@ export function MemoryPanel({
   }, [facts]);
 
   return (
-    <div data-testid="memory-panel" className="space-y-4">
+    <div data-testid="memory-panel" className="space-y-5">
       {warnings.length > 0 ? (
         <section aria-label="Continuity warnings" className="space-y-2">
           <SectionHeading icon={<AlertTriangleIcon />} title="Continuity" count={warnings.length} />
@@ -70,9 +70,9 @@ export function MemoryPanel({
               <li
                 key={warning.id}
                 data-testid="warning-row"
-                className="flex items-start gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 p-2.5"
+                className="flex items-start gap-2 rounded-md border border-primary/30 bg-primary/[0.06] p-2.5"
               >
-                <AlertTriangleIcon className="mt-0.5 size-3.5 shrink-0 text-amber-600 dark:text-amber-300" aria-hidden />
+                <AlertTriangleIcon className="mt-0.5 size-3.5 shrink-0 text-primary" aria-hidden />
                 <div className="min-w-0 flex-1">
                   <p className="text-xs leading-relaxed">{warning.text}</p>
                   <p className="mt-0.5 text-[10px] text-muted-foreground">
@@ -148,7 +148,7 @@ export function MemoryPanel({
             {summaries.map((summary) => (
               <li
                 key={summary.id}
-                className="rounded-lg border border-border bg-card/60 p-2.5"
+                className="rounded-md border border-border/70 border-l-2 border-l-role-violet/60 bg-card/40 p-2.5"
               >
                 <p className="text-xs leading-relaxed text-foreground/85">
                   {summary.text}
@@ -227,7 +227,7 @@ function SectionHeading({
   count: number;
 }) {
   return (
-    <h3 className="flex items-center gap-1.5 text-[11px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
+    <h3 className="cue flex items-center gap-1.5 text-[0.55rem] text-muted-foreground">
       <span aria-hidden className="[&_svg]:size-3.5">
         {icon}
       </span>
@@ -259,7 +259,7 @@ function Disclosure({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-lg border border-border">
+    <section className="rounded-md border border-border/70 bg-card/25">
       <button
         type="button"
         aria-expanded={open}
@@ -299,10 +299,10 @@ function FactRow({
       data-testid="fact-row"
       data-global={global ? "true" : undefined}
       data-muted={fact.status === "muted" ? "true" : undefined}
-      className={`rounded-lg border p-2.5 ${
+      className={`rounded-md border border-border/70 border-l-2 p-2.5 ${
         global
-          ? "border-primary/40 bg-primary/5"
-          : "border-border bg-card/60"
+          ? "border-l-primary/70 bg-primary/5"
+          : "border-l-border bg-card/40"
       } ${dim ? "opacity-80" : ""}`}
     >
       <div className="flex items-start gap-2">

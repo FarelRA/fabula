@@ -4,7 +4,7 @@ import { CastProgress } from "@/components/cast/CastProgress";
 import { WizardPage } from "@/components/cast/WizardPage";
 
 export const metadata: Metadata = {
-  title: "Guided setup · Fabula",
+  title: "Guided setup",
 };
 
 export default async function Page({

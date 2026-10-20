@@ -249,10 +249,14 @@ export function ThreadView({
   return (
     <div className="relative flex min-h-0 flex-1 flex-col">
       <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 z-10 h-5 bg-gradient-to-b from-background to-transparent"
+      />
+      <div
         ref={scrollRef}
         onScroll={onScroll}
         data-testid="beat-scroll"
-        className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-4 sm:px-5 lg:pr-10"
+        className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-5 sm:px-6 sm:py-7 lg:pr-12"
       >
         {rows.length === 0 ? (
           <EmptyState
@@ -265,7 +269,7 @@ export function ThreadView({
               height: `${virtualizer.getTotalSize()}px`,
               position: "relative",
             }}
-            className="mx-auto w-full max-w-3xl"
+            className="mx-auto w-full max-w-[var(--reading-measure)]"
           >
             {virtualizer.getVirtualItems().map((item) => {
               const row = rows[item.index];
@@ -286,7 +290,7 @@ export function ThreadView({
                 >
                   {row.kind === "cue" ? (
                     <div
-                      className="flex items-center gap-3 rounded-xl border border-border bg-card/60 p-3"
+                      className="flex items-center gap-3 rounded-md border border-border/70 bg-card/35 p-3"
                       role="status"
                     >
                       {row.run.roleId ? (
@@ -295,11 +299,11 @@ export function ThreadView({
                           monogram={row.run.roleMonogram}
                           accentColor={row.run.roleAccent}
                           size="sm"
-                          className="size-9 text-xs"
+                          className="size-8 text-[10px]"
                         />
                       ) : null}
                       <div className="min-w-0 flex-1 space-y-1.5">
-                        <p className="text-sm font-medium">
+                        <p className="font-mono text-[10px] tracking-[0.08em] text-primary uppercase">
                           {row.run.roleName ?? "The cast"} takes the stage…
                         </p>
                         <Skeleton className="h-3 w-4/5" />

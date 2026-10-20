@@ -19,58 +19,64 @@
 :root {
   color-scheme: light;
 
-  /* --- light theme: warm parchment --- */
-  --background: #faf7f0;
-  --foreground: #1c1a16;
-  --card: #ffffff;
-  --card-foreground: #1c1a16;
-  --popover: #ffffff;
-  --popover-foreground: #1c1a16;
-  --primary: #7a4f10;
-  --primary-foreground: #fdf6e8;
-  --secondary: #efe9dc;
-  --secondary-foreground: #2a2620;
-  --muted: #efe9dc;
-  --muted-foreground: #5f584c;
-  --accent: #f0e2c4;
-  --accent-foreground: #2a2620;
-  --destructive: #b3261e;
-  --destructive-foreground: #fdf0ee;
-  --border: #ddd4c4;
-  --input: #ddd4c4;
-  --ring: #7a4f10;
-  --chart-1: #7a4f10;
-  --chart-2: #0f766e;
-  --chart-3: #6d28d9;
-  --chart-4: #be123c;
-  --chart-5: #0369a1;
-  --radius: 0.625rem;
-  --sidebar: #f3eee3;
-  --sidebar-foreground: #1c1a16;
-  --sidebar-primary: #7a4f10;
-  --sidebar-primary-foreground: #fdf6e8;
-  --sidebar-accent: #efe9dc;
-  --sidebar-accent-foreground: #2a2620;
-  --sidebar-border: #ddd4c4;
-  --sidebar-ring: #7a4f10;
+  /* --- light theme: warm rehearsal parchment --- */
+  --background: #f7f2e8;
+  --foreground: #1d1a15;
+  --card: #fffaf1;
+  --card-foreground: #1d1a15;
+  --popover: #fffaf1;
+  --popover-foreground: #1d1a15;
+  --primary: #7a4a10;
+  --primary-foreground: #fff7e7;
+  --secondary: #ebe2d2;
+  --secondary-foreground: #2a251e;
+  --muted: #eee6d8;
+  --muted-foreground: #5b5245;
+  --accent: #f1e1c3;
+  --accent-foreground: #2a251e;
+  --destructive: #a3261d;
+  --destructive-foreground: #fff1ef;
+  --border: #d9cdbb;
+  --input: #d9cdbb;
+  --ring: #7a4a10;
+  --chart-1: #7a4a10;
+  --chart-2: #176f66;
+  --chart-3: #6533b8;
+  --chart-4: #b11f45;
+  --chart-5: #0c5f8f;
+  --radius: 0.5rem;
+  --sidebar: #f2ebdf;
+  --sidebar-foreground: #1d1a15;
+  --sidebar-primary: #7a4a10;
+  --sidebar-primary-foreground: #fff7e7;
+  --sidebar-accent: #ebe2d2;
+  --sidebar-accent-foreground: #2a251e;
+  --sidebar-border: #d9cdbb;
+  --sidebar-ring: #7a4a10;
 
   /* --- identity palette (mode-independent) --- */
-  --role-amber: #e0a458;
-  --role-amber-foreground: #12131a;
-  --role-teal: #4fb8b0;
-  --role-teal-foreground: #12131a;
-  --role-violet: #a78bfa;
-  --role-violet-foreground: #12131a;
-  --role-rose: #f472b6;
-  --role-rose-foreground: #12131a;
-  --role-sky: #7cc4f0;
-  --role-sky-foreground: #12131a;
-  --role-lime: #a3d977;
-  --role-lime-foreground: #12131a;
-  --role-orange: #f08c4f;
-  --role-orange-foreground: #12131a;
-  --role-indigo: #8f9bf5;
-  --role-indigo-foreground: #12131a;
+  --role-amber: #d99538;
+  --role-amber-foreground: #160d02;
+  --role-teal: #39b7a7;
+  --role-teal-foreground: #041311;
+  --role-violet: #a98aef;
+  --role-violet-foreground: #130a25;
+  --role-rose: #e57ca4;
+  --role-rose-foreground: #220812;
+  --role-sky: #6fb9e5;
+  --role-sky-foreground: #041520;
+  --role-lime: #9bc65e;
+  --role-lime-foreground: #101a04;
+  --role-orange: #e3804a;
+  --role-orange-foreground: #1e0c02;
+  --role-indigo: #8994ea;
+  --role-indigo-foreground: #080b22;
+
+  /* --- stage atmosphere (used by surfaces, not text pairs) --- */
+  --stage-glow: rgb(232 154 60 / 0.14);
+  --stage-velvet: 0.32;
+  --panel-highlight: rgb(255 244 220 / 0.08);
+  --panel-shadow: 0 24px 60px -32px rgb(24 14 4 / 0.5);
 
   /* --- typography / layout scale --- */
   --reading-measure: 72ch;
@@ -79,56 +85,67 @@
 .dark {
   color-scheme: dark;
 
-  /* --- dark theme: the director's stage (default) --- */
-  --background: #0a0b0f;
-  --foreground: #e9e4d8;
-  --card: #101218;
-  --card-foreground: #e9e4d8;
-  --popover: #12141b;
-  --popover-foreground: #e9e4d8;
-  --primary: #e0a458;
-  --primary-foreground: #14100a;
-  --secondary: #191c24;
-  --secondary-foreground: #e9e4d8;
-  --muted: #191c24;
-  --muted-foreground: #b3ab99;
-  --accent: #262a35;
-  --accent-foreground: #e9e4d8;
-  --destructive: #ff6b63;
-  --destructive-foreground: #200604;
-  --border: #262a35;
-  --input: #262a35;
-  --ring: #e0a458;
-  --chart-1: #e0a458;
-  --chart-2: #4fb8b0;
-  --chart-3: #a78bfa;
-  --chart-4: #f472b6;
-  --chart-5: #7cc4f0;
-  --sidebar: #0d0f14;
-  --sidebar-foreground: #e9e4d8;
-  --sidebar-primary: #e0a458;
-  --sidebar-primary-foreground: #14100a;
-  --sidebar-accent: #191c24;
-  --sidebar-accent-foreground: #e9e4d8;
-  --sidebar-border: #262a35;
-  --sidebar-ring: #e0a458;
+  /* --- dark theme: the unlit stage (default) --- */
+  --background: #0d0d11;
+  --foreground: #f4eedd;
+  --card: #15151d;
+  --card-foreground: #f4eedd;
+  --popover: #1e1e28;
+  --popover-foreground: #f4eedd;
+  --primary: #e8a23f;
+  --primary-foreground: #1b1104;
+  --secondary: #24222b;
+  --secondary-foreground: #f0e7d6;
+  --muted: #1b1a23;
+  --muted-foreground: #aaa294;
+  --accent: #2a2833;
+  --accent-foreground: #f4eedd;
+  --destructive: #ff8178;
+  --destructive-foreground: #240503;
+  --border: #2a2833;
+  --input: #2a2833;
+  --ring: #e8a23f;
+  --chart-1: #e8a23f;
+  --chart-2: #39b7a7;
+  --chart-3: #a98aef;
+  --chart-4: #e57ca4;
+  --chart-5: #6fb9e5;
+  --sidebar: #101015;
+  --sidebar-foreground: #f4eedd;
+  --sidebar-primary: #e8a23f;
+  --sidebar-primary-foreground: #1b1104;
+  --sidebar-accent: #1b1a23;
+  --sidebar-accent-foreground: #f4eedd;
+  --sidebar-border: #2a2833;
+  --sidebar-ring: #e8a23f;
+
+  --stage-glow: rgb(232 154 60 0.18);
+  --stage-velvet: 0.55;
+  --panel-highlight: rgb(255 244 220 0.1);
+  --panel-shadow: 0 28px 80px -36px rgb(0 0 0 / 0.9);
 }
 
 @theme {
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-serif: ui-serif, Georgia, "Times New Roman", serif;
-  --font-heading: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-sans: "Hanken Grotesk Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-serif: "Newsreader Variable", ui-serif, Georgia, "Times New Roman", serif;
+  --font-heading: "Newsreader Variable", ui-serif, Georgia, "Times New Roman", serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, monospace;
 
   /* Type scale (display → body); sizes map to utilities text-* */
-  --text-hero: clamp(2rem, 1.35rem + 2.6vw, 3.5rem);
-  --text-title: clamp(1.375rem, 1.1rem + 1vw, 1.75rem);
+  --text-hero: clamp(2.5rem, 1.5rem + 3.4vw, 4.75rem);
+  --text-title: clamp(1.5rem, 1.15rem + 1.1vw, 2.125rem);
+  --text-prose: 1.125rem;
+  --text-prose--line-height: 1.75;
 
   /* Static stage tones (legacy aliases used by landing + shell chrome) */
-  --color-stage-950: #0a0b0f;
-  --color-stage-900: #101218;
-  --color-stage-800: #191c24;
-  --color-stage-700: #262a35;
-  --color-parchment: #e9e4d8;
+  --color-stage-950: #0d0d11;
+  --color-stage-900: #15151d;
+  --color-stage-800: #1b1a23;
+  --color-stage-700: #2a2833;
+  --color-parchment: #f4eedd;
+  --color-footlight: #e8a23f;
+  --color-velvet: #7d1f2a;
+  --color-velvet-soft: #a33a44;
 }
 
 @theme inline {
@@ -199,9 +216,24 @@
   }
   html {
     @apply font-sans;
+    scroll-behavior: smooth;
   }
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "ss01" 1, "cv01" 1;
+    text-rendering: optimizeLegibility;
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--primary) 30%, transparent);
+    color: var(--foreground);
   }
 }
 
@@ -210,6 +242,85 @@
 /* Reading column for the thread. */
 @utility reading-measure {
   max-width: var(--reading-measure);
+}
+
+/* Wide studio container used by the marketing and library surfaces. */
+@utility studio-shell {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 90rem;
+  padding-inline: 1.25rem;
+  @media (width >= 48rem) {
+    padding-inline: 2rem;
+  }
+  @media (width >= 80rem) {
+    padding-inline: 3rem;
+  }
+}
+
+/* Small caps cue label, the connective tissue of the theatre UI. */
+@utility cue {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+/* Paper grain / stage haze without external assets. */
+@utility stage-haze {
+  position: relative;
+  isolation: isolate;
+}
+
+.stage-haze::before {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  content: "";
+  pointer-events: none;
+  background:
+    radial-gradient(60rem 28rem at 15% -10%, var(--stage-glow), transparent 68%),
+    radial-gradient(38rem 22rem at 92% 8%, rgb(169 138 239 / 0.08), transparent 72%);
+}
+
+/* A hairline with a warm edge, used between stage zones. */
+@utility footlight-rule {
+  border-top: 1px solid color-mix(in oklab, var(--border) 75%, var(--primary) 25%);
+  box-shadow: 0 -1px 0 0 rgb(232 162 63 / 0.08);
+}
+
+/* Panel surface family: recessed, raised and glow. */
+@utility panel-recessed {
+  background: color-mix(in oklab, var(--card) 72%, var(--background));
+  border: 1px solid color-mix(in oklab, var(--border) 84%, transparent);
+}
+
+@utility panel-raised {
+  background:
+    linear-gradient(180deg, var(--panel-highlight), transparent 38%),
+    var(--card);
+  border: 1px solid color-mix(in oklab, var(--border) 88%, transparent);
+  box-shadow: var(--panel-shadow);
+}
+
+@utility panel-glow {
+  border-color: color-mix(in oklab, var(--primary) 38%, var(--border));
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--primary) 12%, transparent),
+    0 18px 50px -30px color-mix(in oklab, var(--primary) 55%, transparent);
+}
+
+/* The five-line staff: a quiet decorative motif for empty states. */
+@utility staff-lines {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    color-mix(in oklab, var(--foreground) 7%, transparent) 0,
+    color-mix(in oklab, var(--foreground) 7%, transparent) 1px,
+    transparent 1px,
+    transparent 0.5rem
+  );
 }
 
 /* Notch / home-indicator safe areas (viewport-fit=cover is set in layout.tsx). */

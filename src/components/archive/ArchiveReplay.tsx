@@ -42,7 +42,7 @@ export function ArchiveReplay({
   const roleById = new Map(roles.map((role) => [role._id, role]));
 
   return (
-    <ol data-testid="archive-replay" className="space-y-3">
+    <ol data-testid="archive-replay" className="space-y-1">
       {chain.map((beat) => {
         const speaker = beat.speakerRoleId
           ? roleById.get(beat.speakerRoleId)
@@ -58,59 +58,54 @@ export function ArchiveReplay({
             <article
               data-testid="archive-beat"
               style={{ borderLeftColor: accent }}
-              className="rounded-xl border border-border border-l-4 bg-card p-3 shadow-sm sm:p-4"
+              className="border-l-2 py-2 pl-3 sm:pl-4"
             >
-              <header className="flex items-start gap-2.5">
+              <header className="flex items-center gap-2">
                 {speaker ? (
                   <RoleAvatar
                     name={speaker.identity.name}
                     monogram={speaker.identity.monogram}
                     accentColor={speaker.identity.accentColor}
                     size="sm"
-                    className="size-9 text-xs"
+                    className="size-7 text-[10px]"
                   />
                 ) : (
-                  <span className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border bg-muted text-muted-foreground">
-                    <GitForkIcon className="size-4" aria-hidden />
+                  <span className="flex size-7 shrink-0 items-center justify-center rounded-full border border-border bg-muted text-muted-foreground">
+                    <GitForkIcon className="size-3.5" aria-hidden />
                   </span>
                 )}
-                <div className="min-w-0 flex-1">
-                  <p className="flex flex-wrap items-center gap-1.5 text-sm font-medium">
+                <p className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5">
+                  <span className="font-sans text-[11px] font-bold tracking-[0.14em] text-foreground uppercase">
                     {speaker?.identity.name ?? "Narration"}
-                    {beat.isPinned ? (
-                      <PinIcon
-                        className="size-3.5 text-primary"
-                        aria-label="Pinned"
-                      />
-                    ) : null}
-                  </p>
-                  <p className="flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
-                    <Badge variant="secondary" className="font-normal">
-                      {ORIGIN_LABELS[beat.origin] ?? beat.origin}
-                    </Badge>
-                    <span>beat {beat.seq}</span>
-                    {beat.editedFromBeatId ? <span>· edited fork</span> : null}
-                    {beat.status !== "finished" ? <span>· {beat.status}</span> : null}
-                  </p>
-                </div>
+                  </span>
+                  <span className="font-mono text-[9px] text-muted-foreground uppercase">
+                    <span>{ORIGIN_LABELS[beat.origin] ?? beat.origin}</span> · beat{" "}
+                    {beat.seq}
+                    {beat.editedFromBeatId ? " · edited fork" : ""}
+                    {beat.status !== "finished" ? ` · ${beat.status}` : ""}
+                  </span>
+                  {beat.isPinned ? (
+                    <PinIcon className="size-3 text-primary" aria-label="Pinned" />
+                  ) : null}
+                </p>
               </header>
 
-              <div className="mt-2">
-                <p className="text-sm leading-relaxed whitespace-pre-wrap text-foreground/85">
+              <div className="mt-1.5">
+                <p className="font-serif text-[1.05rem] leading-[1.75] whitespace-pre-wrap text-foreground/85">
                   {beat.text}
                 </p>
               </div>
 
               {ghosts.length > 0 ? (
-                <details className="mt-2 border-t border-border/60 pt-2">
-                  <summary className="cursor-pointer text-[11px] text-muted-foreground">
+                <details className="mt-2 border-t border-border/50 pt-2">
+                  <summary className="cursor-pointer font-mono text-[10px] text-muted-foreground transition-colors hover:text-foreground">
                     {ghosts.length} path{ghosts.length === 1 ? "" : "s"} not taken
                   </summary>
-                  <ul className="mt-1.5 space-y-1.5">
+                  <ul className="mt-2 space-y-1.5">
                     {ghosts.map((ghost) => (
                       <li
                         key={ghost._id}
-                        className="rounded-lg border border-border/70 bg-background/50 p-2"
+                        className="rounded-sm border border-dashed border-border/70 bg-background/30 p-2"
                       >
                         <p className="flex items-center gap-1.5 text-xs font-medium">
                           {ghost.label}

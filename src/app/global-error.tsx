@@ -28,8 +28,8 @@ export default function GlobalError({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#0a0b0f",
-          color: "#f4f1ea",
+          background: "#0d0d11",
+          color: "#f4eedd",
           fontFamily:
             "ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif",
         }}

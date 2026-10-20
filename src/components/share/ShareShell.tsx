@@ -8,9 +8,11 @@ import { toast } from "sonner";
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { CastProgress } from "@/components/cast/CastProgress";
+import { Wordmark } from "@/components/brand/Wordmark";
 import { EmptyState } from "@/components/shell/states";
 import { ThreadView } from "@/components/thread/ThreadView";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { buildPlayScene, mapPlayRun } from "@/lib/play/map";
 import { nextSpeakerPreview } from "@/lib/play/helpers";
 import { useConnectionState } from "@/hooks/useConnectionState";
@@ -105,35 +107,64 @@ export function ShareShell({ token }: { token: string }) {
       .finally(() => setPendingPickId(null));
   };
 
+  const nextSpeakerName = nextSpeakerPreview(scene)?.card.identity.name;
+  const statusText = run
+    ? `${run.roleName ?? "The cast"} is speaking…`
+    : archived
+      ? "The scene has ended. Everything stays readable."
+      : scene.status === "paused"
+        ? "Paused by the director."
+        : nextSpeakerName
+          ? `Waiting for ${nextSpeakerName}…`
+          : "Waiting for the next beat…";
+
   return (
-    <div className="flex h-[calc(100dvh-3.5rem)] min-h-0 flex-col bg-background">
-      <header className="flex items-center gap-2 border-b border-border px-3 py-2">
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <h1 className="truncate font-serif text-lg leading-tight">
+    <div className="flex min-h-0 flex-1 flex-col bg-[radial-gradient(60rem_28rem_at_50%_-12%,color-mix(in_oklab,var(--primary)_7%,transparent),transparent_62%)]">
+      <header className="border-b border-border/70 bg-card/25 px-3 py-2.5 sm:px-4">
+        <div className="flex items-start gap-3">
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+              <Wordmark
+                className="mr-1"
+                context={canPick ? "The director's chair" : "The house is watching"}
+              />
+              <Badge variant={canPick ? "default" : "outline"} className="font-normal">
+                {canPick ? "Can pick paths" : "View only"}
+              </Badge>
+              {archived ? (
+                <Badge variant="outline" className="font-normal">
+                  Archived
+                </Badge>
+              ) : null}
+            </div>
+            <h1 className="mt-1 line-clamp-2 font-serif text-lg leading-tight sm:truncate sm:text-2xl">
               {scene.title}
             </h1>
-            <Badge variant={canPick ? "default" : "outline"} className="font-normal">
-              {canPick ? "Can pick paths" : "View only"}
-            </Badge>
-            {archived ? (
-              <Badge variant="outline" className="font-normal">
-                Archived
-              </Badge>
-            ) : null}
+            <p className="line-clamp-2 text-[11px] leading-snug text-muted-foreground sm:truncate">
+              {scene.premise}
+            </p>
+            <p
+              role="status"
+              aria-live="polite"
+              className="mt-1 flex items-center gap-1.5 text-[11px] text-muted-foreground"
+            >
+              {run ? (
+                <span className="relative flex size-2 shrink-0">
+                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary/60 motion-reduce:hidden" />
+                  <span className="relative inline-flex size-2 rounded-full bg-primary" />
+                </span>
+              ) : null}
+              {statusText}
+            </p>
           </div>
-          <p className="truncate text-[11px] text-muted-foreground">
-            {scene.premise}
-          </p>
+          <div className="flex shrink-0 items-center gap-1.5">
+            <SharePresence roomToken={token} />
+            <Button asChild variant="outline" size="sm" className="hidden sm:inline-flex">
+              <Link href="/new">Direct your own scene</Link>
+            </Button>
+          </div>
         </div>
-        <SharePresence roomToken={token} />
       </header>
-
-      <ShareFloor
-        run={run}
-        sceneStatus={scene.status}
-        nextSpeaker={nextSpeakerPreview(scene)?.card.identity.name}
-      />
 
       <ThreadView
         scene={scene}
@@ -149,51 +180,6 @@ export function ShareShell({ token }: { token: string }) {
         onRegenerate={() => undefined}
         onRetry={() => undefined}
       />
-
-      <footer className="border-t border-border px-4 py-2 text-center text-[11px] text-muted-foreground">
-        Shared scene · {canPick ? "you can pick path options" : "read-only"} ·
-        updates live, nothing is ever deleted
-      </footer>
-    </div>
-  );
-}
-
-function ShareFloor({
-  run,
-  sceneStatus,
-  nextSpeaker,
-}: {
-  run: ReturnType<typeof mapPlayRun>;
-  sceneStatus: string;
-  nextSpeaker?: string;
-}) {
-  if (run) {
-    return (
-      <div
-        role="status"
-        className="flex items-center gap-2 border-b border-border bg-card/40 px-3 py-1.5 text-xs"
-      >
-        <span className="relative flex size-2">
-          <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary/60 motion-reduce:hidden" />
-          <span className="relative inline-flex size-2 rounded-full bg-primary" />
-        </span>
-        <span className="font-medium">{run.roleName ?? "The cast"}</span>
-        <span className="text-muted-foreground">is speaking…</span>
-      </div>
-    );
-  }
-  return (
-    <div
-      role="status"
-      className="flex items-center gap-2 border-b border-border px-3 py-1.5 text-xs text-muted-foreground"
-    >
-      {sceneStatus === "archived"
-        ? "The scene has ended. Everything stays readable."
-        : sceneStatus === "paused"
-          ? "Paused by the director."
-          : nextSpeaker
-            ? `Waiting for ${nextSpeaker}…`
-            : "Waiting for the next beat…"}
     </div>
   );
 }

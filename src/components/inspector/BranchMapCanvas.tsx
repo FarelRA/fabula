@@ -56,7 +56,7 @@ function BeatMapNode({ data }: NodeProps<BeatFlowNode>) {
         height: MAP_NODE_HEIGHT,
         borderLeftColor: branchColor(data.colorIndex),
       }}
-      className={`rounded-lg border border-border border-l-4 bg-card px-2.5 py-1.5 shadow-sm ${
+      className={`rounded-md border border-border/70 border-l-4 bg-card px-2.5 py-1.5 shadow-[var(--panel-shadow)] ${
         data.selected ? "ring-2 ring-primary" : ""
       } ${data.isActive ? "" : "opacity-60"}`}
     >
@@ -209,7 +209,7 @@ export function BranchMapCanvas({
 
   return (
     <div data-fabula-map="true" data-testid="branch-map" className="space-y-3">
-      <div className="h-[320px] overflow-hidden rounded-lg border border-border bg-background/60">
+      <div className="h-[320px] overflow-hidden rounded-md border border-border/70 bg-background/40">
         <ReactFlow
           nodes={flowNodes}
           edges={flowEdges}
@@ -237,11 +237,11 @@ export function BranchMapCanvas({
         <section
           data-testid="map-metadata"
           aria-label="Beat metadata"
-          className="space-y-1.5 rounded-lg border border-border bg-card/60 p-2.5"
+          className="space-y-1.5 rounded-md border border-border/70 bg-card/40 p-2.5"
         >
           <div className="flex items-center gap-1.5">
             <EyeIcon className="size-3.5 text-muted-foreground" aria-hidden />
-            <h4 className="text-[11px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
+            <h4 className="cue text-[0.55rem] text-muted-foreground">
               Beat {selected.seq}
             </h4>
             {selected.isPinned ? (
@@ -288,7 +288,7 @@ export function BranchMapCanvas({
       )}
 
       <section aria-label="Branches" className="space-y-1">
-        <h4 className="text-[11px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
+        <h4 className="cue text-[0.55rem] text-muted-foreground">
           Branches
         </h4>
         <ul className="space-y-1">
@@ -331,7 +331,7 @@ export function BranchMapCanvas({
       </section>
 
       <section aria-label="Beats by branch" className="space-y-1">
-        <h4 className="text-[11px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
+        <h4 className="cue text-[0.55rem] text-muted-foreground">
           All beats
         </h4>
         <ul
@@ -383,7 +383,7 @@ export function BranchMapCanvas({
               className="size-3.5 text-muted-foreground"
               aria-hidden
             />
-            <h4 className="text-[11px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
+            <h4 className="cue text-[0.55rem] text-muted-foreground">
               Compare branches
             </h4>
             <Badge variant="outline" className="font-normal">

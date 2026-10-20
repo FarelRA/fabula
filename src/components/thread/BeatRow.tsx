@@ -10,7 +10,6 @@ import {
   RotateCcwIcon,
   SparklesIcon,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -87,21 +86,20 @@ export function BeatRow({
       <article
         data-testid="beat-row"
         aria-label={`Failed beat from ${speakerName}`}
-        className="rounded-xl border border-destructive/40 bg-destructive/5 p-3"
+        className="rounded-md border border-destructive/40 bg-destructive/5 p-3"
       >
         <div className="flex items-start gap-2">
           <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full border border-destructive/30 text-destructive">
             <RotateCcwIcon className="size-4" aria-hidden />
           </span>
           <div className="min-w-0 flex-1 space-y-1">
-            <p className="text-sm font-medium">
-              {speakerName}&apos;s attempt failed
-            </p>
+            <p className="text-sm font-medium">{speakerName}&apos;s attempt failed</p>
             <p className="text-xs leading-relaxed text-muted-foreground">
-              The partial text was kept off the active path. The scene is intact, try the beat again or steer the cast.
+              The partial text was kept off the active path. The scene is intact;
+              try the beat again or steer the cast.
             </p>
             {beat.text ? (
-              <p className="rounded-md bg-muted/50 px-2 py-1 text-xs text-muted-foreground">
+              <p className="rounded-sm bg-muted/50 px-2 py-1 text-xs text-muted-foreground">
                 Partial: {beat.text}
               </p>
             ) : null}
@@ -128,13 +126,14 @@ export function BeatRow({
       aria-label={`Beat ${beat.seq} from ${speakerName}`}
       style={{ borderLeftColor: accent }}
       className={cn(
-        "rounded-xl border border-border border-l-4 bg-card p-3 shadow-sm sm:p-4",
-        isTip && "ring-1 ring-primary/15",
-        selected && "ring-2 ring-primary/45",
+        "group/beat relative border-l-2 py-2 pl-3 transition-colors sm:pl-5",
+        "hover:border-l-[3px]",
+        isTip && "bg-gradient-to-r from-primary/[0.045] to-transparent",
+        selected && "bg-primary/[0.055]",
         beat.optimistic && "animate-pulse motion-reduce:animate-none",
       )}
     >
-      <header className="flex items-start gap-2.5">
+      <header className="flex items-start gap-2">
         {speaker ? (
           <RoleAvatar
             name={speaker.card.identity.name}
@@ -142,82 +141,81 @@ export function BeatRow({
             accentColor={speaker.card.identity.accentColor}
             size="sm"
             imageUrl={speaker.avatarUrl}
-            className="size-9 text-xs"
+            className="mt-0.5 size-7 text-[10px] ring-1 ring-background"
           />
         ) : (
-          <span className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border bg-muted text-muted-foreground">
-            <SparklesIcon className="size-4" aria-hidden />
+          <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full border border-border bg-muted/60 text-muted-foreground">
+            <SparklesIcon className="size-3.5" aria-hidden />
           </span>
         )}
         <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <h3 className="truncate font-heading text-sm font-semibold">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <h3 className="font-sans text-[11px] font-bold tracking-[0.14em] text-foreground uppercase">
               {speakerName}
             </h3>
             {origin ? (
-              <Badge variant="secondary" className="font-normal">
+              <span className="font-mono text-[9px] tracking-[0.05em] text-muted-foreground uppercase">
                 {origin}
-              </Badge>
-            ) : null}
-            {beat.isPinned ? (
-              <Badge variant="outline" className="gap-1 font-normal">
-                <PinIcon className="size-3" aria-hidden />
-                Pinned
-              </Badge>
-            ) : null}
-            {streaming ? (
-              <span className="text-[11px] text-muted-foreground" role="status">
-                speaking…
               </span>
             ) : null}
+            {beat.isPinned ? (
+              <span className="inline-flex items-center gap-1 font-mono text-[9px] text-primary">
+                <PinIcon className="size-2.5" aria-hidden />
+                Pinned
+              </span>
+            ) : null}
+            {streaming ? (
+              <span className="inline-flex items-center gap-1 font-mono text-[9px] text-primary" role="status">
+                <span className="size-1 animate-pulse rounded-full bg-primary motion-reduce:animate-none" aria-hidden />
+                speaking
+              </span>
+            ) : null}
+            <span className="ml-auto font-mono text-[9px] text-muted-foreground/70">
+              beat {beat.seq}
+              {beat.optimistic ? " · taking path" : ""}
+            </span>
           </div>
-          <p className="text-[11px] text-muted-foreground">
-            Beat {beat.seq}
-            {beat.optimistic ? " · taking this path…" : ""}
-          </p>
         </div>
 
         {readOnly ? null : (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              aria-label={`Actions for beat ${beat.seq}`}
-              disabled={disabled || beat.optimistic}
-            >
-              <MoreHorizontalIcon />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onSelect={() => onPin(!beat.isPinned)}>
-              {beat.isPinned ? <PinOffIcon /> : <PinIcon />}
-              {beat.isPinned ? "Unpin beat" : "Pin beat"}
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => onEdit(beat)}>
-              <PencilIcon />
-              Edit (forks)
-            </DropdownMenuItem>
-            {onInspect ? (
-              <DropdownMenuItem onSelect={() => onInspect(beat)}>
-                <FileSearchIcon />
-                Inspect prompts
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon-xs"
+                aria-label={`Actions for beat ${beat.seq}`}
+                disabled={disabled || beat.optimistic}
+                className="text-muted-foreground/70 transition-colors hover:text-foreground focus-visible:text-foreground data-[state=open]:text-foreground"
+              >
+                <MoreHorizontalIcon />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onSelect={() => onPin(!beat.isPinned)}>
+                {beat.isPinned ? <PinOffIcon /> : <PinIcon />}
+                {beat.isPinned ? "Unpin beat" : "Pin beat"}
               </DropdownMenuItem>
-            ) : null}
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onSelect={() => onRegenerate(beat)}
-              disabled={!canRegenerate}
-            >
-              <RefreshCwIcon />
-              Regenerate (forks)
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              <DropdownMenuItem onSelect={() => onEdit(beat)}>
+                <PencilIcon />
+                Edit (forks)
+              </DropdownMenuItem>
+              {onInspect ? (
+                <DropdownMenuItem onSelect={() => onInspect(beat)}>
+                  <FileSearchIcon />
+                  Inspect prompts
+                </DropdownMenuItem>
+              ) : null}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onSelect={() => onRegenerate(beat)} disabled={!canRegenerate}>
+                <RefreshCwIcon />
+                Regenerate (forks)
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         )}
       </header>
 
-      <div className="mt-2">
+      <div className="mt-1.5">
         {streaming && !text ? (
           <div className="space-y-2 py-1" aria-hidden>
             <Skeleton className="h-4 w-4/5" />

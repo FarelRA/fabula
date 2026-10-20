@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { ScenePage } from "@/components/scene/ScenePage";
+import { ArchiveRouteClient } from "./ArchiveRouteClient";
 
 export const metadata: Metadata = {
-  title: "Scene · Fabula",
+  title: "Scene archive",
 };
 
 export default async function Page({
@@ -11,5 +11,5 @@ export default async function Page({
   params: Promise<{ sceneId: string }>;
 }) {
   const { sceneId } = await params;
-  return <ScenePage sceneId={sceneId} />;
+  return <ArchiveRouteClient sceneId={sceneId} />;
 }

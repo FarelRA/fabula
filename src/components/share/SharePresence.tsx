@@ -29,7 +29,7 @@ export function SharePresence({ roomToken }: { roomToken: string }) {
     <div
       data-testid="share-presence"
       aria-label={`${viewers.length} watching now`}
-      className="flex items-center gap-1.5 rounded-full border border-border bg-card/60 px-2 py-1 text-[11px] text-muted-foreground"
+      className="flex items-center gap-1.5 rounded-sm border border-border/70 bg-card/40 px-2 py-1 font-mono text-[10px] text-muted-foreground"
     >
       <UsersIcon className="size-3.5" aria-hidden />
       <span aria-hidden className="flex -space-x-1.5">

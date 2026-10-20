@@ -66,27 +66,27 @@ export function InspectorPane({
   const disabled = scene.status === "archived";
 
   return (
-    <div className="flex h-full min-h-0 flex-col bg-background">
+    <div className="flex h-full min-h-0 flex-col bg-card/20">
       <Tabs
         value={tab}
         onValueChange={(value) => onTabChange(value as InspectorTab)}
         className="flex min-h-0 flex-1 flex-col gap-0"
       >
-        <div className="flex items-center gap-1 border-b border-border px-2 py-1.5">
-          <TabsList className="h-7">
-            <TabsTrigger value="memory" className="gap-1 text-xs">
+        <div className="flex items-center gap-1 border-b border-border/70 px-2 py-2">
+          <TabsList variant="line" className="h-7 gap-0.5">
+            <TabsTrigger value="memory" className="gap-1 px-2 text-[11px]">
               <BookOpenIcon className="size-3.5" aria-hidden />
               Memory
             </TabsTrigger>
-            <TabsTrigger value="prompts" className="gap-1 text-xs">
+            <TabsTrigger value="prompts" className="gap-1 px-2 text-[11px]">
               <FileSearchIcon className="size-3.5" aria-hidden />
               Prompts
             </TabsTrigger>
-            <TabsTrigger value="map" className="gap-1 text-xs">
+            <TabsTrigger value="map" className="gap-1 px-2 text-[11px]">
               <MapIcon className="size-3.5" aria-hidden />
               Map
             </TabsTrigger>
-            <TabsTrigger value="usage" className="gap-1 text-xs">
+            <TabsTrigger value="usage" className="gap-1 px-2 text-[11px]">
               <CoinsIcon className="size-3.5" aria-hidden />
               Usage
             </TabsTrigger>
@@ -103,7 +103,7 @@ export function InspectorPane({
           </Button>
         </div>
 
-        <div className="min-h-0 flex-1 overflow-y-auto p-3">
+        <div className="min-h-0 flex-1 overflow-y-auto p-3 sm:p-4">
           <TabsContent value="memory" className="m-0">
             <MemoryTab scene={scene} sceneId={sceneId} disabled={disabled} />
           </TabsContent>
